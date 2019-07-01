@@ -5,7 +5,7 @@ This is the project page for **Unreal Tournament** on GitHub abandoned by Epic (
 
 As described in the [License Agreement](LICENSE.pdf), the code and assets residing in this repository may only be used for Unreal Tournament submissions.
 
-This project is the continuation of Epic's Unreal Torunamet [Epic UT](https://github.com/EpicGames/UnrealTournament) with the last commit date stamp: Aug 11, 2017 (more than 555 days).
+This project is the continuation of [Epic UT](https://github.com/EpicGames/UnrealTournament) with the last commit date stamp: Aug 11, 2017 (more than 555 days).
 
 Check out the [Unreal Tournament wiki](https://wiki.unrealengine.com/Unreal_Tournament_Development) for documentation on the design and development process of the game.
 
