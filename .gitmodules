@@ -1,3 +1,4 @@
 [submodule "UnrealEngine"]
 	path = UnrealEngine
-	url = https://github.com/EpicGames/UnrealEngine.git
+	url = git@github.com:https://github.com/EpicGames/UnrealEngine.git
+	branch = release
