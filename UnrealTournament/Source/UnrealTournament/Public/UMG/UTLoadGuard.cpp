@@ -110,7 +110,12 @@ TSharedRef<SWidget> UUTLoadGuard::RebuildWidget()
 
 	SetIsLoadingInternal(bIsLoading);
 
-	return BuildDesignTimeWidget(MyGuardOverlay.ToSharedRef());
+    //return BuildDesignTimeWidget(MyGuardOverlay.ToSharedRef());
+#if WITH_EDITOR
+    return CreateDesignerOutline(MyGuardOverlay.ToSharedRef());
+#else
+    return MyGuardOverlay.ToSharedRef();
+#endif
 }
 
 void UUTLoadGuard::SynchronizeProperties()

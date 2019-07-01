@@ -43,7 +43,7 @@ void AUTTimedPowerup::UpdateStatsCounter(float Amount)
 {
 	if (GetUTOwner() && (StatsNameTime != NAME_None))
 	{
-		AUTPlayerState* PS = Cast<AUTPlayerState>(GetUTOwner()->PlayerState);
+        AUTPlayerState* PS = Cast<AUTPlayerState>(GetUTOwner()->GetPlayerState());
 		if (PS)
 		{
 			PS->ModifyStatsValue(StatsNameTime, Amount);

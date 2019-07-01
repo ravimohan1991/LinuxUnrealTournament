@@ -27,7 +27,7 @@ void SUTChatEditBox::Construct(const FArguments& InArgs, TWeakObjectPtr<UUTLocal
 	TAttribute<FSlateFontInfo> Font = FontOverride.IsSet() ? FontOverride : InArgs._Style->Font;
 	TAttribute<FSlateColor> BorderForegroundColor = ForegroundColorOverride.IsSet() ? ForegroundColorOverride : InArgs._Style->ForegroundColor;
 	TAttribute<FSlateColor> BackgroundColor = BackgroundColorOverride.IsSet() ? BackgroundColorOverride : InArgs._Style->BackgroundColor;
-	ReadOnlyForegroundColor = InArgs._Style->ReadOnlyForegroundColor;
+    FSlateColor ReadOnlyForegroundColor = InArgs._Style->ReadOnlyForegroundColor;
 
 	ConsoleKeyPressedDelegate = InArgs._OnConsoleKeyPressed;
 	ConsoleKeyName = InArgs._ConsoleKeyName;

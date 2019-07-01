@@ -328,7 +328,7 @@ public:
 			float DeliveredXL;
 			Canvas->StrLen(UTHUDOwner->SmallFont, DeliveredPrefix.ToString(), DeliveredXL, YL);
 			YPos = TopY + RenderScale * (ScoreHeight - 1.1f*YL);
-			EmphasisText = FText::FromString(ScoringPlayer->PlayerName);
+            EmphasisText = FText::FromString(ScoringPlayer->GetPlayerName());
 			Canvas->StrLen(UTHUDOwner->SmallFont, EmphasisText.ToString(), EmphasisXL, YL);
 
 			ScoreX = 0.5f * (Canvas->ClipX - RenderScale * (EmphasisXL + DeliveredXL));

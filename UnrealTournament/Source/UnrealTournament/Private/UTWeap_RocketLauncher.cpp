@@ -216,9 +216,9 @@ void AUTWeap_RocketLauncher::ClientAbortLoad_Implementation()
 		}
 		// set grace timer
 		float AdjustedGraceTime = GracePeriod;
-		if (UTOwner != NULL && UTOwner->PlayerState != NULL)
+        if (UTOwner != NULL && UTOwner->GetPlayerState() != NULL)
 		{
-			AdjustedGraceTime = FMath::Max<float>(0.01f, AdjustedGraceTime - UTOwner->PlayerState->ExactPing * 0.0005f); // one way trip so half ping
+            AdjustedGraceTime = FMath::Max<float>(0.01f, AdjustedGraceTime - UTOwner->GetPlayerState()->ExactPing * 0.0005f); // one way trip so half ping
 		}
 		GetWorldTimerManager().SetTimer(LoadState->GraceTimerHandle, LoadState, &UUTWeaponStateFiringChargedRocket::GraceTimer, AdjustedGraceTime, false);
 	}
@@ -580,7 +580,7 @@ void AUTWeap_RocketLauncher::StateChanged()
 bool AUTWeap_RocketLauncher::CanLockTarget(AActor *Target)
 {
 	//Make sure its not dead
-	if (Target != NULL && !Target->bTearOff && !IsPendingKillPending())
+    if (Target != NULL && !Target->GetTearOff() && !IsPendingKillPending())
 	{
 		AUTCharacter* UTP = Cast<AUTCharacter>(Target);
 

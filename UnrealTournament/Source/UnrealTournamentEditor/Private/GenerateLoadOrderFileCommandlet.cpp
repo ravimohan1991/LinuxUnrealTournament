@@ -22,7 +22,7 @@ int32 UGenerateLoadOrderFileCommandlet::Main(const FString& FullCommandLine)
 	FString LogFilePath;
 	FString NewLogFilePath;
 
-	LogFileDirectory = FPaths::Combine(FPlatformMisc::GameDir(), TEXT("Build"), TEXT("WindowsNoEditor"), TEXT("FileOpenOrder"));
+    LogFileDirectory = FPaths::Combine(FPaths::ProjectDir(), TEXT("Build"), TEXT("LinuxNoEditor"), TEXT("FileOpenOrder"));
 	LogFilePath = FPaths::Combine(*LogFileDirectory, TEXT("GameOpenOrder.log"));
 	
 	TArray<FString> OrderEntries;
@@ -84,7 +84,7 @@ int32 UGenerateLoadOrderFileCommandlet::Main(const FString& FullCommandLine)
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 
 	FoundAssets.Empty();
-	PlatformFile.IterateDirectoryRecursively(*FPaths::Combine(*FPaths::GameContentDir(), TEXT("RestrictedAssets")), AssetVisitor);
+    PlatformFile.IterateDirectoryRecursively(*FPaths::Combine(*FPaths::ProjectContentDir(), TEXT("RestrictedAssets")), AssetVisitor);
 	for (const FString& AssetPath : FoundAssets)
 	{
 		FString Text = FString::Printf(TEXT("\"%s\""), *AssetPath);
@@ -95,7 +95,7 @@ int32 UGenerateLoadOrderFileCommandlet::Main(const FString& FullCommandLine)
 	}
 
 	FoundAssets.Empty();
-	PlatformFile.IterateDirectoryRecursively(*FPaths::Combine(*FPaths::GameContentDir(), TEXT("EpicInternal")), AssetVisitor);
+    PlatformFile.IterateDirectoryRecursively(*FPaths::Combine(*FPaths::ProjectContentDir(), TEXT("EpicInternal")), AssetVisitor);
 	for (const FString& AssetPath : FoundAssets)
 	{
 		FString Text = FString::Printf(TEXT("\"%s\""), *AssetPath);

@@ -3,99 +3,67 @@
 #include "UnrealTournament.h"
 #include "UTJumpPad.h"
 #include "UTJumpPadRenderingComponent.h"
-
-#if !UE_SERVER
-
-class UNREALTOURNAMENT_API UTJumpPadRenderingProxy : public FPrimitiveSceneProxy
+/*
+UUTJumpPadRenderingProxy::UUTJumpPadRenderingProxy(const UPrimitiveComponent* InComponent): FPrimitiveSceneProxy(InComponent)
 {
-private:
-	FVector JumpPadLocation;
-	FVector JumpPadTarget;
-	FVector JumpVelocity;
-	float	JumpTime;
-	float	GravityZ;
+    AUTJumpPad *JumpPad = Cast<AUTJumpPad>(InComponent->GetOwner());
 
-public:
+    if (JumpPad != NULL)
+    {
+        JumpPadLocation = InComponent->GetOwner()->GetActorLocation();
+        JumpVelocity = JumpPad->CalculateJumpVelocity(JumpPad);
+        JumpTime = JumpPad->JumpTime;
+        GravityZ = JumpPad->GetWorld()->GetGravityZ();
+        JumpPadTarget = JumpPad->JumpTarget;
+    }
+}
 
-	UTJumpPadRenderingProxy(const UPrimitiveComponent* InComponent) : FPrimitiveSceneProxy(InComponent)
-	{
-		AUTJumpPad *JumpPad = Cast<AUTJumpPad>(InComponent->GetOwner());
+void UUTJumpPadRenderingProxy::GetDynamicMeshElements(const TArray<const FSceneView*>& Views, const FSceneViewFamily& ViewFamily, uint32 VisibilityMap, FMeshElementCollector& Collector) const
+{
+    for (int32 ViewIndex = 0; ViewIndex < Views.Num(); ViewIndex++)
+    {
+        if (VisibilityMap & (1 << ViewIndex))
+        {
+            FPrimitiveDrawInterface* PDI = Collector.GetPDI(ViewIndex);
 
-		if (JumpPad != NULL)
-		{
-			JumpPadLocation = InComponent->GetOwner()->GetActorLocation();
-			JumpVelocity = JumpPad->CalculateJumpVelocity(JumpPad);
-			JumpTime = JumpPad->JumpTime;
-			GravityZ = JumpPad->GetWorld()->GetGravityZ();
-			JumpPadTarget = JumpPad->JumpTarget;
-		}
-	}
+            static const float LINE_THICKNESS = 20;
+            static const int32 NUM_DRAW_LINES = 16;
+            static const float FALL_DAMAGE_VELOCITY = GetDefault<AUTCharacter>()->MaxSafeFallSpeed; // TODO: find default pawn class and pull from that
 
-	virtual void GetDynamicMeshElements(const TArray<const FSceneView*>& Views, const FSceneViewFamily& ViewFamily, uint32 VisibilityMap, FMeshElementCollector& Collector) const override
-	{
-		for (int32 ViewIndex = 0; ViewIndex < Views.Num(); ViewIndex++)
-		{
-			if (VisibilityMap & (1 << ViewIndex))
-			{
-				FPrimitiveDrawInterface* PDI = Collector.GetPDI(ViewIndex);
+            FVector Start = JumpPadLocation;
+            float TimeTick = JumpTime / NUM_DRAW_LINES;
 
-				static const float LINE_THICKNESS = 20;
-				static const int32 NUM_DRAW_LINES = 16;
-				static const float FALL_DAMAGE_VELOCITY = GetDefault<AUTCharacter>()->MaxSafeFallSpeed; // TODO: find default pawn class and pull from that
+            for (int32 i = 1; i <= NUM_DRAW_LINES; i++)
+            {
+                //Find the position in the Trajectory
+                float TimeElapsed = TimeTick * i;
+                FVector End = JumpPadLocation + (JumpVelocity * TimeElapsed);
+                End.Z -= (-GravityZ * FMath::Pow(TimeElapsed, 2)) / 2;
 
-				FVector Start = JumpPadLocation;
-				float TimeTick = JumpTime / NUM_DRAW_LINES;
+                //Colour gradient to show how fast the player will be travelling. Useful to visualize fall damage
+                float speed = FMath::Clamp(FMath::Abs(Start.Z - End.Z) / TimeTick / FALL_DAMAGE_VELOCITY, 0.0f, 1.0f);
+                FColor LineClr = FColor::MakeRedToGreenColorFromScalar(1 - speed);
 
-				for (int32 i = 1; i <= NUM_DRAW_LINES; i++)
-				{
-					//Find the position in the Trajectory
-					float TimeElapsed = TimeTick * i;
-					FVector End = JumpPadLocation + (JumpVelocity * TimeElapsed);
-					End.Z -= (-GravityZ * FMath::Pow(TimeElapsed, 2)) / 2;
+                //Draw and swap line ends
+                PDI->DrawLine(Start, End, LineClr, 0, LINE_THICKNESS);
+                Start = End;
+            }
+        }
+    }
+}
 
-					//Colour gradient to show how fast the player will be travelling. Useful to visualize fall damage
-					float speed = FMath::Clamp(FMath::Abs(Start.Z - End.Z) / TimeTick / FALL_DAMAGE_VELOCITY, 0.0f, 1.0f);
-					FColor LineClr = FColor::MakeRedToGreenColorFromScalar(1 - speed);
-
-					//Draw and swap line ends
-					PDI->DrawLine(Start, End, LineClr, 0, LINE_THICKNESS);
-					Start = End;
-				}
-			}
-		}
-	}
-
-	virtual uint32 GetMemoryFootprint(void) const
-	{
-		return(sizeof(*this));
-	}
-
-	FPrimitiveViewRelevance GetViewRelevance(const FSceneView* View) const
-	{
-		FPrimitiveViewRelevance Result;
-		Result.bDrawRelevance = IsShown(View) && (IsSelected() || View->Family->EngineShowFlags.Navigation);
-		Result.bDynamicRelevance = true;
-		Result.bNormalTranslucencyRelevance = IsShown(View);
-		Result.bShadowRelevance = IsShadowCast(View);
-		Result.bEditorPrimitiveRelevance = UseEditorCompositing(View);
-		return Result;
-	}
-};
-
-#endif
-
-
+*/
 UUTJumpPadRenderingComponent::UUTJumpPadRenderingComponent(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	// Allows updating in game, while optimizing rendering for the case that it is not modified
+    // Allows updating in game, while optimizing rendering for the case that it is not modified
 	Mobility = EComponentMobility::Stationary;
 
 	BodyInstance.SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
 
 	bIsEditorOnly = true;
 	bHiddenInGame = true;
-	bGenerateOverlapEvents = false;
+    SetGenerateOverlapEvents(false);//bGenerateOverlapEvents = false;
 
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.bStartWithTickEnabled = true;
@@ -118,7 +86,7 @@ void UUTJumpPadRenderingComponent::TickComponent(float DeltaTime, enum ELevelTic
 
 FBoxSphereBounds UUTJumpPadRenderingComponent::CalcBounds(const FTransform & LocalToWorld) const
 {
-	FBox CalculatedBounds(0);
+    FBox CalculatedBounds(EForceInit::ForceInitToZero);// (0)
 
 	if (GExitPurge || HasAnyFlags(RF_BeginDestroyed) || GetWorld() == nullptr)
 	{
@@ -159,7 +127,10 @@ FPrimitiveSceneProxy* UUTJumpPadRenderingComponent::CreateSceneProxy()
 #if UE_SERVER
 	return nullptr;
 #else
-	return new UTJumpPadRenderingProxy(this);
+    {
+        FPrimitiveSceneProxy* test = nullptr;//new UUTJumpPadRenderingProxy(this);
+        return test;
+    }
 #endif
 }
 

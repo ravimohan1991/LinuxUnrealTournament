@@ -2,6 +2,7 @@
 #pragma once
 
 #include "UTAnnouncer.h"
+#include "UTLocalMessage.h"
 
 #include "UTCTFRewardMessage.generated.h"
 

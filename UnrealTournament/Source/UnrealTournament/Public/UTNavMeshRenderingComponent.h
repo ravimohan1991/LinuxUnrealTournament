@@ -1,7 +1,7 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 
-#include "AI/Navigation/NavMeshRenderingComponent.h"
+#include "NavMeshRenderingComponent.h"
 
 #include "UTNavMeshRenderingComponent.generated.h"
 

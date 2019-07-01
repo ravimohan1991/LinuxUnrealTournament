@@ -99,14 +99,14 @@ FVector2D UUTHUDWidgetMessage_ConsoleMessages::DrawMessage(int32 QueueIndex, flo
 		}
 		if (MessageQueue[QueueIndex].RelatedPlayerState_1 && (MessageQueue[QueueIndex].MessageClass != UUTDeathMessage::StaticClass()))
 		{
-			FText PlayerName = FText::FromString(MessageQueue[QueueIndex].RelatedPlayerState_1->PlayerName);
+            FText PlayerName = FText::FromString(MessageQueue[QueueIndex].RelatedPlayerState_1->GetPlayerName());
 			FUTCanvasTextItem TextItem(RenderPos, PlayerName, MessageQueue[QueueIndex].DisplayFont, MessageQueue[QueueIndex].DrawColor, WordWrapper);
 			TextItem.FontRenderInfo = FontRenderInfo;
 			TextItem.Scale = FVector2D(TextScaling, TextScaling);
 			TextItem.EnableShadow(ShadowColor, MessageQueue[QueueIndex].ShadowDirection);
 			Canvas->DrawItem(TextItem);
 			float PreXL, PreYL;
-			Canvas->StrLen(MessageQueue[QueueIndex].DisplayFont, MessageQueue[QueueIndex].RelatedPlayerState_1->PlayerName, PreXL, PreYL);
+            Canvas->StrLen(MessageQueue[QueueIndex].DisplayFont, MessageQueue[QueueIndex].RelatedPlayerState_1->GetPlayerName(), PreXL, PreYL);
 			RenderPos.X += PreXL * TextScaling;
 		}
 		FUTCanvasTextItem TextItem(RenderPos, MessageQueue[QueueIndex].Text, MessageQueue[QueueIndex].DisplayFont, DrawColor, WordWrapper);

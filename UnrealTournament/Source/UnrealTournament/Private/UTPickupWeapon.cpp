@@ -80,7 +80,7 @@ void AUTPickupWeapon::InventoryTypeUpdated_Implementation()
 		GhostDepthMesh->SetRenderInMainPass(false);
 		GhostDepthMesh->CastShadow = false;
 		GhostDepthMesh->RegisterComponent();
-		GhostDepthMesh->bShouldUpdatePhysicsVolume = false;
+        GhostDepthMesh->SetShouldUpdatePhysicsVolume(false);// = false;
 		GhostDepthMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale);
 		if (GhostDepthMesh->bAbsoluteScale) // SnapToTarget doesn't handle absolute...
 		{
@@ -93,7 +93,7 @@ bool AUTPickupWeapon::IsTaken(APawn* TestPawn)
 {
 	for (int32 i = Customers.Num() - 1; i >= 0; i--)
 	{
-		if (Customers[i].P == NULL || Customers[i].P->bTearOff || Customers[i].P->IsPendingKillPending())
+        if (Customers[i].P == NULL || Customers[i].P->GetTearOff() || Customers[i].P->IsPendingKillPending())
 		{
 			Customers.RemoveAt(i);
 		}
@@ -156,8 +156,8 @@ void AUTPickupWeapon::ProcessTouch_Implementation(APawn* TouchedBy)
 					float Radius = 0.0f;
 					if (TakenSound != NULL)
 					{
-						Radius = TakenSound->GetMaxAudibleDistance();
-						const FAttenuationSettings* Settings = TakenSound->GetAttenuationSettingsToApply();
+                        Radius = TakenSound->GetMaxDistance();
+                        const FSoundAttenuationSettings* Settings = TakenSound->GetAttenuationSettingsToApply();
 						if (Settings != NULL)
 						{
 							Radius = FMath::Max<float>(Radius, Settings->GetMaxDimension());

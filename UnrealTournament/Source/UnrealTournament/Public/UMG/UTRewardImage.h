@@ -21,9 +21,9 @@ public:
 	UUTRewardImage(const FObjectInitializer& Initializer);
 
 	// IUTListItem interface
-	virtual UObject* GetData_Implementation() const override { return ItemDef; }
-	virtual void SetData_Implementation(UObject* InData) override;
-	virtual void Reset_Implementation() override;
+    virtual UObject* GetData_Implementation() const { return ItemDef; }
+    virtual void SetData_Implementation(UObject* InData);
+    virtual void Reset_Implementation();
 	virtual void SetSelected_Implementation(bool bInSelected) override {}
 	virtual void SetIndexInList_Implementation(int32 InIndexInList) override {}
 	virtual bool IsItemExpanded_Implementation() const override { return false; }

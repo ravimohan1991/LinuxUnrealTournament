@@ -41,7 +41,7 @@ void UUTHUDWidget_TeamGameClock::Draw_Implementation(float DeltaTime)
 	}
 
 	AUTCharacter* UTC = Cast<AUTCharacter>(UTHUDOwner->UTPlayerOwner->GetViewTarget());
-	AUTPlayerState* PS = UTC ? Cast<AUTPlayerState>(UTC->PlayerState) : NULL;
+    AUTPlayerState* PS = UTC ? Cast<AUTPlayerState>(UTC->GetPlayerState()) : NULL;
 	if (UTGameState && UTGameState->bTeamGame && PS && PS->Team && UTGameState->HasMatchStarted())
 	{
 		RoleText.bHidden = false;

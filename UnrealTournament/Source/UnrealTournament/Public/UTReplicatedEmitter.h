@@ -2,6 +2,7 @@
 #pragma once
 
 #include "UnrealNetwork.h"
+#include "Runtime/Engine/Classes/GameFramework/Actor.h"
 
 #include "UTReplicatedEmitter.generated.h"
 

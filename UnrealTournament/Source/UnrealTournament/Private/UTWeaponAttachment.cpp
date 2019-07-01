@@ -11,7 +11,7 @@ AUTWeaponAttachment::AUTWeaponAttachment(const FObjectInitializer& ObjectInitial
 	RootComponent = ObjectInitializer.CreateDefaultSubobject<USceneComponent, USceneComponent>(this, TEXT("DummyRoot"), false);
 	Mesh = ObjectInitializer.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("Mesh3P"));
 	Mesh->SetupAttachment(RootComponent);
-	Mesh->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::OnlyTickPoseWhenRendered;
+    Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 	Mesh->bLightAttachmentsAsGroup = true;
 	Mesh->bReceivesDecals = false;
 	Mesh->bUseAttachParentBound = true;
@@ -135,8 +135,8 @@ void AUTWeaponAttachment::UpdateOutline(bool bOn, uint8 StencilValue)
 			CustomDepthMesh->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
 			{
 				// TODO: scary that these get copied, need an engine solution and/or safe way to duplicate objects during gameplay
-				CustomDepthMesh->PrimaryComponentTick = CustomDepthMesh->GetClass()->GetDefaultObject<USkeletalMeshComponent>()->PrimaryComponentTick;
-				CustomDepthMesh->PostPhysicsComponentTick = CustomDepthMesh->GetClass()->GetDefaultObject<USkeletalMeshComponent>()->PostPhysicsComponentTick;
+                //CustomDepthMesh->PrimaryComponentTick = CustomDepthMesh->GetClass()->GetDefaultObject<USkeletalMeshComponent>()->PrimaryComponentTick;
+                //CustomDepthMesh->PostPhysicsComponentTick = CustomDepthMesh->GetClass()->GetDefaultObject<USkeletalMeshComponent>()->PostPhysicsComponentTick;
 			}
 			CustomDepthMesh->SetMasterPoseComponent(Mesh);
 			CustomDepthMesh->BoundsScale = 15000.f;
@@ -274,14 +274,14 @@ void AUTWeaponAttachment::PlayFiringEffects()
 	{
 		UParticleSystemComponent* PSC = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEffect[UTOwner->FireMode], SpawnLocation, (UTOwner->FlashLocation.Position - SpawnLocation).Rotation(), true);
 		PSC->SetVectorParameter(NAME_HitLocation, UTOwner->FlashLocation.Position);
-		PSC->SetVectorParameter(NAME_LocalHitLocation, PSC->ComponentToWorld.InverseTransformPosition(UTOwner->FlashLocation.Position));
+        PSC->SetVectorParameter(NAME_LocalHitLocation, PSC->GetComponentToWorld().InverseTransformPosition(UTOwner->FlashLocation.Position));
 		ModifyFireEffect(PSC);
 	}
 	// perhaps the muzzle flash also contains hit effect (constant beam, etc) so set the parameter on it instead
 	else if (MuzzleFlash.IsValidIndex(UTOwner->FireMode) && MuzzleFlash[UTOwner->FireMode] != NULL)
 	{
 		MuzzleFlash[UTOwner->FireMode]->SetVectorParameter(NAME_HitLocation, UTOwner->FlashLocation.Position);
-		MuzzleFlash[UTOwner->FireMode]->SetVectorParameter(NAME_LocalHitLocation, MuzzleFlash[UTOwner->FireMode]->ComponentToWorld.InverseTransformPosition(UTOwner->FlashLocation.Position));
+        MuzzleFlash[UTOwner->FireMode]->SetVectorParameter(NAME_LocalHitLocation, MuzzleFlash[UTOwner->FireMode]->GetComponentToWorld().InverseTransformPosition(UTOwner->FlashLocation.Position));
 	}
 
 	if (!UTOwner->FlashLocation.Position.IsZero() && ((UTOwner->FlashLocation.Position - LastImpactEffectLocation).Size() >= ImpactEffectSkipDistance || GetWorld()->TimeSeconds - LastImpactEffectTime >= MaxImpactEffectSkipTime))

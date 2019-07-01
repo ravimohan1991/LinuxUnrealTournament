@@ -5,6 +5,7 @@
 #include "UTPickupWeapon.h"
 #include "UTGameplayStatics.h"
 #include "UTLineUpZone.h"
+#include "../Runtime/Engine/Classes/GameFramework/Controller.h"
 
 #if WITH_PROFILE
 #include "UTMcpProfile.h"
@@ -31,7 +32,7 @@ struct FDeferredFireInput
 	{}
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FCustomSoundAmplification
 {
 	GENERATED_USTRUCT_BODY()
@@ -100,7 +101,7 @@ struct FQueuedCoolMoment
 	float TimeToRewind;
 };
 
-UCLASS(config=Game)
+UCLASS(BlueprintType, config=Game)
 class UNREALTOURNAMENT_API AUTPlayerController : public AUTBasePlayerController
 {
 	GENERATED_UCLASS_BODY()
@@ -479,7 +480,7 @@ public:
 
 	virtual FVector GetFocalLocation() const override;
 
-	virtual void Possess(APawn*) override;
+    virtual void OnPossess(APawn*) override;
 	virtual void PawnLeavingGame() override;
 
 	/**	We override player tick to keep updating the player's rotation when the game is over. */

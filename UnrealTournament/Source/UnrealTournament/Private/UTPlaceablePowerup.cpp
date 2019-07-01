@@ -65,9 +65,9 @@ FText AUTPlaceablePowerup::GetHUDText() const
 	}
 	else
 	{
-		if (UTOwner && UTOwner->PlayerState)
+        if (UTOwner && UTOwner->GetPlayerState())
 		{
-			AUTPlayerState* UTPS = Cast<AUTPlayerState>(UTOwner->PlayerState);
+            AUTPlayerState* UTPS = Cast<AUTPlayerState>(UTOwner->GetPlayerState());
 			if (UTPS)
 			{
 				return FText::AsNumber(UTPS->GetRemainingBoosts());
@@ -86,9 +86,9 @@ int32 AUTPlaceablePowerup::GetHUDValue() const
 	}
 	else
 	{
-		if (UTOwner && UTOwner->PlayerState)
+        if (UTOwner && UTOwner->GetPlayerState())
 		{
-			AUTPlayerState* UTPS = Cast<AUTPlayerState>(UTOwner->PlayerState);
+            AUTPlayerState* UTPS = Cast<AUTPlayerState>(UTOwner->GetPlayerState());
 			if (UTPS)
 			{
 				return static_cast<int32>(UTPS->GetRemainingBoosts());
@@ -133,9 +133,9 @@ void AUTPlaceablePowerup::SpawnPowerup()
 	}
 
 	//Remove itself if we are out of boosts
-	if (UTOwner && UTOwner->PlayerState)
+    if (UTOwner && UTOwner->GetPlayerState())
 	{
-		AUTPlayerState* UTPS = Cast<AUTPlayerState>(UTOwner->PlayerState);
+        AUTPlayerState* UTPS = Cast<AUTPlayerState>(UTOwner->GetPlayerState());
 		if (UTPS)
 		{
 			if (bDestroyWhenOutOfBoosts && (UTPS->GetRemainingBoosts() <= 0))

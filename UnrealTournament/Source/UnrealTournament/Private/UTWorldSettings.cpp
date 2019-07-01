@@ -116,7 +116,7 @@ void AUTWorldSettings::NotifyBeginPlay()
 				// note: OnDestroyed() instead of OnEndPlay() as Actors that are destroyed by BeginPlay() don't always call EndPlay()
 				Actor->OnDestroyed.AddDynamic(this, &AUTWorldSettings::LevelActorDestroyed);
 			}
-			Actor->BeginPlay();
+            Actor->DispatchBeginPlay();// Actor->BeginPlay()
 		}
 	}
 }

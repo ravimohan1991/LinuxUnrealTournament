@@ -14,7 +14,7 @@ void AUTHUD_CastingGuide::DrawHUD()
 	APawn* PTarget = Cast<APawn>(ViewTarget);
 	if (PTarget != NULL)
 	{
-		AUTPlayerState* PS = Cast<AUTPlayerState>(PTarget->PlayerState);
+        AUTPlayerState* PS = Cast<AUTPlayerState>(PTarget->GetPlayerState());
 		if (PS != NULL)
 		{
 			if (PS->Team != NULL)

@@ -75,7 +75,7 @@ bool UUTWeaponStateZooming::DrawHUD(UUTHUDWidget* WeaponHudWidget)
 		{
 			OverlayMI = UMaterialInstanceDynamic::Create(OverlayMat, this);
 		}
-		FCanvasTileItem Item(FVector2D(0.0f, 0.0f), OverlayMI->GetRenderProxy(false), FVector2D(C->ClipX, C->ClipY));
+        FCanvasTileItem Item(FVector2D(0.0f, 0.0f), OverlayMI->GetRenderProxy(), FVector2D(C->ClipX, C->ClipY));
 		// expand X axis size to be widest supported aspect ratio (16:9)
 		float OrigSizeX = Item.Size.X;
 		Item.Size.X = FMath::Max<float>(Item.Size.X, Item.Size.Y * 16.0f / 9.0f);
@@ -90,7 +90,7 @@ bool UUTWeaponStateZooming::DrawHUD(UUTHUDWidget* WeaponHudWidget)
 			if (HeadScale > 0.0f)
 			{
 				AUTGameState* GS = GetWorld()->GetGameState<AUTGameState>();
-				APlayerState* OwnerState = GetUTOwner()->PlayerState;
+                APlayerState* OwnerState = GetUTOwner()->GetPlayerState();
 				float WorldTime = GetWorld()->TimeSeconds;
 				FVector FireStart = GetOuterAUTWeapon()->GetFireStartLoc();
 				for (FConstPawnIterator It = GetWorld()->GetPawnIterator(); It; ++It)

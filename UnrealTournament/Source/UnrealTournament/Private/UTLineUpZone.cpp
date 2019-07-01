@@ -3,7 +3,7 @@
 #include "UnrealTournament.h"
 #include "UTLineUpZone.h"
 #include "UTCharacter.h"
-
+#include "UTLineUpZoneVisualizationCharacter.h"
 
 AUTLineUpZone::AUTLineUpZone(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -270,7 +270,7 @@ void AUTLineUpZone::DeleteAllMeshVisualizations()
 		if (MeshVisualizations[index])
 		{
 			//MeshVisualizations[index]->DestroyComponent();
-			MeshVisualizations[index]->DetachRootComponentFromParent(true);
+            MeshVisualizations[index]->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 			MeshVisualizations[index]->Instigator = nullptr;
 			MeshVisualizations[index]->SetOwner(nullptr);
 			MeshVisualizations[index]->Destroy(true, true);

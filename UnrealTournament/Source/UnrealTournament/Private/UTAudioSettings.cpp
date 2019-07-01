@@ -19,7 +19,7 @@ void UUTAudioSettings::SetSoundClassVolume(EUTSoundClass::Type SoundClassType, f
 		// add logging?
 		return;
 	}
-	FString EnumValueDisplayName = EUTSoundClassPtr->GetEnumName(SoundClassType);
+    FString EnumValueDisplayName = EUTSoundClassPtr->GetNameStringByIndex(SoundClassType);
 	SetSoundClassVolumeByName(EnumValueDisplayName, NewVolume);
 }
 

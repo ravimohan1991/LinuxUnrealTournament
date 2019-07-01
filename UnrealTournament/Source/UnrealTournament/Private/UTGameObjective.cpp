@@ -154,7 +154,7 @@ AUTPlayerState* AUTGameObjective::GetCarriedObjectHolder()
 
 void AUTGameObjective::ObjectWasPickedUp(AUTCharacter* NewHolder, bool bWasHome)
 {
-	CarriedObjectHolder = NewHolder != NULL ? Cast<AUTPlayerState>(NewHolder->PlayerState) : NULL;
+    CarriedObjectHolder = NewHolder != NULL ? Cast<AUTPlayerState>(NewHolder->GetPlayerState()) : NULL;
 }
 
 void AUTGameObjective::ObjectWasDropped(AUTCharacter* LastHolder)

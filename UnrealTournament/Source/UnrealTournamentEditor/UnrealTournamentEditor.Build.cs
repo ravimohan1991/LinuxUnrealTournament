@@ -1,4 +1,4 @@
-// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
+﻿// (ɔ) The_Cowboy 1000 BC - 2019 AD. All rights reversed.
 
 using UnrealBuildTool;
 using System.IO;
@@ -7,43 +7,44 @@ public class UnrealTournamentEditor : ModuleRules
 {
     bool IsLicenseeBuild()
     {
-        return !Directory.Exists("Runtime/NotForLicensees");
+        return true;
     }
 
-    public UnrealTournamentEditor(TargetInfo Target)
-	{
+    public UnrealTournamentEditor(ReadOnlyTargetRules Target) : base(Target)
+    {
         bFasterWithoutUnity = true;
         MinFilesUsingPrecompiledHeaderOverride = 1;
+        PrivatePCHHeaderFile = "Public/UnrealTournamentEditor.h";
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", 
-            "CoreUObject", 
-            "Engine", 
-            "InputCore", 
-            "UnrealEd", 
+        PublicDependencyModuleNames.AddRange(new string[]{ 
+            "Core",
+            "CoreUObject",
+            "Engine",
+            "InputCore",
+            "UnrealEd",
             "Matinee",
-            "Slate", 
-            "SlateCore", 
-            "SlateRHIRenderer", 
-            "UnrealTournament", 
-            "OnlineSubsystem", 
+            "Slate",
+            "SlateCore",
+            "SlateRHIRenderer",
+            "UnrealTournament",
+            "OnlineSubsystem",
             "OnlineSubsystemUtils",
             "BlueprintContext",
             "BlueprintContextEditor",
-            "PakFile", 
-            "StreamingFile", 
-            "NetworkFile", 
-			"PerfCounters",
-			"UMGEditor",
+            "PakFile",
+            "StreamingFile",
+            "NetworkFile",
+            "PerfCounters",
+            "UMGEditor",
             "UMG" });
 
         if (!IsLicenseeBuild())
         {
-            PublicDependencyModuleNames.AddRange(
-                new string[]
+            PublicDependencyModuleNames.AddRange(new string[]
                 {
-			        "McpProfileSys",
-			        "GameSubCatalog",
-			        "GameSubCatalogEditor",
+                    "McpProfileSys",
+                    "GameSubCatalog",
+                    "GameSubCatalogEditor",
                     "UTMcpProfile",
                     "LootTables",
                 }
@@ -51,13 +52,7 @@ public class UnrealTournamentEditor : ModuleRules
         }
         else
         {
-            PublicDependencyModuleNames.AddRange(
-                    new string[]
-                    {
-                    "GithubStubs",
-                    }
-                );
+            PublicDependencyModuleNames.Add("GithubStubs");
         }
     }
-
 }

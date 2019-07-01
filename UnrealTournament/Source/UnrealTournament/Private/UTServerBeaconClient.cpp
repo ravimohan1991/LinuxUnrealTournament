@@ -83,7 +83,7 @@ void AUTServerBeaconClient::ServerRequestInfo_Implementation()
 			//Cull out players that are Replay Spectators or monsters
 			if (Cast<AUTDemoRecSpectator>(GameState->PlayerArray[i]->GetOwner()) == nullptr && Cast<AUTMonsterAI>(GameState->PlayerArray[i]->GetOwner()) == nullptr && !GameState->PlayerArray[i]->bOnlySpectator)
 			{
-				FString PlayerName = GameState->PlayerArray[i]->PlayerName;
+                FString PlayerName = GameState->PlayerArray[i]->GetPlayerName();
 				FString PlayerScore = FString::Printf(TEXT("%i"), int32(GameState->PlayerArray[i]->Score));
 				FString UniqueID = GameState->PlayerArray[i]->UniqueId.IsValid() ? GameState->PlayerArray[i]->UniqueId->ToString() : TEXT("none");
 				ServerInfo.ServerPlayers += FString::Printf(TEXT("%s\t%s\t%s\t"), *PlayerName, *PlayerScore, *UniqueID);

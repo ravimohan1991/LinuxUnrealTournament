@@ -168,7 +168,7 @@ private:
 	void HideKillcamFromUser();
 	
 	/** Added as the delegate for PostLoadMap for the playback world. */
-	void OnPostLoadMap();
+    void OnPostLoadMap(UWorld* sos = nullptr);
 
 	/** Sets ShouldTick on the playback world to false. */
 	void SetPlaybackWorldShouldTick(const bool bShouldTick);

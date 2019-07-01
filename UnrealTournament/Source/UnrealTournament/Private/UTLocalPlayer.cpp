@@ -600,12 +600,12 @@ void UUTLocalPlayer::HideMenu()
 
 		if (SpectatorWidget.IsValid())
 		{
-			FSlateApplication::Get().SetKeyboardFocus(SpectatorWidget, EKeyboardFocusCause::Keyboard);
+            FSlateApplication::Get().SetKeyboardFocus(SpectatorWidget, EFocusCause::Navigation);
 		}
 
 		if (ReplayWindow.IsValid())
 		{
-			FSlateApplication::Get().SetKeyboardFocus(ReplayWindow, EKeyboardFocusCause::Keyboard);
+            FSlateApplication::Get().SetKeyboardFocus(ReplayWindow, EFocusCause::Navigation);
 		}
 	}
 	else
@@ -719,7 +719,7 @@ void UUTLocalPlayer::CloseDialog(TSharedRef<SUTDialogBase> Dialog)
 
 	if (DesktopSlateWidget.IsValid())
 	{
-		FSlateApplication::Get().SetKeyboardFocus(DesktopSlateWidget, EKeyboardFocusCause::Keyboard);
+        FSlateApplication::Get().SetKeyboardFocus(DesktopSlateWidget, EFocusCause::Navigation);
 	}
 }
 
@@ -1565,7 +1565,7 @@ void UUTLocalPlayer::ClearProfileWarnResults(TSharedPtr<SCompoundWidget> Widget,
 		if (OnlineUserCloudInterface.IsValid() && UserID.IsValid())
 		{
 			OnlineUserCloudInterface->DeleteUserFile(*UserID, GetProfileFilename(), true, true);
-			FString Path = FPaths::GameSavedDir() + GetProfileFilename() + TEXT(".local");
+            FString Path = FPaths::ProjectSavedDir() + GetProfileFilename() + TEXT(".local");
 			FPlatformFileManager::Get().GetPlatformFile().DeleteFile(*Path);
 		}
 	}
@@ -2105,7 +2105,7 @@ void UUTLocalPlayer::ReadSpecificELOFromBackend(const FString& MatchRatingType)
 		if (!Result.bSucceeded)
 		{
 			// best we can do is log an error
-			UE_LOG(UT, Warning, TEXT("Failed to read ELO from the server. (%d) %s %s"), Result.HttpResult, *Result.ErrorCode, *Result.ErrorMessage.ToString());
+            UE_LOG(UT, Warning, TEXT("Failed to read ELO from the server. %s %s"), /*Result.HttpResult,*/ *Result.ErrorCode, *Result.ErrorMessage.ToString());
 		}
 		else
 		{
@@ -2180,7 +2180,7 @@ void UUTLocalPlayer::ReadSpecificELOFromBackend(const FString& MatchRatingType)
 			if (!Result.bSucceeded)
 			{
 				// best we can do is log an error
-				UE_LOG(UT, Warning, TEXT("Failed to read League info from the server. (%d) %s %s"), Result.HttpResult, *Result.ErrorCode, *Result.ErrorMessage.ToString());
+                UE_LOG(UT, Warning, TEXT("Failed to read League info from the server. %s %s"), /*Result.HttpResult,*/ *Result.ErrorCode, *Result.ErrorMessage.ToString());
 			}
 			else
 			{
@@ -2425,7 +2425,7 @@ void UUTLocalPlayer::ReadMMRFromBackend()
 		if (!Result.bSucceeded)
 		{
 			// best we can do is log an error
-			UE_LOG(UT, Warning, TEXT("Failed to read MMR from the server. (%d) %s %s"), Result.HttpResult, *Result.ErrorCode, *Result.ErrorMessage.ToString());
+            UE_LOG(UT, Warning, TEXT("Failed to read MMR from the server. %s %s"), /*Result.HttpResult,*/ *Result.ErrorCode, *Result.ErrorMessage.ToString());
 		}
 		else
 		{
@@ -2529,7 +2529,7 @@ void UUTLocalPlayer::ReadLeagueFromBackend(const FString& MatchRatingType)
 		if (!Result.bSucceeded)
 		{
 			// best we can do is log an error
-			UE_LOG(UT, Warning, TEXT("Failed to read %s League info from the server. (%d) %s %s"), *MatchRatingType, Result.HttpResult, *Result.ErrorCode, *Result.ErrorMessage.ToString());
+            UE_LOG(UT, Warning, TEXT("Failed to read %s League info from the server. %s %s"), *MatchRatingType, /*Result.HttpResult,*/ *Result.ErrorCode, *Result.ErrorMessage.ToString());
 		}
 		else
 		{
@@ -3482,9 +3482,11 @@ void UUTLocalPlayer::JoinFriendSession(const FUniqueNetId& FriendId, const FUniq
 	OnlineSessionInterface->FindFriendSession(0, FriendId);
 }
 
-void UUTLocalPlayer::OnFindFriendSessionComplete(int32 LocalUserNum, bool bWasSuccessful, const FOnlineSessionSearchResult& SearchResult)
+void UUTLocalPlayer::OnFindFriendSessionComplete(int LocalUserNum, bool bWasSuccessful, const TArray<FOnlineSessionSearchResult, FDefaultAllocator>& TASearchResult)//const FOnlineSessionSearchResult& SearchResult)
 {
-	if (bWasSuccessful)
+
+    FOnlineSessionSearchResult SearchResult;// Stub and useless now
+    if (bWasSuccessful)
 	{
 		if (SearchResult.Session.SessionInfo.IsValid())
 		{
@@ -4728,13 +4730,13 @@ void UUTLocalPlayer::AwardAchievement(FName AchievementName)
 		GetAllBlueprintAssetData(AUTCharacterContent::StaticClass(), PossibleUnlocks, true);
 		for (const FAssetData& Item : PossibleUnlocks)
 		{
-			const FString* ReqAchievement = Item.TagsAndValues.Find(NAME_RequiredAchievement);
+            const FString* ReqAchievement = &Item.TagsAndValues.FindTag(NAME_RequiredAchievement).GetValue();
 			if (ReqAchievement != NULL && FName(**ReqAchievement) == AchievementName)
 			{
-				const FString* DisplayName = Item.TagsAndValues.Find(NAME_DisplayName);
+                const FString* DisplayName = &Item.TagsAndValues.FindTag(NAME_DisplayName).GetValue();
 				if (DisplayName == NULL)
 				{
-					DisplayName = Item.TagsAndValues.Find(NAME_CosmeticName);
+                    DisplayName = &Item.TagsAndValues.FindTag(NAME_CosmeticName).GetValue();
 				}
 				if (DisplayName != NULL)
 				{
@@ -5193,8 +5195,8 @@ void UUTLocalPlayer::HandleProfileNotification(const FOnlineNotification& Notifi
 {
 	if (Notification.TypeStr == TEXT("XPProgress"))
 	{
-		FXPProgressNotifyPayload Payload;
-		Notification.ParsePayload(Payload, Notification.TypeStr);
+        FXPProgressNotifyPayload Payload;
+        Notification.ParsePayload(Payload);//, Notification.TypeStr);
 		AUTPlayerController* PC = Cast<AUTPlayerController>(PlayerController);
 		if (PC != nullptr)
 		{
@@ -5644,7 +5646,7 @@ TSharedPtr<SUTChatEditBox> UUTLocalPlayer::GetChatWidget()
 
 void UUTLocalPlayer::FocusWidget(TSharedPtr<SWidget> WidgetToFocus)
 {
-	FSlateApplication::Get().SetKeyboardFocus(WidgetToFocus, EKeyboardFocusCause::Keyboard);
+    FSlateApplication::Get().SetKeyboardFocus(WidgetToFocus, EFocusCause::Navigation);
 	GetSlateOperations() = FReply::Handled().ReleaseMouseCapture().SetUserFocus(WidgetToFocus.ToSharedRef(), EFocusCause::SetDirectly);
 }
 
@@ -5694,7 +5696,7 @@ void UUTLocalPlayer::ShowQuickChat(FName ChatDestination)
 		if (QuickChatWindow.IsValid())
 		{
 			OpenWindow(QuickChatWindow);
-			FSlateApplication::Get().SetAllUserFocus(QuickChatWindow.ToSharedRef(), EKeyboardFocusCause::SetDirectly);
+            FSlateApplication::Get().SetAllUserFocus(QuickChatWindow.ToSharedRef(), EFocusCause::SetDirectly);
 			FSlateApplication::Get().SetKeyboardFocus(QuickChatWindow);
 		}
 	}
@@ -5799,7 +5801,7 @@ bool UUTLocalPlayer::HasChatText()
 
 void UUTLocalPlayer::LoadLocalProfileSettings()
 {
-	FString Path = FPaths::GameSavedDir() + GetProfileFilename() + TEXT(".local");
+    FString Path = FPaths::ProjectSavedDir() + GetProfileFilename() + TEXT(".local");
 
 	// We only load the local profile if there isn't a profile.  It will be overwritten upon login
 	if (CurrentProfileSettings == NULL)
@@ -5844,7 +5846,7 @@ void UUTLocalPlayer::LoadLocalProfileSettings()
 }
 void UUTLocalPlayer::SaveLocalProfileSettings()
 {
-	FString Path = FPaths::GameSavedDir() + GetProfileFilename() + TEXT(".local");
+    FString Path = FPaths::ProjectSavedDir() + GetProfileFilename() + TEXT(".local");
 
 	// Build a blob of the profile contents
 	TArray<uint8> FileContents;
@@ -6779,7 +6781,7 @@ void UUTLocalPlayer::UpdateCheck()
 		if (MCPPulledData.CurrentVersionNumber > LastLoadedVersionNumber)
 		{
 			// Delete the web cache to insure the new version is loaded.  CEFBrowser should give you a LoadURLIgnoringCache but it doesn't
-			FString WebCacheIndex = FPaths::GameSavedDir() + TEXT("/webcache/index");
+            FString WebCacheIndex = FPaths::ProjectSavedDir() + TEXT("/webcache/index");
 			FPlatformFileManager::Get().GetPlatformFile().DeleteFile(*WebCacheIndex);
 
 			
@@ -7130,7 +7132,7 @@ void UUTLocalPlayer::ProcessTitleFile(const FString& Filename, const TArray<uint
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 		if (FParse::Param(FCommandLine::Get(), TEXT("localUTMCPS")))
 		{
-			FString Path = FPaths::GameContentDir() + TEXT("EpicInternal/MCP/UnrealTournmentMCPStorage.json");
+            FString Path = FPaths::ProjectSavedDir() + TEXT("EpicInternal/MCP/UnrealTournmentMCPStorage.json");
 			FFileHelper::LoadFileToString(JsonString, *Path);
 		}
 #endif

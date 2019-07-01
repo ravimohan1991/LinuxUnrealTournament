@@ -11,6 +11,7 @@ AUTEyewear::AUTEyewear(const class FObjectInitializer& ObjectInitializer)
 
 void AUTEyewear::OnWearerDeath_Implementation(TSubclassOf<UDamageType> DamageType)
 {
-	DetachRootComponentFromParent(true);
+    //DetachRootComponentFromParent(true);
+    DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);// Or could be KeepRelativeTransform
 	SetBodiesToSimulatePhysics();
 }

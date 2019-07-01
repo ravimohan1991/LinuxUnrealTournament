@@ -615,7 +615,7 @@ void UUTHUDWidget_SpectatorSlideOut::DrawPlayer(int32 Index, AUTPlayerState* Pla
 		bIsSelectedPlayer = true;
 	}
 
-	FString DisplayName = PlayerState->PlayerName;
+    FString DisplayName = PlayerState->GetPlayerName();
 	FString ClanName = PlayerState->ClanName;
 	if (!PlayerState->ClanName.IsEmpty())
 	{

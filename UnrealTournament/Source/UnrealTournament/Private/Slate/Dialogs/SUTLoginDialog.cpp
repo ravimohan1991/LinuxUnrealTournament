@@ -382,11 +382,11 @@ void SUTLoginDialog::SetInitialFocus()
 {
 	if (UserEditBox->GetText().IsEmpty())
 	{
-		FSlateApplication::Get().SetKeyboardFocus(UserEditBox, EKeyboardFocusCause::SetDirectly);
+        FSlateApplication::Get().SetKeyboardFocus(UserEditBox, EFocusCause::SetDirectly);
 	}
 	else
 	{
-		FSlateApplication::Get().SetKeyboardFocus(PassEditBox, EKeyboardFocusCause::SetDirectly);
+        FSlateApplication::Get().SetKeyboardFocus(PassEditBox, EFocusCause::SetDirectly);
 	}
 
 }
@@ -475,11 +475,11 @@ FReply SUTLoginDialog::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& I
 	{
 		if ( UserEditBox->HasKeyboardFocus() )
 		{
-			FSlateApplication::Get().SetKeyboardFocus(PassEditBox, EKeyboardFocusCause::SetDirectly);
+            FSlateApplication::Get().SetKeyboardFocus(PassEditBox, EFocusCause::SetDirectly);
 		}
 		else
 		{
-			FSlateApplication::Get().SetKeyboardFocus(UserEditBox, EKeyboardFocusCause::SetDirectly);
+            FSlateApplication::Get().SetKeyboardFocus(UserEditBox, EFocusCause::SetDirectly);
 		}
 	}
 	return FReply::Handled();
@@ -507,7 +507,7 @@ void SUTLoginDialog::SetErrorText(FText NewErrorText)
 	if ( ErrorAsString.FindLastChar(TEXT('='),ErrorCodePos) )
 	{
 		ErrorAsString.RemoveAt(0,ErrorCodePos+1);
-		ErrorAsString = ErrorAsString.Trim();
+        ErrorAsString = ErrorAsString.TrimStart();
 		if ( ErrorAsString == TEXT("18031") )
 		{
 			NewErrorText = NSLOCTEXT("SUTLoginDialog","BadCredentials","The Username or Password you have entered was not found.");

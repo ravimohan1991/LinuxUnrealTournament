@@ -4,6 +4,7 @@
 
 #include "UTPathBuilderInterface.h"
 #include "UTMovementBaseInterface.h"
+#include "../Runtime/Engine/Classes/AI/NavigationSystemBase.h"
 #include "UTLift.generated.h"
 
 UCLASS(BlueprintType, Blueprintable, Abstract)
@@ -85,8 +86,9 @@ class UNREALTOURNAMENT_API AUTLift : public AActor, public INavRelevantInterface
 
 		if (PropertyChangedEvent.Property == NULL || PropertyChangedEvent.Property->GetFName() == FName(TEXT("NavmeshScale")))
 		{
-			UNavigationSystem::UpdateNavOctreeBounds(this);
-			UNavigationSystem::UpdateActorAndComponentsInNavOctree(*this);
+            //UNavigationSystem::UpdateNavOctreeBounds(this);
+            //FNavigationSystem::OnActorBoundsChanged(this);Dunno why it is there
+            FNavigationSystem::UpdateActorAndComponentData(*this);
 		}
 	}
 #endif

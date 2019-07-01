@@ -8,17 +8,17 @@ UUTObjectListItem::UUTObjectListItem(const FObjectInitializer& Initializer)
 {
 }
 
-UObject* IUTObjectListItem::GetData_Implementation() const
+/*UObject* IUTObjectListItem::GetData() const
 {
 	return nullptr;
 }
 
-void IUTObjectListItem::SetData_Implementation(UObject* InData)
+void IUTObjectListItem::SetData(UObject* InData)
 {
 	// stub
 }
 
-void IUTObjectListItem::Reset_Implementation()
+void IUTObjectListItem::Reset()
 {
 	// stub
-}
+}*/

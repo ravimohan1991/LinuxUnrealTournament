@@ -46,7 +46,7 @@ FText UUTSpectatorPickupMessage::ResolveMessage_Implementation(int32 Switch, boo
 			}
 
 			FFormatNamedArguments Args;
-			Args.Add(TEXT("PlayerName"), FText::FromString(RelatedPlayerState_1->PlayerName));
+            Args.Add(TEXT("PlayerName"), FText::FromString(RelatedPlayerState_1->GetPlayerName()));
 			Args.Add(TEXT("DisplayName"), DisplayName);
 			Args.Add(TEXT("Num"), PlayerPickups);
 			Args.Add(TEXT("TotalNum"), TotalPickups);

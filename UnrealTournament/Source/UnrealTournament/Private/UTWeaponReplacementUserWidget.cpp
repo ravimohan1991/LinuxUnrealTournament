@@ -25,7 +25,7 @@ void UUTWeaponReplacementUserWidget::BuildWeaponList()
 	for (const FAssetData& Asset : AssetList)
 	{
 		static FName NAME_GeneratedClass(TEXT("GeneratedClass"));
-		const FString* ClassPath = Asset.TagsAndValues.Find(NAME_GeneratedClass);
+        const FString* ClassPath = &Asset.TagsAndValues.FindTag(NAME_GeneratedClass).GetValue();
 		if (ClassPath != NULL)
 		{
 			UClass* TestClass = LoadObject<UClass>(NULL, **ClassPath);

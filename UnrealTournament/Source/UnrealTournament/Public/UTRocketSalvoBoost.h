@@ -3,6 +3,9 @@
 
 #include "UTProj_Rocket.h"
 #include "UTInventory.h"
+#include "UTTimedPowerup.h"
+#include "UTGameState.h"
+#include "UTBot.h"
 
 #include "UTRocketSalvoBoost.generated.h"
 
@@ -47,7 +50,7 @@ public:
 		GetWorldTimerManager().SetTimer(Unused, this, &AUTRocketSalvoBoost::FireSalvo, 0.4f, true);
 		Super::GivenTo(NewOwner, bAutoActivate);
 	}
-	virtual void Removed()
+    virtual void Removed() override
 	{
 		Super::Removed();
 		GetWorldTimerManager().ClearAllTimersForObject(this);
@@ -63,10 +66,10 @@ public:
 		{
 			if (It->IsValid() &&
 				It->Get() != User &&
-				!It->Get()->bTearOff &&
+                !It->Get()->GetTearOff() &&
 				(It->Get()->GetActorLocation() - MyLoc).Size() < TargetingRange &&
 				((It->Get()->GetActorLocation() - MyLoc).GetSafeNormal() | User->GetActorRotation().Vector()) > 0.0f &&
-				(GS == nullptr || !GS->OnSameTeam(It->Get(), User)))
+                (GS == nullptr || !GS->OnSameTeam(It->Get(), User)))
 			{
 				Targets.Add(It->Get());
 			}

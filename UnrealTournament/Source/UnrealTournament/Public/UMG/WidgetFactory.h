@@ -6,6 +6,7 @@
 #include "STableRow.h"
 #include "SObjectTableRow.h"
 #include "STableViewBase.h"
+#include "Runtime/UMG/Public/Components/Widget.h"
 
 template <class WidgetType, class = typename TEnableIf<TIsDerivedFrom<WidgetType, UUserWidget>::IsDerived, WidgetType>::Type>
 class TWidgetFactory : public FGCObject
@@ -147,11 +148,11 @@ public:
 		}
 	}
 
-	void AddReferencedObjects(FReferenceCollector& Collector) override
+    void AddReferencedObjects(FReferenceCollector& Collector) override//
 	{
-		Collector.AddReferencedObjects<FName, WidgetType*>(Active);
+        Collector.AddReferencedObjects/*<FName, WidgetType*>*/(Active);// candidate template ignored: substitution failure: too many template arguments for function template 'AddReferencedObjects'
 		Collector.AddReferencedObjects(Inactive);
-	}
+    }
 
 	template <class DerivedWidgetType = SObjectWidget,
 	          class                   = typename TEnableIf<TIsDerivedFrom<DerivedWidgetType, SObjectWidget>::IsDerived, DerivedWidgetType>::Type>
@@ -169,20 +170,20 @@ public:
 	/** Convenience function for SObjectTableRows takes and caches the widget, then creates the object row around it */
 	template <class DerivedWidgetType = SObjectWidget,
 	          class                   = typename TEnableIf<TIsDerivedFrom<DerivedWidgetType, ITableRow>::IsDerived, DerivedWidgetType>::Type>
-	TSharedRef<ITableRow> TakeAndCacheRow(WidgetType* Key, const TSharedRef<STableViewBase>& DestinationTable)
+    TSharedRef<ITableRow> TakeAndCacheRow(WidgetType* Key, const TSharedRef<STableViewBase>& DestinationTable)
 	{
 		TSharedPtr<SWidget>& Cache = CachedSlateWidgets.FindOrAdd(Key);
-		if (!Cache.IsValid())
+        /*if (!Cache.IsValid())
 		{
 			Cache = Key->template TakeDerivedWidget<DerivedWidgetType>(
-			    [DestinationTable](UUserWidget* Widget, TSharedRef<SWidget> SafeContent) 
+                [DestinationTable](UUserWidget Widget, TSharedRef<SWidget> SafeContent)
 				{
-				    return SNew(DerivedWidgetType, DestinationTable, Widget)
+                    return SNew(DerivedWidgetType, DestinationTable,Widget)
 				        [ 
 							SafeContent 
 						];
 				});
-		}
+        }*/
 
 		return StaticCastSharedRef<DerivedWidgetType>(Cache.ToSharedRef());
 	}

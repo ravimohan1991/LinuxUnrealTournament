@@ -10,11 +10,11 @@ struct FSelectionObject
 	GENERATED_USTRUCT_BODY()
 
 	// Holds a reference to PS that is under this score element
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Scoreboard")
+    UPROPERTY(EditAnywhere, Category = "Scoreboard")
 	TWeakObjectPtr<AUTPlayerState> ScoreOwner;
 
 	// Holds the X1/Y1/X2/Y2 bounds of this score element.  
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Scoreboard")
+    UPROPERTY(EditAnywhere, Category = "Scoreboard")
 	FVector4 ScoreBounds;
 
 	FSelectionObject()
@@ -137,7 +137,7 @@ public:
 	virtual FLinearColor GetPlayerBackgroundColorFor(AUTPlayerState* InPS) const;
 	virtual FString GetPlayerNameFor(AUTPlayerState* InPS) const
 	{
-		return InPS ? InPS->PlayerName : "";
+        return InPS ? InPS->GetPlayerName() : "";
 	};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Scoreboard")

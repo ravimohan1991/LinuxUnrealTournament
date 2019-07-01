@@ -55,7 +55,7 @@ void AUTBaseGameMode::InitGame( const FString& MapName, const FString& Options, 
 {
 	if (!PlayerPawnObject.IsNull())
 	{
-		DefaultPawnClass = Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *PlayerPawnObject.ToStringReference().ToString(), NULL, LOAD_NoWarn));
+        DefaultPawnClass = Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *PlayerPawnObject.ToSoftObjectPath().ToString(), NULL, LOAD_NoWarn));
 	}
 	if (!PawnClassOverride.IsEmpty())
 	{
@@ -341,9 +341,9 @@ void AUTBaseGameMode::PostLogin(APlayerController* NewPlayer)
 		PC->ClientRequireContentItemListComplete();
 	}
 
-	if ( NewPlayer && NewPlayer->PlayerState && !NewPlayer->PlayerState->PlayerName.IsEmpty() )
+    if ( NewPlayer && NewPlayer->PlayerState && !NewPlayer->PlayerState->GetPlayerName().IsEmpty() )
 	{
-		UE_LOG(UTConnection, Verbose, TEXT("PostLogin: %s (%s) Login Completed."), *NewPlayer->PlayerState->PlayerName, *NewPlayer->PlayerState->UniqueId.ToString() );
+        UE_LOG(UTConnection, Verbose, TEXT("PostLogin: %s (%s) Login Completed."), *NewPlayer->PlayerState->GetPlayerName(), *NewPlayer->PlayerState->UniqueId.ToString() );
 	}
 
 }
@@ -383,7 +383,7 @@ void AUTBaseGameMode::ChangeName(AController* Other, const FString& S, bool bNam
 		ClampedName = FString::Printf(TEXT("%s%i"), *DefaultPlayerName.ToString(), PS->PlayerId);
 	}
 
-	if (FCString::Stricmp(*PS->PlayerName, *ClampedName) != 0)
+    if (FCString::Stricmp(*PS->GetPlayerName(), *ClampedName) != 0)
 	{
 		PS->SetPlayerName(ClampedName);
 	}
@@ -454,7 +454,7 @@ void AUTBaseGameMode::GameWelcomePlayer(UNetConnection* Connection, FString& Red
 	UUTGameEngine* UTEngine = Cast<UUTGameEngine>(GEngine);
 	if (UTEngine != NULL) // in PIE this will happen
 	{
-		FString PackageName = Connection->ClientWorldPackageName.ToString();
+        FString PackageName = Connection->GetClientWorldPackageName().ToString();
 		FString PackageBaseFilename = FPaths::GetBaseFilename(PackageName) + TEXT("-WindowsNoEditor");
 
 		for (int32 i = 0; i < RedirectReferences.Num(); i++)
@@ -533,7 +533,7 @@ void AUTBaseGameMode::SendRconMessage(const FString& DestinationId, const FStrin
 	{
 		for (int32 i = 0; i < UTGameState->PlayerArray.Num(); i++)
 		{
-			if ( DestinationId == TEXT("") || UTGameState->PlayerArray[i]->UniqueId.ToString() == DestinationId || UTGameState->PlayerArray[i]->PlayerName.Equals(DestinationId,ESearchCase::IgnoreCase) )
+            if ( DestinationId == TEXT("") || UTGameState->PlayerArray[i]->UniqueId.ToString() == DestinationId || UTGameState->PlayerArray[i]->GetPlayerName().Equals(DestinationId, ESearchCase::IgnoreCase) )
 			{			
 				AUTPlayerState* UTPlayerState = Cast<AUTPlayerState>(UTGameState->PlayerArray[i]);
 				if (UTPlayerState)
@@ -553,7 +553,7 @@ void AUTBaseGameMode::RconKick(const FString& NameOrUIDStr, bool bBan, const FSt
 	{
 		for (int32 i=0; i < GS->PlayerArray.Num(); i++)
 		{
-			if ( (GS->PlayerArray[i]->PlayerName.ToLower() == NameOrUIDStr.ToLower()) ||
+            if ( (GS->PlayerArray[i]->GetPlayerName().ToLower() == NameOrUIDStr.ToLower()) ||
 				 (GS->PlayerArray[i]->UniqueId.ToString() == NameOrUIDStr))
 			{
 				APlayerController* PC = Cast<APlayerController>(GS->PlayerArray[i]->GetOwner());

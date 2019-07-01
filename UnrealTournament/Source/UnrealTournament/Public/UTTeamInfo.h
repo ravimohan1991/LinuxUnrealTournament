@@ -19,7 +19,7 @@ struct FPickupClaim
 
 	inline bool IsValid() const
 	{
-		return ClaimedBy != NULL && !ClaimedBy->bTearOff && !ClaimedBy->IsPendingKillPending() && Pickup != NULL && !Pickup->IsPendingKillPending();
+        return ClaimedBy != NULL && !ClaimedBy->GetTearOff() && !ClaimedBy->IsPendingKillPending() && Pickup != NULL && !Pickup->IsPendingKillPending();
 	}
 
 	FPickupClaim()
@@ -250,7 +250,7 @@ protected:
 	TArray<class AUTSquadAI*> Squads;
 
 	/** list of known enemies for bots */
-	UPROPERTY(BlueprintReadOnly, Category = AI)
+    UPROPERTY(EditAnywhere, Category = AI)
 	TArray<FBotEnemyInfo> EnemyList;
 
 	/** map of additional stats used for scoring display. */

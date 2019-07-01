@@ -76,7 +76,7 @@ void AUTFlag::UpdateOutline()
 	}
 	if (bOutlined)
 	{
-		GetMesh()->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPoseAndRefreshBones;
+        GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;//EMeshComponentUpdateFlag::AlwaysTickPoseAndRefreshBones;
 		if (CustomDepthMesh == NULL)
 		{
 			CustomDepthMesh = Cast<USkeletalMeshComponent>(CreateCustomDepthOutlineMesh(GetMesh(), this));
@@ -95,7 +95,7 @@ void AUTFlag::UpdateOutline()
 	}
 	else
 	{
-		GetMesh()->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::OnlyTickPoseWhenRendered;
+        GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;//EMeshComponentUpdateFlag::OnlyTickPoseWhenRendered;
 		if (CustomDepthMesh != NULL && CustomDepthMesh->IsRegistered())
 		{
 			CustomDepthMesh->UnregisterComponent();
@@ -215,7 +215,7 @@ void AUTFlag::PlayReturnedEffects()
 			ReturningMeshMID->SetScalarParameterValue(NAME_Wipe, ReturnParamCurve->GetFloatValue(0.0f));
 			ReturningMesh->RegisterComponent();
 		}
-		UGameplayStatics::SpawnEmitterAtLocation(this, ReturnSrcEffect, GetActorLocation() + GetRootComponent()->ComponentToWorld.TransformVectorNoScale(GetMesh()->RelativeLocation), GetActorRotation());
+        UGameplayStatics::SpawnEmitterAtLocation(this, ReturnSrcEffect, GetActorLocation() + GetRootComponent()->GetComponentToWorld().TransformVectorNoScale(GetMesh()->RelativeLocation), GetActorRotation());
 		if (HomeBase != NULL)
 		{
 			UGameplayStatics::SpawnEmitterAtLocation(this, ReturnDestEffect, GetHomeLocation() + FRotationMatrix(GetHomeRotation()).TransformVector(GetMesh()->RelativeLocation), GetHomeRotation());

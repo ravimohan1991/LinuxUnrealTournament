@@ -119,7 +119,7 @@ FText UUTCharacterVoice::GetText(int32 Switch, bool bTargetsPlayerState1, class 
 		return FText::GetEmpty();
 	}
 	FCharacterSpeech PickedSpeech = GetCharacterSpeech(Switch);
-	Args.Add("PlayerName", FText::AsCultureInvariant(RelatedPlayerState_1->PlayerName));
+    Args.Add("PlayerName", FText::AsCultureInvariant(RelatedPlayerState_1->GetPlayerName()));
 	Args.Add("TauntMessage", PickedSpeech.SpeechText);
 
 	bool bStatusMessage = (Switch >= StatusBaseIndex) && OptionalObject && Cast<AUTGameVolume>(OptionalObject);

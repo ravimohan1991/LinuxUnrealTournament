@@ -143,7 +143,7 @@ struct FUTPathLink
 
 	/** source path node */
 	UPROPERTY(BlueprintReadOnly, Category = PathLink)
-	TWeakObjectPtr<const UUTPathNode> Start;
+    TWeakObjectPtr<UUTPathNode> Start;// Removed const keyword to avoid the error  "Implicit conversions from const pointers to non-const TWeakObjectPtrs has been deprecated as it is not const-correct"
 	/** poly on source that is closest to EndPoly
 	 * note that it does not necessarily share a navmesh edge with EndPoly if this is a link that's not simple walkable (jump, teleport, etc)
 	 */
@@ -151,7 +151,7 @@ struct FUTPathLink
 	uint64 StartEdgePoly;
 	/** endpoint path node */
 	UPROPERTY(BlueprintReadOnly, Category = PathLink)
-	TWeakObjectPtr<const UUTPathNode> End;
+    TWeakObjectPtr<UUTPathNode> End;
 	/** poly on End's side of the edge between the two nodes */
 	UPROPERTY()
 	uint64 EndPoly;
@@ -204,9 +204,9 @@ struct FUTPathLink
 	FUTPathLink()
 		: Start(NULL), StartEdgePoly(INVALID_NAVNODEREF), End(NULL), EndPoly(INVALID_NAVNODEREF), Spec(NULL), CollisionRadius(0), CollisionHeight(0), ReachFlags(0)
 	{}
-	FUTPathLink(const UUTPathNode* InStart, const NavNodeRef InStartEdgePoly, const UUTPathNode* InEnd, const NavNodeRef InEndPoly, UUTReachSpec* InSpec, int32 InRadius, int32 InHeight, uint32 InFlags)
+    FUTPathLink(UUTPathNode* InStart, const NavNodeRef InStartEdgePoly, UUTPathNode* InEnd, const NavNodeRef InEndPoly, UUTReachSpec* InSpec, int32 InRadius, int32 InHeight, uint32 InFlags)
 		: Start(InStart), StartEdgePoly(InStartEdgePoly), End(InEnd), EndPoly(InEndPoly), Spec(InSpec), CollisionRadius(InRadius), CollisionHeight(InHeight), ReachFlags(InFlags)
-	{}
+    {}
 	FUTPathLink(const FUTPathLink& Other) = default;
 	FUTPathLink& operator= (const FUTPathLink& Other) = default;
 };

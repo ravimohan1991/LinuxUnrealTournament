@@ -3,6 +3,8 @@
 #pragma once
 
 #include "Components/ActorComponent.h"
+#include "UTCharacter.h"
+
 #include "UTGhostComponent.generated.h"
 
 //TODOTIM: Make all these into objects that they can be derriveed from in BP

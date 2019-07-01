@@ -99,21 +99,21 @@ protected:
 
 	bool bHandledMouseClick;
 	
-	void KillsEnumerated(const FReplayEventList& ReplayEventList, bool bSucceeded);
-	void FlagCapsEnumerated(const FReplayEventList& ReplayEventList, bool bSucceeded);
-	void FlagReturnsEnumerated(const FReplayEventList& ReplayEventList, bool bSucceeded);
-	void FlagDenyEnumerated(const FReplayEventList& ReplayEventList, bool bSucceeded);
-	void MultiKillsEnumerated(const FReplayEventList& ReplayEventList, bool bSucceeded);
-	void SpreeKillsEnumerated(const FReplayEventList& ReplayEventList, bool bSucceeded);
-	void CommentsEnumerated(const FReplayEventList& ReplayEventList, bool bSucceeded);
+    void KillsEnumerated(const FEnumerateEventsResult& ReplayEventList);
+    void FlagCapsEnumerated(const FEnumerateEventsResult& ReplayEventList);
+    void FlagReturnsEnumerated(const FEnumerateEventsResult& ReplayEventList);
+    void FlagDenyEnumerated(const FEnumerateEventsResult& ReplayEventList);
+    void MultiKillsEnumerated(const FEnumerateEventsResult& ReplayEventList);
+    void SpreeKillsEnumerated(const FEnumerateEventsResult& ReplayEventList);
+    void CommentsEnumerated(const FEnumerateEventsResult& ReplayEventList);
 
-	TArray<FReplayEventListItem> KillEvents;
-	TArray<FReplayEventListItem> FlagCapEvents;
-	TArray<FReplayEventListItem> FlagDenyEvents;
-	TArray<FReplayEventListItem> FlagReturnEvents;
-	TArray<FReplayEventListItem> MultiKillEvents;
-	TArray<FReplayEventListItem> SpreeKillEvents;
-	TArray<FReplayEventListItem> CommentEvents;
+    /*TArray<FReplayEventListItem>*/FReplayEventList KillEvents;
+    FReplayEventList FlagCapEvents;
+    FReplayEventList FlagDenyEvents;
+    FReplayEventList FlagReturnEvents;
+    FReplayEventList MultiKillEvents;
+    FReplayEventList SpreeKillEvents;
+    FReplayEventList CommentEvents;
 
 	TArray<FBookmarkTimeAndColor> CurrentBookmarks;
 	TArray<FString> EventDataRequests;

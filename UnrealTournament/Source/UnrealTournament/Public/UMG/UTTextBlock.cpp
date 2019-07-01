@@ -60,7 +60,7 @@ UUTTextBlock::UUTTextBlock(const FObjectInitializer& ObjectInitializer)
 	static ConstructorHelpers::FClassFinder<UUTTextStyle> BaseTextStyleClassFinder(TEXT("/Game/RestrictedAssets/UI/Text/TextStyle-Body"));
 	Style = BaseTextStyleClassFinder.Class;
 
-	Visiblity_DEPRECATED = Visibility = ESlateVisibility::SelfHitTestInvisible;
+    //Visiblity_DEPRECATED = Visibility = ESlateVisibility::SelfHitTestInvisible;
 }
 
 void UUTTextBlock::SetWrapTextWidth(int32 InWrapTextAt)
@@ -156,7 +156,12 @@ TSharedRef<SWidget> UUTTextBlock::RebuildWidget()
 	// clang-format on
 
 	TickHandle = FTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &ThisClass::OnTick));
-	return BuildDesignTimeWidget(ScrollBox.ToSharedRef());
+    //return BuildDesignTimeWidget(ScrollBox.ToSharedRef());
+#if WITH_EDITOR
+    return CreateDesignerOutline(ScrollBox.ToSharedRef());
+#else
+    return ScrollBox.ToSharedRef();
+#endif
 }
 
 TAttribute<FText> UUTTextBlock::GetDisplayText()

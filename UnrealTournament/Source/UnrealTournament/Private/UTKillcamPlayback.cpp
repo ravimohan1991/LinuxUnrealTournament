@@ -42,9 +42,9 @@ UUTKillcamPlayback::UUTKillcamPlayback()
 
 DEFINE_LOG_CATEGORY_STATIC(LogUTKillcam, Log, All);
 
-void UUTKillcamPlayback::OnPostLoadMap()
+void UUTKillcamPlayback::OnPostLoadMap(UWorld* sos)
 {
-	FCoreUObjectDelegates::PostLoadMap.Remove(OnPostLoadMapHandle);
+    FCoreUObjectDelegates::PostLoadMapWithWorld.Remove(OnPostLoadMapHandle);// FCoreUObjectDelegates::PostLoadMap.Remove(OnPostLoadMapHandle)
 	SetPlaybackWorldShouldTick(false);
 }
 
@@ -157,7 +157,7 @@ void UUTKillcamPlayback::PlayKillcamReplay(const FString& ReplayUniqueName)
 	// Currently, loading the killcam world seamlessly is not supported, so force a synchronous load for now
 	AdditionalOptions.Add(TEXT("AsyncLoadWorldOverride=0"));
 
-	OnPostLoadMapHandle = FCoreUObjectDelegates::PostLoadMap.AddUObject(this, &UUTKillcamPlayback::OnPostLoadMap);
+    OnPostLoadMapHandle = FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UUTKillcamPlayback::OnPostLoadMap);
 	GameInstance->PlayReplay(ReplayUniqueName, KillcamWorld, AdditionalOptions);
 
 	UWorld* CachedSourceWorld = SourceWorld.Get();
@@ -419,9 +419,9 @@ void UUTKillcamPlayback::OnKillcamReady(bool bWasSuccessful, FNetworkGUID InKill
 
 	//	SpecController->SetSpectatorCameraType(ESpectatorCameraType::Chase);
 		APawn* KillcamPawn = Cast<APawn>(KillcamActor);
-		if (KillcamPawn && KillcamPawn->PlayerState)
+        if (KillcamPawn && KillcamPawn->GetPlayerState())
 		{
-			UE_LOG(LogUTKillcam, Log, TEXT("Killcam viewing %s"), *KillcamPawn->PlayerState->PlayerName);
+            UE_LOG(LogUTKillcam, Log, TEXT("Killcam viewing %s"), *KillcamPawn->GetPlayerState()->GetPlayerName());
 		}
 		SpecController->ViewPawn(KillcamPawn);
 		// Weapon isn't replicated so first person view doesn't have a class to spawn for first person visuals

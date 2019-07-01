@@ -7,7 +7,7 @@
 #include "UTWeaponRedirector.generated.h"
 
 /** replicatable version of FCollisionShape... */
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FRepCollisionShape
 {
 	GENERATED_USTRUCT_BODY()

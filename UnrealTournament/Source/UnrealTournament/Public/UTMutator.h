@@ -1,6 +1,7 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 
+#include "Runtime/Engine/Classes/GameFramework/Info.h"
 #include "UTMutator.generated.h"
 
 UCLASS(Blueprintable, Abstract, Meta = (ChildCanTick), Config = Game)

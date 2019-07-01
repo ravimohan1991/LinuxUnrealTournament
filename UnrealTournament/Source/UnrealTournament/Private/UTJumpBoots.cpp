@@ -107,7 +107,7 @@ void AUTJumpBoots::OwnerEvent_Implementation(FName EventName)
 		{
 			if (UTOwner && Cast<AUTPlayerController>(UTOwner->GetController()) && UTOwner->IsLocallyControlled() && (NumJumps == 3))
 			{
-				AUTPlayerState* PS = Cast<AUTPlayerState>(GetUTOwner()->PlayerState);
+                AUTPlayerState* PS = Cast<AUTPlayerState>(GetUTOwner()->GetPlayerState());
 				if (PS && (PS->GetStatsValue(NAME_BootJumps) == 0))
 				{
 					Cast<AUTPlayerController>(UTOwner->GetController())->SendPersonalMessage(UUTJumpbootMessage::StaticClass(), 0, NULL, NULL, NULL);
@@ -126,7 +126,7 @@ void AUTJumpBoots::OwnerEvent_Implementation(FName EventName)
 			}
 			if (GetUTOwner())
 			{
-				AUTPlayerState* PS = Cast<AUTPlayerState>(GetUTOwner()->PlayerState);
+                AUTPlayerState* PS = Cast<AUTPlayerState>(GetUTOwner()->GetPlayerState());
 				if (PS)
 				{
 					PS->ModifyStatsValue(NAME_BootJumps, 1);

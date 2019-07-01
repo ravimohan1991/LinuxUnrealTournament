@@ -692,7 +692,7 @@ TSharedRef<SWidget> SUTSystemSettingsDialog::BuildGeneralTab()
 		[
 			SAssignNew(VSync, SCheckBox)
 			.Style(SUWindowsStyle::Get(), "UT.Common.CheckBox")
-			.IsChecked(UserSettings->IsVSyncEnabled() ? ESlateCheckBoxState::Checked : ESlateCheckBoxState::Unchecked)
+            .IsChecked(UserSettings->IsVSyncEnabled() ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
 		]
 	]
 	+ SVerticalBox::Slot()
@@ -748,7 +748,7 @@ TSharedRef<SWidget> SUTSystemSettingsDialog::BuildGeneralTab()
 		[
 			SAssignNew(SmoothFrameRate, SCheckBox)
 			.Style(SUWindowsStyle::Get(), "UT.Common.CheckBox")
-			.IsChecked(GEngine->bSmoothFrameRate ? ESlateCheckBoxState::Checked : ESlateCheckBoxState::Unchecked)
+            .IsChecked(GEngine->bSmoothFrameRate ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
 		]
 	]	
 	+ SVerticalBox::Slot()
@@ -811,7 +811,7 @@ TSharedRef<SWidget> SUTSystemSettingsDialog::BuildGeneralTab()
 		[
 			SAssignNew(KeyboardLightingCheckbox, SCheckBox)
 			.Style(SUWindowsStyle::Get(), "UT.Common.CheckBox")
-			.IsChecked(UserSettings->IsKeyboardLightingEnabled() ? ESlateCheckBoxState::Checked : ESlateCheckBoxState::Unchecked)
+            .IsChecked(UserSettings->IsKeyboardLightingEnabled() ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
 		]
 	]
 	+ SVerticalBox::Slot()
@@ -1106,7 +1106,7 @@ TSharedRef<SWidget> SUTSystemSettingsDialog::BuildAudioTab()
 		[
 			SAssignNew(HRTFCheckBox, SCheckBox)
 			.Style(SUWindowsStyle::Get(), "UT.Common.CheckBox")
-			.IsChecked(UserSettings->IsHRTFEnabled() ? ESlateCheckBoxState::Checked : ESlateCheckBoxState::Unchecked)
+            .IsChecked(UserSettings->IsHRTFEnabled() ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
 		]
 	]
 	+ SVerticalBox::Slot()
@@ -1131,7 +1131,7 @@ TSharedRef<SWidget> SUTSystemSettingsDialog::BuildAudioTab()
 		[
 			SAssignNew(VoiceChatCheckBox, SCheckBox)
 			.Style(SUWindowsStyle::Get(), "UT.Common.CheckBox")
-			.IsChecked(UserSettings->IsVoiceChatEnabled() ? ESlateCheckBoxState::Checked : ESlateCheckBoxState::Unchecked)
+            .IsChecked(UserSettings->IsVoiceChatEnabled() ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
 		]
 	]
 

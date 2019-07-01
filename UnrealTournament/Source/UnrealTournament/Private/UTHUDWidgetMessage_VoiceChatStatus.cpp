@@ -55,9 +55,9 @@ void UUTHUDWidgetMessage_VoiceChatStatus::DrawMessages(float DeltaTime)
 			AUTPlayerState* PS = Cast<AUTPlayerState>(GS->PlayerArray[i]);
 			if (PS && PS->bIsTalking)
 			{
-				Canvas->TextSize(UTHUDOwner->GetFontFromSizeIndex(-1), PS->PlayerName, XL, SmallYL, RenderScale, RenderScale);
+                Canvas->TextSize(UTHUDOwner->GetFontFromSizeIndex(-1), PS->GetPlayerName(), XL, SmallYL, RenderScale, RenderScale);
 				XL += 28 * RenderScale;
-				DrawTalker(PS->PlayerName, PS->Team ? PS->Team->GetTeamNum() : 0, 0, Y, XL, SmallYL);
+                DrawTalker(PS->GetPlayerName(), PS->Team ? PS->Team->GetTeamNum() : 0, 0, Y, XL, SmallYL);
 				NumTalking++;
 				Y -= SmallYL;
 				Y -= 2;

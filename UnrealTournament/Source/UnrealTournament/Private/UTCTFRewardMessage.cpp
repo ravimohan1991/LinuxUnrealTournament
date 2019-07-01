@@ -112,7 +112,7 @@ void UUTCTFRewardMessage::GetEmphasisText(FText& PrefixText, FText& EmphasisText
 	if (Switch == 0)
 	{
 		PrefixText = RejectedMessage;
-		EmphasisText = RelatedPlayerState_1 ? FText::FromString(RelatedPlayerState_1->PlayerName) : FText::GetEmpty();
+        EmphasisText = RelatedPlayerState_1 ? FText::FromString(RelatedPlayerState_1->GetPlayerName()) : FText::GetEmpty();
 		AUTPlayerState* Denier = Cast<AUTPlayerState>(RelatedPlayerState_1);
 		EmphasisColor = Denier && Denier->Team && (Denier->Team->TeamIndex == 1) ? BLUEHUDCOLOR : REDHUDCOLOR;
 		PostfixText = ExclamationPostfix;
@@ -121,7 +121,7 @@ void UUTCTFRewardMessage::GetEmphasisText(FText& PrefixText, FText& EmphasisText
 	if (Switch == 6)
 	{
 		PrefixText = DeniedMessage;
-		EmphasisText = RelatedPlayerState_1 ? FText::FromString(RelatedPlayerState_1->PlayerName) : FText::GetEmpty();
+        EmphasisText = RelatedPlayerState_1 ? FText::FromString(RelatedPlayerState_1->GetPlayerName()) : FText::GetEmpty();
 		AUTPlayerState* Denier = Cast<AUTPlayerState>(RelatedPlayerState_1);
 		EmphasisColor = Denier && Denier->Team && (Denier->Team->TeamIndex == 1) ? BLUEHUDCOLOR : REDHUDCOLOR;
 		PostfixText = ExclamationPostfix;
@@ -139,7 +139,7 @@ void UUTCTFRewardMessage::GetEmphasisText(FText& PrefixText, FText& EmphasisText
 	{
 		PrefixText = EarnedSpecialPrefix;
 		PostfixText = EarnedSpecialPostfix;
-		EmphasisText = RelatedPlayerState_1 ? FText::FromString(RelatedPlayerState_1->PlayerName) : FText::GetEmpty();
+        EmphasisText = RelatedPlayerState_1 ? FText::FromString(RelatedPlayerState_1->GetPlayerName()) : FText::GetEmpty();
 		EmphasisColor = FLinearColor::Yellow;
 		return;
 	}

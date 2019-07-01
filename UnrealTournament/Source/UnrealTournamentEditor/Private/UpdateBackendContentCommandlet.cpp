@@ -31,7 +31,7 @@ int32 UUpdateBackendContentCommandlet::Main(const FString& FullCommandLine)
 	ParseCommandLine(*FullCommandLine, Tokens, Switches, Params);
 
 	// get the base directory
-	FString BaseDirectory = FPaths::GameContentDir() + TEXT("Backend/");
+    FString BaseDirectory = FPaths::ProjectContentDir() + TEXT("Backend/");
 	FString* OutDir = Params.Find(TEXT("OUT"));
 	if (OutDir)
 	{

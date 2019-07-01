@@ -1,4 +1,4 @@
-// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
+// (ɔ) The_Cowboy 1000 BC - 2019 AD. All rights reversed.
 
 #pragma once
 #include "BlueprintContextTypes.h"
@@ -72,7 +72,7 @@ class BLUEPRINTCONTEXT_API UMatchmakingContext : public UBlueprintContextBase
 	void OnPartyStateChangeInternal(EUTPartyState NewPartyState);
 
 public:
-	virtual void Initialize() override;
+    virtual void Initialize() override;
 	virtual void Finalize() override;
 
 	void StartMatchmaking(int32 InPlaylistId);

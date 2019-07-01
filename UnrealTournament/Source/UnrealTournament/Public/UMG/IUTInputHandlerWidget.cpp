@@ -1,6 +1,7 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 #include "UnrealTournament.h"
+#include "IUTInputHandlerWidget.h"
 
 #include "IUTInputHandlerWidget.h"
 
@@ -10,7 +11,7 @@ UUTInputHandlerWidget::UUTInputHandlerWidget(const FObjectInitializer& Initializ
 
 }
 
-void IUTInputHandlerWidget::HandleRequestedInput_Implementation(FKey Key, EInputEvent EventType)
+/*void IUTInputHandlerWidget::HandleRequestedInput(FKey Key, EInputEvent EventType)
 {
 	// stub
-}
+}*/

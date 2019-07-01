@@ -70,7 +70,7 @@ bool AUTLiftExit::AddLiftPathsShared(const FVector& ExitLoc, AUTLift* TheLift, b
 					LiftSpec->LiftCenter = BestStop + LiftCenterOffset;
 					LiftSpec->bEntryPath = true;
 					FUTPathLink* NewLink = new(MyNode->Paths) FUTPathLink(MyNode, MyPoly, LiftNode, LiftPoly, LiftSpec, PathSize.Radius, PathSize.Height, 0);
-					for (NavNodeRef StartPoly : MyNode->Polys)
+                    for (NavNodeRef StartPoly : MyNode->Polys)
 					{
 						NewLink->Distances.Add(NavData->CalcPolyDistance(StartPoly, MyPoly) + FMath::TruncToInt((LiftSpec->LiftCenter - ExitLoc).Size()) + ExtraDist);
 					}

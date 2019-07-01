@@ -33,16 +33,16 @@ FString SUTLeagueMatchResultsDialog::LeagueTierToBrushName(int32 Tier)
 	{
 	case 5:
 	case 4:
-		return L"UT.RankedMaster";
+        return "UT.RankedMaster";
 	case 3:
-		return L"UT.RankedPlatinum";
+        return "UT.RankedPlatinum";
 	case 2:
-		return L"UT.RankedGold";
+        return "UT.RankedGold";
 	case 1:
-		return L"UT.RankedSilver";
+        return "UT.RankedSilver";
 	}
 
-	return L"UT.RankedBronze";
+    return "UT.RankedBronze";
 }
 
 EVisibility SUTLeagueMatchResultsDialog::GetDialogVisibility() const

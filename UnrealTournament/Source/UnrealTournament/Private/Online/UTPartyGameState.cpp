@@ -173,9 +173,9 @@ void UUTPartyGameState::SetLocation(EUTPartyMemberLocation NewLocation)
 			ULocalPlayer* LP = Cast<ULocalPlayer>(*It);
 			if (LP)
 			{
-				TSharedPtr<const FUniqueNetId> UniqueId = LP->GetPreferredUniqueNetId();
+                //TSharedPtr<const FUniqueNetIdRepl> UniqueId = LP->GetPreferredUniqueNetId();
 
-				FUniqueNetIdRepl PartyMemberId(UniqueId);
+                FUniqueNetIdRepl PartyMemberId = LP->GetPreferredUniqueNetId(); //(UniqueId);
 				UUTPartyMemberState* PartyMember = Cast<UUTPartyMemberState>(GetPartyMember(PartyMemberId));
 				if (PartyMember)
 				{

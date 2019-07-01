@@ -77,7 +77,7 @@ AUTWeapon::AUTWeapon(const FObjectInitializer& ObjectInitializer)
 	Mesh->SetupAttachment(RootComponent);
 	Mesh->bSelfShadowOnly = true;
 	Mesh->bReceivesDecals = false;
-	Mesh->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::OnlyTickPoseWhenRendered;
+    Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 	Mesh->LightingChannels.bChannel1 = true;
 	FirstPMeshOffset = FVector(0.f);
 	FirstPMeshRotation = FRotator(0.f, 0.f, 0.f);
@@ -726,7 +726,7 @@ bool AUTWeapon::BeginFiringSequence(uint8 FireModeNum, bool bClientFired)
 		// Flag this player as not being idle
 		if (Role == ROLE_Authority)
 		{
-			AUTPlayerState* UTPlayerState = Cast<AUTPlayerState>(UTOwner->PlayerState);
+            AUTPlayerState* UTPlayerState = Cast<AUTPlayerState>(UTOwner->GetPlayerState());
 			if (UTPlayerState != nullptr)
 			{
 				UTPlayerState->NotIdle();
@@ -928,12 +928,12 @@ void AUTWeapon::AttachToOwner_Implementation()
 		if (ShouldPlay1PVisuals())
 		{
 			UTOwner->OnFirstPersonWeaponEquipped(this);
-			Mesh->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPose; // needed for anims to be ticked even if weapon is not currently displayed, e.g. sniper zoom
+            Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPose; // needed for anims to be ticked even if weapon is not currently displayed, e.g. sniper zoom
 			Mesh->LastRenderTime = GetWorld()->TimeSeconds;
 			Mesh->bRecentlyRendered = true;
 			if (OverlayMesh != NULL)
 			{
-				OverlayMesh->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPose;
+                OverlayMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPose;
 				OverlayMesh->LastRenderTime = GetWorld()->TimeSeconds;
 				OverlayMesh->bRecentlyRendered = true;
 			}
@@ -1093,11 +1093,11 @@ void AUTWeapon::DetachFromOwner_Implementation()
 	}
 	if (Mesh != NULL && Mesh->SkeletalMesh != NULL)
 	{
-		Mesh->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::OnlyTickPoseWhenRendered;
+        Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 		Mesh->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
 		if (OverlayMesh != NULL)
 		{
-			OverlayMesh->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::OnlyTickPoseWhenRendered;
+            OverlayMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 		}
 	}
 	if (CustomDepthMesh != NULL)
@@ -1329,14 +1329,14 @@ void AUTWeapon::PlayImpactEffects_Implementation(const FVector& TargetLoc, uint8
 				? AdjustedSpawnLocation + MaxTracerDist * (TargetLoc - AdjustedSpawnLocation).GetSafeNormal()
 				: TargetLoc;
 			PSC->SetVectorParameter(NAME_HitLocation, AdjustedTargetLoc);
-			PSC->SetVectorParameter(NAME_LocalHitLocation, PSC->ComponentToWorld.InverseTransformPosition(AdjustedTargetLoc));
+            PSC->SetVectorParameter(NAME_LocalHitLocation, PSC->GetComponentToWorld().InverseTransformPosition(AdjustedTargetLoc));
 			ModifyFireEffect(PSC);
 		}
 		// perhaps the muzzle flash also contains hit effect (constant beam, etc) so set the parameter on it instead
 		else if (MuzzleFlash.IsValidIndex(FireMode) && MuzzleFlash[FireMode] != NULL)
 		{
 			MuzzleFlash[FireMode]->SetVectorParameter(NAME_HitLocation, TargetLoc);
-			MuzzleFlash[FireMode]->SetVectorParameter(NAME_LocalHitLocation, MuzzleFlash[FireMode]->ComponentToWorld.InverseTransformPositionNoScale(TargetLoc));
+            MuzzleFlash[FireMode]->SetVectorParameter(NAME_LocalHitLocation, MuzzleFlash[FireMode]->GetComponentToWorld().InverseTransformPositionNoScale(TargetLoc));
 		}
 
 		// Always spawn effects instigated by local player unless beyond cull distance
@@ -2688,13 +2688,13 @@ bool AUTWeapon::ShouldDrawFFIndicator(APlayerController* Viewer, AUTPlayerState 
 
 				if (Char != NULL && !Char->IsFeigningDeath() && bCanSee)
 				{
-					if (Char->PlayerState != nullptr)
+                    if (Char->GetPlayerState() != nullptr)
 					{
-						HitPlayerState = Cast<AUTPlayerState>(Char->PlayerState);
+                        HitPlayerState = Cast<AUTPlayerState>(Char->GetPlayerState());
 					}
-					else if (Char->DrivenVehicle != nullptr && Char->DrivenVehicle->PlayerState != nullptr)
+                    else if (Char->DrivenVehicle != nullptr && Char->DrivenVehicle->GetPlayerState() != nullptr)
 					{
-						HitPlayerState = Cast<AUTPlayerState>(Char->DrivenVehicle->PlayerState);
+                        HitPlayerState = Cast<AUTPlayerState>(Char->DrivenVehicle->GetPlayerState());
 					}
 				}
 			}
@@ -2776,7 +2776,7 @@ void AUTWeapon::UpdateCrosshairTarget(AUTPlayerState* NewCrosshairTarget, UUTHUD
 			float Alpha = (TimeSinceSeen < MAXNAMEFULLALPHA) ? 1.f : (1.f - ((TimeSinceSeen - MAXNAMEFULLALPHA) / (MAXNAMEDRAWTIME - MAXNAMEFULLALPHA)));
 
 			float H = WeaponHudWidget->UTHUDOwner->DefaultCrosshairTex->GetSurfaceHeight();
-			FText PlayerName = FText::FromString(TargetPlayerState->PlayerName);
+            FText PlayerName = FText::FromString(TargetPlayerState->GetPlayerName());
 			WeaponHudWidget->DrawText(PlayerName, 0.f, H * 2.f, WeaponHudWidget->UTHUDOwner->SmallFont, false, FVector2D(0.f, 0.f), FLinearColor::Black, true, FLinearColor::Black, 1.0f, Alpha, FLinearColor::Red, FLinearColor(0.0f,0.0f,0.0f,0.0f), ETextHorzPos::Center);
 		}
 		else
@@ -2949,7 +2949,7 @@ void AUTWeapon::UpdateOutline()
 		// show outline on weapon if ENEMIES have outline
 		bool bOutlined = false;
 		// this is a little hacky because the flag carrier outline replicates through PlayerState and isn't using UTCharacter's team mask
-		AUTPlayerState* PS = Cast<AUTPlayerState>(UTOwner->PlayerState);
+        AUTPlayerState* PS = Cast<AUTPlayerState>(UTOwner->GetPlayerState());
 		if (PS != nullptr && PS->bSpecialPlayer)
 		{
 			bOutlined = true;
@@ -2979,7 +2979,7 @@ void AUTWeapon::UpdateOutline()
 				{
 					CustomDepthMesh->SetMaterial(i, Mesh->GetMaterial(i));
 				}
-				CustomDepthMesh->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPoseAndRefreshBones;
+                CustomDepthMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 			}
 			if (CustomDepthMesh->CustomDepthStencilValue != NewStencilValue)
 			{

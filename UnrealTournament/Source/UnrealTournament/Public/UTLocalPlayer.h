@@ -714,7 +714,7 @@ protected:
 
 	// friend join functionality
 	virtual void JoinFriendSession(const FUniqueNetId& FriendId, const FUniqueNetId& SessionId);
-	virtual void OnFindFriendSessionComplete(int32 LocalUserNum, bool bWasSuccessful, const FOnlineSessionSearchResult& SearchResult);
+    virtual void OnFindFriendSessionComplete(int LocalUserNum, bool bWasSuccessful, const TArray<FOnlineSessionSearchResult, FDefaultAllocator>& SearchResult);
 	virtual void HandleFriendsJoinGame(const FUniqueNetId& FriendId, const FUniqueNetId& SessionId);
 	virtual bool AllowFriendsJoinGame();
 	virtual void HandleFriendsNotificationAvail(bool bAvailable);

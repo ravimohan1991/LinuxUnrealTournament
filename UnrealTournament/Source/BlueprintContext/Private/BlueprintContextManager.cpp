@@ -100,8 +100,8 @@ void FBlueprintContextManager::AddReferencedObjects( FReferenceCollector& Collec
 {
 	for ( auto Iter = ContextMapping.CreateIterator(); Iter; ++Iter )
 	{
-		Collector.AddReferencedObjects<TSubclassOf<UBlueprintContextBase>, UBlueprintContextBase*>( Iter.Value() );
-	}
+    //	Collector.AddReferencedObjects<TSubclassOf<UBlueprintContextBase>, UBlueprintContextBase*>( Iter.Value() );
+    }//(TArray<UObjectType*>& ObjectArray, const UObject* ReferencingObject = nullptr, const UProperty* ReferencingProperty = nullptr)
 }
 
 void FBlueprintContextManager::OnPostWorldInit( UWorld* World, const UWorld::InitializationValues )

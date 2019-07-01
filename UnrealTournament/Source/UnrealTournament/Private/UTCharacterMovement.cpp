@@ -40,7 +40,7 @@ UUTCharacterMovement::UUTCharacterMovement(const class FObjectInitializer& Objec
 	WallDodgeResetInterval = 0.2f;
 	LandingStepUp = 40.f;
 	LandingAssistBoost = 430.f;
-	CrouchedSpeedMultiplier_DEPRECATED = 0.31f;
+    //CrouchedSpeedMultiplier_DEPRECATED = 0.31f;
 	MaxWalkSpeedCrouched = 315.f;
 	MaxWallDodges = 99;
 	WallDodgeMinNormal = 0.5f; 
@@ -461,7 +461,7 @@ void UUTCharacterMovement::ApplyImpactVelocity(FVector JumpDir, bool bIsFullImpa
 	SetMovementMode(MOVE_Falling);
 	bNotifyApex = true;
 	NeedsClientAdjustment();
-	AUTPlayerState* PS = CharacterOwner ? Cast<AUTPlayerState>(CharacterOwner->PlayerState) : NULL;
+    AUTPlayerState* PS = CharacterOwner ? Cast<AUTPlayerState>(CharacterOwner->GetPlayerState()) : NULL;
 	if (PS)
 	{
 		PS->ModifyStatsValue(NAME_NumImpactJumps, 1);
@@ -900,7 +900,7 @@ bool UUTCharacterMovement::PerformDodge(FVector &DodgeDir, FVector &DodgeCross)
 	float VelocityZ = Velocity.Z;
 	float MaxHorizontalVelocity = DodgeMaxHorizontalVelocity;
 	// perform the dodge
-	AUTPlayerState* UTPlayerState = UTCharOwner ? Cast<AUTPlayerState>(UTCharOwner->PlayerState) : nullptr;
+    AUTPlayerState* UTPlayerState = UTCharOwner ? Cast<AUTPlayerState>(UTCharOwner->GetPlayerState()) : nullptr;
 	bool bSlowMovement = (UTPlayerState && UTPlayerState->CarriedObject && UTPlayerState->CarriedObject->bSlowsMovement);
 	if (bSlowMovement)
 	{
@@ -956,7 +956,7 @@ bool UUTCharacterMovement::PerformDodge(FVector &DodgeDir, FVector &DodgeCross)
 	{
 		SetMovementMode(MOVE_Falling);
 	}
-	AUTPlayerState* PS = CharacterOwner ? Cast<AUTPlayerState>(CharacterOwner->PlayerState) : NULL;
+    AUTPlayerState* PS = CharacterOwner ? Cast<AUTPlayerState>(CharacterOwner->GetPlayerState()) : NULL;
 	if (PS)
 	{
 		PS->ModifyStatsValue(bIsAWallDodge ? NAME_NumWallDodges : NAME_NumDodges, 1);  
@@ -1054,7 +1054,7 @@ void UUTCharacterMovement::PerformFloorSlide(const FVector& DodgeDir, const FVec
 				UTChar->bRepFloorSliding = true;
 			}
 		}
-		AUTPlayerState* PS = CharacterOwner ? Cast<AUTPlayerState>(CharacterOwner->PlayerState) : NULL;
+        AUTPlayerState* PS = CharacterOwner ? Cast<AUTPlayerState>(CharacterOwner->GetPlayerState()) : NULL;
 		if (PS)
 		{
 			PS->ModifyStatsValue(NAME_NumFloorSlides, 1);
@@ -1087,7 +1087,7 @@ void UUTCharacterMovement::PerformMovement(float DeltaSeconds)
 		else
 		{
 			// Flag this player as not being idle.
-			AUTPlayerState* UTPlayerState = Cast<AUTPlayerState>(CharacterOwner->PlayerState);
+            AUTPlayerState* UTPlayerState = Cast<AUTPlayerState>(CharacterOwner->GetPlayerState());
 			if (UTPlayerState)
 			{
 				UTPlayerState->NotIdle();
@@ -1143,7 +1143,7 @@ void UUTCharacterMovement::UpdateMovementStats(const FVector& StartLocation)
 {
 	if (CharacterOwner && CharacterOwner->Role == ROLE_Authority)
 	{
-		AUTPlayerState* PS = Cast<AUTPlayerState>(CharacterOwner->PlayerState);
+        AUTPlayerState* PS = Cast<AUTPlayerState>(CharacterOwner->GetPlayerState());
 		if (PS)
 		{
 			float Dist = (GetActorLocation() - StartLocation).Size();
@@ -1525,7 +1525,7 @@ bool UUTCharacterMovement::DoJump(bool bReplayingMoves)
 		bNotifyApex = true;
 		bExplicitJump = true;
 		NeedsClientAdjustment(); 
-		AUTPlayerState* PS = CharacterOwner ? Cast<AUTPlayerState>(CharacterOwner->PlayerState) : NULL;
+        AUTPlayerState* PS = CharacterOwner ? Cast<AUTPlayerState>(CharacterOwner->GetPlayerState()) : NULL;
 		if (PS)
 		{
 			PS->ModifyStatsValue(NAME_NumJumps, 1);
@@ -1714,7 +1714,7 @@ void UUTCharacterMovement::CheckWallSlide(FHitResult const& Impact)
 			if (UTCharOwner->bApplyWallSlide && bCountWallSlides)
 			{
 				bCountWallSlides = false;
-				AUTPlayerState* PS = CharacterOwner ? Cast<AUTPlayerState>(CharacterOwner->PlayerState) : NULL;
+                AUTPlayerState* PS = CharacterOwner ? Cast<AUTPlayerState>(CharacterOwner->GetPlayerState()) : NULL;
 				if (PS)
 				{
 					PS->ModifyStatsValue(NAME_NumWallRuns, 1);

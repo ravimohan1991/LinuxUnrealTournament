@@ -1,6 +1,7 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 
+#include "UTWeapon.h"
 #include "UTWeap_ImpactHammer.generated.h"
 
 UCLASS(abstract)

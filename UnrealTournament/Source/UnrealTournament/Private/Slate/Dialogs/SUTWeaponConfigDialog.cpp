@@ -584,7 +584,7 @@ SUTWeaponConfigDialog::~SUTWeaponConfigDialog()
 			PreviewWorld->DestroyWorld(true);
 			GEngine->DestroyWorldContext(PreviewWorld);
 			PreviewWorld = NULL;
-			GetPlayerOwner()->GetWorld()->ForceGarbageCollection(true);
+            GEngine->ForceGarbageCollection(true);//GetPlayerOwner()->GetWorld()->ForceGarbageCollection(true);
 		}
 	}
 	PreviewViewState.Destroy();
@@ -681,7 +681,7 @@ void SUTWeaponConfigDialog::UpdatePreviewRender(UCanvas* C, int32 Width, int32 H
 	PreviewInitOptions.WorldToMetersScale = GetPlayerOwner()->GetWorld()->GetWorldSettings()->WorldToMeters;
 	PreviewInitOptions.CursorPos = FIntPoint(-1, -1);
 
-	ViewFamily.bUseSeparateRenderTarget = true;
+    //ViewFamily.bUseSeparateRenderTarget = true;
 
 	FSceneView* View = new FSceneView(PreviewInitOptions); // note: renderer gets ownership
 	View->ViewLocation = FVector::ZeroVector;
@@ -691,7 +691,7 @@ void SUTWeaponConfigDialog::UpdatePreviewRender(UCanvas* C, int32 Width, int32 H
 	ViewFamily.Views.Add(View);
 	View->StartFinalPostprocessSettings(PreviewCameraLocation);
 	View->EndFinalPostprocessSettings(PreviewInitOptions);
-	View->ViewRect = View->UnscaledViewRect;
+    //View->ViewRect = View->UnscaledViewRect;
 
 	// workaround for hacky renderer code that uses GFrameNumber to decide whether to resize render targets
 	--GFrameNumber;
@@ -719,7 +719,7 @@ void SUTWeaponConfigDialog::GatherWeaponData(UUTProfileSettings* ProfileSettings
 		for (const FAssetData& Asset : AssetList)
 		{
 			static FName NAME_GeneratedClass(TEXT("GeneratedClass"));
-			const FString* ClassPath = Asset.TagsAndValues.Find(NAME_GeneratedClass);
+            const FString* ClassPath = &Asset.TagsAndValues.FindTag(NAME_GeneratedClass).GetValue();
 			if (ClassPath != NULL && !ClassPath->Contains(TEXT("/EpicInternal/"))) // exclude debug/test weapons
 			{
 				UClass* TestClass = LoadObject<UClass>(NULL, **ClassPath);
@@ -1247,7 +1247,7 @@ TSharedRef<SWidget> SUTWeaponConfigDialog::GenerateAutoSwitch(UUTProfileSettings
 		SAssignNew(AutoWeaponSwitch, SCheckBox)
 		.Style(SUTStyle::Get(), "UT.CheckBox")
 		.ForegroundColor(FLinearColor::White)
-		.IsChecked(Profile->bAutoWeaponSwitch ? ESlateCheckBoxState::Checked : ESlateCheckBoxState::Unchecked)
+        .IsChecked(Profile->bAutoWeaponSwitch ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
 	];
 
 	return Box.ToSharedRef();
@@ -1615,7 +1615,7 @@ void SUTWeaponConfigDialog::GatherCrosshairs(UUTProfileSettings* ProfileSettings
 	for (const FAssetData& Asset : AssetList)
 	{
 		static FName NAME_GeneratedClass(TEXT("GeneratedClass"));
-		const FString* ClassPath = Asset.TagsAndValues.Find(NAME_GeneratedClass);
+        const FString* ClassPath = &Asset.TagsAndValues.FindTag(NAME_GeneratedClass).GetValue();
 		UClass* CrosshairClass = LoadObject<UClass>(NULL, **ClassPath);
 		if (CrosshairClass != nullptr)
 		{

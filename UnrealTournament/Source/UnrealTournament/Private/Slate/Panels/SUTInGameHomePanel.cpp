@@ -509,7 +509,7 @@ FReply SUTInGameHomePanel::ContextCommand(int32 CommandId, TWeakObjectPtr<AUTPla
 
 			switch (CommandId)
 			{
-				case ECONTEXT_COMMAND_ShowPlayerCard:	PlayerOwner->ShowPlayerInfo(TargetPlayerState->UniqueId.ToString(), TargetPlayerState->PlayerName); break;
+                case ECONTEXT_COMMAND_ShowPlayerCard:	PlayerOwner->ShowPlayerInfo(TargetPlayerState->UniqueId.ToString(), TargetPlayerState->GetPlayerName()); break;
 				case ECONTEXT_COMMAND_FriendRequest:	PlayerOwner->RequestFriendship(TargetPlayerState->UniqueId.GetUniqueNetId()); break;
 				case ECONTEXT_COMMAND_KickVote: 
 						if (TargetPlayerState != MyPlayerState)
@@ -746,7 +746,7 @@ FText SUTInGameHomePanel::GetMuteLabelText() const
 	if (IModularFeatures::Get().IsModularFeatureAvailable(VoiceChatFeatureName))
 	{
 		UTVoiceChatFeature* VoiceChat = &IModularFeatures::Get().GetModularFeature<UTVoiceChatFeature>(VoiceChatFeatureName);
-		bIsMuted = bIsMuted | VoiceChat->IsPlayerMuted(SelectedPlayer->PlayerName);
+        bIsMuted = bIsMuted | VoiceChat->IsPlayerMuted(SelectedPlayer->GetPlayerName());
 	}
 
 	return bIsMuted ? NSLOCTEXT("SUTInGameHomePanel","Unmute","Unmute Player") : NSLOCTEXT("SUTInGameHomePanel","Mute","Mute Player");

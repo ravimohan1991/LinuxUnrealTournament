@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "UTLocalMessage.h"
 #include "UTTimerMessage.generated.h"
 
 UCLASS(CustomConstructor)
@@ -79,7 +80,7 @@ class UNREALTOURNAMENT_API UUTTimerMessage : public UUTLocalMessage
 		APlayerState* PS = Cast<APlayerState>(OptionalObject);
 		if (PS != NULL)
 		{
-			CurrentLeader = FText::FromString(PS->PlayerName);
+            CurrentLeader = FText::FromString(PS->GetPlayerName());
 		}
 		else
 		{

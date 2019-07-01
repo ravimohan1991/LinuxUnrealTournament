@@ -71,7 +71,7 @@ void AUTPickupHealth::BeginPlay()
 				GhostMesh->SetWorldScale3D(Mesh->GetComponentScale());
 			}
 			GhostMesh->SetVisibility(!State.bActive, true);
-			GhostMesh->bShouldUpdatePhysicsVolume = false;
+            GhostMesh->SetShouldUpdatePhysicsVolume(false);// = false;
 		}
 	}
 }
@@ -107,7 +107,7 @@ void AUTPickupHealth::GiveTo_Implementation(APawn* Target)
 			P->HealthRemovalAssists.Empty();
 		}
 		//Add to the stats pickup count
-		AUTPlayerState* PS = Cast<AUTPlayerState>(P->PlayerState);
+        AUTPlayerState* PS = Cast<AUTPlayerState>(P->GetPlayerState());
 		if (PS != nullptr && StatsNameCount != NAME_None)
 		{
 			PS->ModifyStatsValue(StatsNameCount, 1);

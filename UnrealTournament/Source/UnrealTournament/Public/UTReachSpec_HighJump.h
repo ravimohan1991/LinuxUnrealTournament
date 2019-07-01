@@ -250,7 +250,7 @@ class UNREALTOURNAMENT_API UUTReachSpec_HighJump : public UUTReachSpec
 					}
 					else if (B->GetUTChar() == NULL)
 					{
-						UE_LOG(UT, Warning, TEXT("Bot %s in Pawn %s attempting to use high jump path!"), *B->PlayerState->PlayerName, *GetNameSafe(B->GetPawn()));
+                        UE_LOG(UT, Warning, TEXT("Bot %s in Pawn %s attempting to use high jump path!"), *B->PlayerState->GetPlayerName(), *GetNameSafe(B->GetPawn()));
 						B->MoveTimer = -1.0f;
 						return false;
 					}

@@ -1,12 +1,13 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #include "UnrealTournamentEditor.h"
 #include "UTEditorEngine.h"
+#include "DelegateBase.h"
 
 void UUTEditorEngine::InitializeObjectReferences()
 {
 	Super::InitializeObjectReferences();
 
-	if (FCoreUObjectDelegates::StringAssetReferenceLoaded.IsBound())
+    if (FCoreUObjectDelegates::StringAssetReferenceLoaded.IsBound())
 	{
 		// manually add FStringClassReferences and FStringAssetReferences in native UClasses to the cook list
 		// this will not happen by default because that is done via Serialize() which does not happen for native CDOs
@@ -48,7 +49,7 @@ void UUTEditorEngine::InitializeObjectReferences()
 						}
 					}
 				}
-				for (TFieldIterator<UAssetObjectProperty> PropIt(*It, EFieldIteratorFlags::IncludeSuper); PropIt; ++PropIt)
+                for (TFieldIterator<USoftObjectProperty> PropIt(*It, EFieldIteratorFlags::IncludeSuper); PropIt; ++PropIt)
 				{
 					if (!PropIt->HasAnyPropertyFlags(CPF_EditorOnly))
 					{

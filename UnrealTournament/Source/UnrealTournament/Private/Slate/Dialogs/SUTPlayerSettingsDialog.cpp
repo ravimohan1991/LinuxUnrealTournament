@@ -140,7 +140,7 @@ void SUTPlayerSettingsDialog::Construct(const FArguments& InArgs)
 		for (const FAssetData& Asset : AssetList)
 		{
 			static FName NAME_GeneratedClass(TEXT("GeneratedClass"));
-			const FString* ClassPath = Asset.TagsAndValues.Find(NAME_GeneratedClass);
+            const FString* ClassPath = &Asset.TagsAndValues.FindTag(NAME_GeneratedClass).GetValue();
 			if (ClassPath != NULL)
 			{
 				UClass* TestClass = LoadObject<UClass>(NULL, **ClassPath);
@@ -165,7 +165,7 @@ void SUTPlayerSettingsDialog::Construct(const FArguments& InArgs)
 		for (const FAssetData& Asset : AssetList)
 		{
 			static FName NAME_GeneratedClass(TEXT("GeneratedClass"));
-			const FString* ClassPath = Asset.TagsAndValues.Find(NAME_GeneratedClass);
+            const FString* ClassPath = &Asset.TagsAndValues.FindTag(NAME_GeneratedClass).GetValue();
 			if (ClassPath != NULL)
 			{
 				UClass* TestClass = LoadObject<UClass>(NULL, **ClassPath);
@@ -190,7 +190,7 @@ void SUTPlayerSettingsDialog::Construct(const FArguments& InArgs)
 		for (const FAssetData& Asset : AssetList)
 		{
 			static FName NAME_GeneratedClass(TEXT("GeneratedClass"));
-			const FString* ClassPath = Asset.TagsAndValues.Find(NAME_GeneratedClass);
+            const FString* ClassPath = &Asset.TagsAndValues.FindTag(NAME_GeneratedClass).GetValue();
 			if (ClassPath != NULL)
 			{
 				UClass* TestClass = LoadObject<UClass>(NULL, **ClassPath);
@@ -212,7 +212,7 @@ void SUTPlayerSettingsDialog::Construct(const FArguments& InArgs)
 		for (const FAssetData& Asset : AssetList)
 		{
 			static FName NAME_GeneratedClass(TEXT("GeneratedClass"));
-			const FString* ClassPath = Asset.TagsAndValues.Find(NAME_GeneratedClass);
+            const FString* ClassPath = &Asset.TagsAndValues.FindTag(NAME_GeneratedClass).GetValue();
 			if (ClassPath != NULL)
 			{
 				UClass* TestClass = LoadObject<UClass>(NULL, **ClassPath);
@@ -237,7 +237,7 @@ void SUTPlayerSettingsDialog::Construct(const FArguments& InArgs)
 		for (const FAssetData& Asset : AssetList)
 		{
 			static FName NAME_GeneratedClass(TEXT("GeneratedClass"));
-			const FString* ClassPath = Asset.TagsAndValues.Find(NAME_GeneratedClass);
+            const FString* ClassPath = &Asset.TagsAndValues.FindTag(NAME_GeneratedClass).GetValue();
 			if (ClassPath != NULL)
 			{
 				UClass* TestClass = LoadObject<UClass>(NULL, **ClassPath);
@@ -259,7 +259,7 @@ void SUTPlayerSettingsDialog::Construct(const FArguments& InArgs)
 		for (const FAssetData& Asset : AssetList)
 		{
 			static FName NAME_GeneratedClass(TEXT("GeneratedClass"));
-			const FString* ClassPath = Asset.TagsAndValues.Find(NAME_GeneratedClass);
+            const FString* ClassPath = &Asset.TagsAndValues.FindTag(NAME_GeneratedClass).GetValue();
 			if (ClassPath != NULL)
 			{
 				UClass* TestClass = LoadObject<UClass>(NULL, **ClassPath);
@@ -281,7 +281,7 @@ void SUTPlayerSettingsDialog::Construct(const FArguments& InArgs)
 		for (const FAssetData& Asset : AssetList)
 		{
 			static FName NAME_GeneratedClass(TEXT("GeneratedClass"));
-			const FString* ClassPath = Asset.TagsAndValues.Find(NAME_GeneratedClass);
+            const FString* ClassPath = &Asset.TagsAndValues.FindTag(NAME_GeneratedClass).GetValue();
 			if (ClassPath != NULL)
 			{
 				UClass* TestClass = LoadObject<UClass>(NULL, **ClassPath);
@@ -1074,7 +1074,7 @@ SUTPlayerSettingsDialog::~SUTPlayerSettingsDialog()
 			PlayerPreviewWorld->DestroyWorld(true);
 			GEngine->DestroyWorldContext(PlayerPreviewWorld);
 			PlayerPreviewWorld = NULL;
-			GetPlayerOwner()->GetWorld()->ForceGarbageCollection(true);
+            GEngine->ForceGarbageCollection(true);
 		}
 	}
 	ViewState.Destroy();
@@ -1495,7 +1495,7 @@ void SUTPlayerSettingsDialog::RecreatePlayerPreview()
 		PreviewWeapon->Destroy();
 	}
 
-	TSubclassOf<class APawn> DefaultPawnClass = Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *GetDefault<AUTGameMode>()->PlayerPawnObject.ToStringReference().ToString(), NULL, LOAD_NoWarn));
+    TSubclassOf<class APawn> DefaultPawnClass = Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *GetDefault<AUTGameMode>()->PlayerPawnObject.ToSoftObjectPath().ToString(), NULL, LOAD_NoWarn));
 	PlayerPreviewMesh = PlayerPreviewWorld->SpawnActor<AUTCharacter>(DefaultPawnClass, FVector(300.0f, 0.f, 4.f), ActorRotation);
 
 	if (PlayerPreviewMesh == nullptr)
@@ -1726,7 +1726,7 @@ void SUTPlayerSettingsDialog::UpdatePlayerRender(UCanvas* C, int32 Width, int32 
 	PlayerPreviewInitOptions.WorldToMetersScale = GetPlayerOwner()->GetWorld()->GetWorldSettings()->WorldToMeters;
 	PlayerPreviewInitOptions.CursorPos = FIntPoint(-1, -1);
 	
-	ViewFamily.bUseSeparateRenderTarget = true;
+    //ViewFamily.bUseSeparateRenderTarget = true;
 
 	FSceneView* View = new FSceneView(PlayerPreviewInitOptions); // note: renderer gets ownership
 	View->ViewLocation = FVector::ZeroVector;
@@ -1742,7 +1742,7 @@ void SUTPlayerSettingsDialog::UpdatePlayerRender(UCanvas* C, int32 Width, int32 
 	//View->OverridePostProcessSettings(PPSettings, 1.0f);
 
 	View->EndFinalPostprocessSettings(PlayerPreviewInitOptions);
-	View->ViewRect = View->UnscaledViewRect;
+    //View->ViewRect = View->UnscaledViewRect;
 
 	// workaround for hacky renderer code that uses GFrameNumber to decide whether to resize render targets
 	--GFrameNumber;

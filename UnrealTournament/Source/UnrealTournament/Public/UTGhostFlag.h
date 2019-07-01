@@ -5,7 +5,7 @@
 #include "UTCarriedObject.h"
 #include "UTGhostFlag.generated.h"
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FGhostMaster
 {
 	GENERATED_USTRUCT_BODY()

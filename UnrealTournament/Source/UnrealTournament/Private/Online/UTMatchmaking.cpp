@@ -632,7 +632,7 @@ void UUTMatchmaking::LookupTeamElo(EQosCompletionResult QoSResult, const FString
 			if (!TeamEloResult.bSucceeded)
 			{
 				// best we can do is log an error
-				UE_LOG(LogOnline, Warning, TEXT("Failed to read ELO from the server. (%d) %s %s"), TeamEloResult.HttpResult, *TeamEloResult.ErrorCode, *TeamEloResult.ErrorMessage.ToString());
+                UE_LOG(LogOnline, Warning, TEXT("Failed to read ELO from the server. %s %s"), /*TeamEloResult.HttpResult,*/ *TeamEloResult.ErrorCode, *TeamEloResult.ErrorMessage.ToString());
 				ContinueMatchmaking(1500, InParams);
 			}
 			else
@@ -645,7 +645,7 @@ void UUTMatchmaking::LookupTeamElo(EQosCompletionResult QoSResult, const FString
 			if (!Result.bSucceeded)
 			{
 				// best we can do is log an error
-				UE_LOG(LogOnline, Warning, TEXT("Failed to get estimated wait times from the server. (%d) %s %s"), Result.HttpResult, *Result.ErrorCode, *Result.ErrorMessage.ToString());
+                UE_LOG(LogOnline, Warning, TEXT("Failed to get estimated wait times from the server. %s %s"), /*Result.HttpResult,*/ *Result.ErrorCode, *Result.ErrorMessage.ToString());
 			}
 			else
 			{
@@ -833,7 +833,7 @@ void UUTMatchmaking::TravelPartyToServer()
 						if (!Result.bSucceeded)
 						{
 							// best we can do is log an error
-							UE_LOG(UT, Warning, TEXT("Failed to report wait time to the server. (%d) %s %s"), Result.HttpResult, *Result.ErrorCode, *Result.ErrorMessage.ToString());
+                            UE_LOG(UT, Warning, TEXT("Failed to report wait time to the server. %s %s"), /*Result.HttpResult,*/ *Result.ErrorCode, *Result.ErrorMessage.ToString());
 						}
 						else
 						{

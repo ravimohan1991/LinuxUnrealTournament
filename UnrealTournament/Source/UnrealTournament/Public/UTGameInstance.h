@@ -42,7 +42,7 @@ class UNREALTOURNAMENT_API UUTGameInstance : public UGameInstance
 	virtual void StartGameInstance() override;
 
 	virtual void StartRecordingReplay(const FString& Name, const FString& FriendlyName, const TArray<FString>& AdditionalOptions = TArray<FString>()) override;
-	virtual void PlayReplay(const FString& Name, UWorld* WorldOverride = nullptr, const TArray<FString>& AdditionalOptions = TArray<FString>()) override;
+    virtual bool PlayReplay(const FString& Name, UWorld* WorldOverride = nullptr, const TArray<FString>& AdditionalOptions = TArray<FString>()) override;
 
 	virtual void HandleGameNetControlMessage(class UNetConnection* Connection, uint8 MessageByte, const FString& MessageStr) override;
 
@@ -193,7 +193,7 @@ public:
 	UFUNCTION()
 	virtual void BeginLevelLoading(const FString& LevelName);
 	UFUNCTION()
-	virtual void EndLevelLoading();
+    virtual void EndLevelLoading(UWorld* lol = nullptr);
 
 	bool bLevelIsLoading;
 
@@ -284,6 +284,6 @@ protected:
 	FDelegateHandle OnEnumerateTitleFilesCompleteDelegate;
 
 	virtual void OnReadTitleFileComplete(bool bWasSuccessful, const FString& Filename);
-	virtual void OnEnumerateTitleFilesComplete(bool bWasSuccessful);
+    virtual void OnEnumerateTitleFilesComplete(bool bWasSuccessful, const FString& lol = FString(""));
 };
 

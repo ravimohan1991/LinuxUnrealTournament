@@ -3,6 +3,7 @@
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "UTGameInstance.h"
+#include "Engine/Engine.h"
 
 #include "UTGameplayStatics.generated.h"
 
@@ -244,7 +245,7 @@ class UNREALTOURNAMENT_API UUTGameplayStatics : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintPure, Category = "Game", meta = (WorldContext = "WorldContextObject"))
 	static TSubclassOf<AGameModeBase> GetGameClass(UObject* WorldContextObject)
 	{
-		UWorld* const World = GEngine->GetWorldFromContextObject(WorldContextObject);
+        UWorld* const World = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);//    GetWorldFromContextObject(WorldContextObject);
 		AGameStateBase* GS = (World != nullptr) ? World->GetGameState() : nullptr;
 		return (GS != nullptr) ? GS->GameModeClass : nullptr;
 	}

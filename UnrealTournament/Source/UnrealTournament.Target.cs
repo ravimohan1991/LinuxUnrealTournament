@@ -1,63 +1,39 @@
-// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
+﻿// (ɔ) The_Cowboy 1000 BC - 2019 AD. All rights reversed.
 
 using UnrealBuildTool;
 using System.Collections.Generic;
 using System.IO;
 
-public class UnrealTournamentTarget : TargetRules
-{
+public class UnrealTournamentTarget : TargetRules 
+{ 
     bool IsLicenseeBuild()
     {
-        return !Directory.Exists("Runtime/NotForLicensees");
+        return true; //!Directory.Exists("Runtime/NotForLicensees");
     }
 
-	public UnrealTournamentTarget(TargetInfo Target)
-	{
+    public UnrealTournamentTarget(TargetInfo Target) : base(Target)
+    {
         Type = TargetType.Game;
 
-        bUsesCEF3 = true;
-
         // Turn on shipping checks and logging
-        UEBuildConfiguration.bUseLoggingInShipping = true;
-        UEBuildConfiguration.bUseChecksInShipping = true;
-        UEBuildConfiguration.bCompileBox2D = false;
-    }
+        bUseLoggingInShipping = true;
+        bUseChecksInShipping = true;
 
-    //
-    // TargetRules interface.
-    //
+        // TargetRules interface
+        /// <summary>
+        /// List of additional modules to be compiled into the target.
+        /// </summary>
+        ExtraModuleNames.AddRange(new string[]{
+        "UnrealTournament",
+        "UnrealTournamentFullScreenMovie"
+        });
 
-    public override void SetupBinaries(
-		TargetInfo Target,
-		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
-		ref List<string> OutExtraModuleNames
-		)
-	{
-		OutExtraModuleNames.Add("UnrealTournament");
-		OutExtraModuleNames.Add("UnrealTournamentFullScreenMovie");
-		if (UEBuildConfiguration.bBuildEditor)
+        // 
+        if (!IsLicenseeBuild()) 
         {
-            OutExtraModuleNames.Add("UnrealTournamentEditor");
+            ExtraModuleNames.Add("OnlineSubsystemMcp");
         }
 
-        if (!IsLicenseeBuild())
-		{
-			OutExtraModuleNames.Add("OnlineSubsystemMcp");
-        }
-        OutExtraModuleNames.Add("OnlineSubsystemNull");
-	}
-
-    public override void SetupGlobalEnvironment(
-		TargetInfo Target,
-		ref LinkEnvironmentConfiguration OutLinkEnvironmentConfiguration,
-		ref CPPEnvironmentConfiguration OutCPPEnvironmentConfiguration
-		)
-	{
-		UEBuildConfiguration.bWithPerfCounters = true;
-    }
-    
-    public override bool ShouldCompileMonolithic(UnrealTargetPlatform InPlatform, UnrealTargetConfiguration InConfiguration)
-    {
-        return false;
+        ExtraModuleNames.Add("OnlineSubsystemNull");
     }
 }

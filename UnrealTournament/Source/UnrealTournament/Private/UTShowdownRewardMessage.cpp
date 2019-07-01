@@ -59,7 +59,7 @@ void UUTShowdownRewardMessage::GetEmphasisText(FText& PrefixText, FText& Emphasi
 	{
 		PrefixText = FText::GetEmpty();
 		PostfixText = (Switch == 1) ? LastManMsg : TerminationMsg;
-		EmphasisText = RelatedPlayerState_1 ? FText::FromString(RelatedPlayerState_1->PlayerName) : FText::GetEmpty();
+        EmphasisText = RelatedPlayerState_1 ? FText::FromString(RelatedPlayerState_1->GetPlayerName()) : FText::GetEmpty();
 		AUTPlayerState* PS = Cast<AUTPlayerState>(RelatedPlayerState_1);
 		EmphasisColor = (PS && PS->Team) ? PS->Team->TeamColor : REDHUDCOLOR;
 		return;

@@ -125,7 +125,7 @@ void UUTGameViewportClient::PeekTravelFailureMessages(UWorld* InWorld, enum ETra
 				// If it already exists with the correct checksum, just mount it again
 				if (UTEngine && UTEngine->DownloadedContentChecksums.Contains(BaseFilename))
 				{
-					FString Path = FPaths::Combine(*FPaths::GameSavedDir(), TEXT("Paks"), TEXT("DownloadedPaks"), *BaseFilename) + TEXT(".pak");
+                    FString Path = FPaths::Combine(*FPaths::ProjectSavedDir(), TEXT("Paks"), TEXT("DownloadedPaks"), *BaseFilename) + TEXT(".pak");
 					if (UTEngine->DownloadedContentChecksums[BaseFilename] == Checksum)
 					{
 						if (FCoreDelegates::OnMountPak.IsBound())
@@ -178,7 +178,7 @@ void UUTGameViewportClient::PeekTravelFailureMessages(UWorld* InWorld, enum ETra
 
 				if (UTEngine->MountedDownloadedContentChecksums.Contains(It.Key()))
 				{
-					FString Path = FPaths::Combine(*FPaths::GameSavedDir(), TEXT("Paks"), TEXT("DownloadedPaks"), *It.Key()) + TEXT(".pak");
+                    FString Path = FPaths::Combine(*FPaths::ProjectSavedDir(), TEXT("Paks"), TEXT("DownloadedPaks"), *It.Key()) + TEXT(".pak");
 
 					// Unmount the pak
 					if (FCoreDelegates::OnUnmountPak.IsBound())
@@ -197,7 +197,7 @@ void UUTGameViewportClient::PeekTravelFailureMessages(UWorld* InWorld, enum ETra
 				{
 					if (UTEngine->DownloadedContentChecksums[It.Key()] == It.Value())
 					{
-						FString Path = FPaths::Combine(*FPaths::GameSavedDir(), TEXT("Paks"), TEXT("DownloadedPaks"), *It.Key()) + TEXT(".pak");
+                        FString Path = FPaths::Combine(*FPaths::ProjectSavedDir(), TEXT("Paks"), TEXT("DownloadedPaks"), *It.Key()) + TEXT(".pak");
 
 						if (FCoreDelegates::OnMountPak.IsBound())
 						{
@@ -872,7 +872,7 @@ bool UUTGameViewportClient::IsDownloadInProgress()
 
 bool UUTGameViewportClient::CheckIfRedirectExists(const FPackageRedirectReference& Redirect)
 {
-	FString Path = FPaths::Combine(*FPaths::GameSavedDir(), TEXT("Paks"), TEXT("DownloadedPaks"), *Redirect.PackageName) + TEXT(".pak");
+    FString Path = FPaths::Combine(*FPaths::ProjectSavedDir(), TEXT("Paks"), TEXT("DownloadedPaks"), *Redirect.PackageName) + TEXT(".pak");
 	UUTGameEngine* UTEngine = Cast<UUTGameEngine>(GEngine);
 	if (UTEngine)
 	{
@@ -965,7 +965,7 @@ void UUTGameViewportClient::DownloadRedirect(FPackageRedirectReference Redirect)
 			}
 		}
 
-		PendingDownloads.Add(FPendingRedirect(Redirect.ToString().TrimTrailing(), Redirect.PackageChecksum));
+        PendingDownloads.Add(FPendingRedirect(Redirect.ToString().TrimEnd()/* TrimTrailing()*/, Redirect.PackageChecksum));
 
 		UUTLocalPlayer* FirstPlayer = Cast<UUTLocalPlayer>(GEngine->GetLocalPlayerFromControllerId(this, 0));	
 		if (FirstPlayer && FirstPlayer->RequiresDLCWarning() && !FirstPlayer->IsShowingDLCWarning())
@@ -1046,7 +1046,7 @@ void UUTGameViewportClient::HttpRequestComplete(FHttpRequestPtr HttpRequest, FHt
 		{
 			IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 		
-			FString Path = FPaths::Combine(*FPaths::GameSavedDir(), TEXT("Paks"), TEXT("DownloadedPaks"));
+            FString Path = FPaths::Combine(*FPaths::ProjectSavedDir(), TEXT("Paks"), TEXT("DownloadedPaks"));
 			if (!PlatformFile.DirectoryExists(*Path))
 			{
 				PlatformFile.CreateDirectoryTree(*Path);

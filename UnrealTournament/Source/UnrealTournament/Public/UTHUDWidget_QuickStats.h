@@ -6,7 +6,7 @@
 
 class AUTWeapon;
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FQStatLayoutInfo
 {
 	GENERATED_USTRUCT_BODY()

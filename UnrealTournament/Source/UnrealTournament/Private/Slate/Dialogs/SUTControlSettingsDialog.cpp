@@ -780,7 +780,7 @@ FReply SUTControlSettingsDialog::OKClick()
 			{
 				if (ScrollBox.IsValid())
 				{
-					ScrollBox->ScrollDescendantIntoView(BindList[i]->PrimaryKeyBindWidget, false, SScrollBox::EDescendantScrollDestination::IntoView);
+                    ScrollBox->ScrollDescendantIntoView(BindList[i]->PrimaryKeyBindWidget, false, EDescendantScrollDestination::IntoView);
 				}
 
 				GetPlayerOwner()->ShowMessage

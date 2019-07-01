@@ -120,7 +120,7 @@ class UNREALTOURNAMENT_API UUTButtonInternal : public UButton
 
 public:
 	void SetInteractionEnabled(bool bInIsInteractionEnabled);
-	bool IsHovered() const;
+    bool IsHovered() const;
 	bool IsPressed() const;
 
 	void SetMinDesiredHeight(int32 InMinHeight);
@@ -164,7 +164,7 @@ public:
 	virtual void NativeDestruct() override;
 	virtual bool NativeIsInteractable() const override;
 	
-	virtual void HandleRequestedInput_Implementation(FKey Key, EInputEvent EventType) override;
+    virtual void HandleRequestedInput_Implementation(FKey Key, EInputEvent EventType);
 
 	/** Associates this button at its priority with the given key */
 	virtual void BindClickToKey(const FKey& KeyToBind);
@@ -186,8 +186,8 @@ public:
 	bool IsInteractionEnabled() const;
 
 	/** Is this button currently hovered? */
-	UFUNCTION(BlueprintCallable, Category = "UT Button|Getters")
-	bool IsHovered() const;
+    //UFUNCTION(BlueprintCallable, Category = "UT Button|Getters")
+    virtual bool IsHovered() const override;
 
 	/** Is this button currently pressed? */
 	UFUNCTION(BlueprintCallable, Category = "UT Button|Getters")

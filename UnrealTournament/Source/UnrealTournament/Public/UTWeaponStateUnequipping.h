@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "UTWeaponState.h"
 #include "UTWeaponStateUnequipping.generated.h"
 
 /** base class of states that fire the weapon and live in the weapon's FiringState array */

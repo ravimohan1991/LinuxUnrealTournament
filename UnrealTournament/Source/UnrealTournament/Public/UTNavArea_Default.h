@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "AI/Navigation/NavAreas/NavArea_Default.h"
+#include "NavArea_Default.h"
 
 #include "UTNavArea_Default.generated.h"
 

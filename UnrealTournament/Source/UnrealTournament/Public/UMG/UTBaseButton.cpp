@@ -474,6 +474,7 @@ bool UUTBaseButton::IsInteractionEnabled() const
 	return GetIsEnabled() && bInteractionEnabled;
 }
 
+UFUNCTION(BlueprintCallable, Category = "UT Button|Getters")
 bool UUTBaseButton::IsHovered() const
 {
 	return RootButton.IsValid() && RootButton->IsHovered();

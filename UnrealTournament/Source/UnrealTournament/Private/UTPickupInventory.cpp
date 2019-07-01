@@ -179,7 +179,7 @@ static void CreatePickupMeshAttachments(AActor* Pickup, UClass* PickupInventoryT
 			if (Prim != NULL)
 			{
 				Prim->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-				Prim->bShouldUpdatePhysicsVolume = false;
+                Prim->SetShouldUpdatePhysicsVolume(false);// = false;
 			}
 			NewComp->RegisterComponent();
 			NewComp->AttachToComponent(CurrentAttachment, FAttachmentTransformRules::KeepRelativeTransform, NewComp->GetAttachSocketName());
@@ -205,7 +205,7 @@ static void CreatePickupMeshAttachments(AActor* Pickup, UClass* PickupInventoryT
 			if (Prim != NULL)
 			{
 				Prim->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-				Prim->bShouldUpdatePhysicsVolume = false;
+                Prim->SetShouldUpdatePhysicsVolume(false);// = false;
 			}
 			NewComp->bAutoRegister = false;
 			NewComp->RegisterComponent();
@@ -260,7 +260,7 @@ void AUTPickupInventory::CreatePickupMesh(AActor* Pickup, UMeshComponent*& Picku
 				}
 				PickupMesh = NewObject<UMeshComponent>(Pickup, NewMesh->GetClass(), NAME_None, RF_NoFlags, NewMesh);
 				PickupMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-				PickupMesh->bShouldUpdatePhysicsVolume = false;
+                PickupMesh->SetShouldUpdatePhysicsVolume(false);// = false;
 				PickupMesh->bUseAttachParentBound = false;
 				PickupMesh->bSingleSampleShadowFromStationaryLights = true;
 				PickupMesh->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
@@ -284,7 +284,7 @@ void AUTPickupInventory::CreatePickupMesh(AActor* Pickup, UMeshComponent*& Picku
 				PickupMesh->bAutoRegister = false;
 				PickupMesh->RegisterComponent();
 				PickupMesh->AttachToComponent(Pickup->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
-				FVector Offset = Pickup->GetRootComponent()->ComponentToWorld.InverseTransformVectorNoScale(PickupMesh->Bounds.Origin - PickupMesh->GetComponentToWorld().GetLocation());
+                FVector Offset = Pickup->GetRootComponent()->GetComponentToWorld().InverseTransformVectorNoScale(PickupMesh->Bounds.Origin - PickupMesh->GetComponentToWorld().GetLocation());
 				PickupMesh->SetRelativeLocation(PickupMesh->GetRelativeTransform().GetLocation() - Offset);
 				PickupMesh->SetRelativeRotation(PickupMesh->RelativeRotation + RotationOffset);
 				// if there's a rotation component, set it up to rotate the pickup mesh
@@ -320,7 +320,7 @@ void AUTPickupInventory::CreatePickupMesh(AActor* Pickup, UMeshComponent*& Picku
 			else if (PickupMesh->GetAttachParent() != Pickup->GetRootComponent())
 			{
 				PickupMesh->AttachToComponent(Pickup->GetRootComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-				FVector Offset = Pickup->GetRootComponent()->ComponentToWorld.InverseTransformVectorNoScale(PickupMesh->Bounds.Origin - PickupMesh->GetComponentToWorld().GetLocation());
+                FVector Offset = Pickup->GetRootComponent()->GetComponentToWorld().InverseTransformVectorNoScale(PickupMesh->Bounds.Origin - PickupMesh->GetComponentToWorld().GetLocation());
 				PickupMesh->SetRelativeLocation(PickupMesh->GetRelativeTransform().GetLocation() - Offset + FVector(0.0f, 0.0f, MeshFloatHeight));
 			}
 		}
@@ -332,7 +332,7 @@ void AUTPickupInventory::InventoryTypeUpdated_Implementation()
 	CreatePickupMesh(this, Mesh, InventoryType, FloatHeight, RotationOffset, bAllowRotatingPickup);
 	if (Mesh)
 	{
-		Mesh->bShouldUpdatePhysicsVolume = false;
+        Mesh->SetShouldUpdatePhysicsVolume(false);// = false;
 
 		for (int i = 0; i < Mesh->GetNumMaterials(); i++)
 		{
@@ -384,7 +384,7 @@ void AUTPickupInventory::InventoryTypeUpdated_Implementation()
 				GhostMesh->SetWorldScale3D(Mesh->GetComponentScale());
 			}
 			GhostMesh->SetVisibility(!State.bActive, true);
-			GhostMesh->bShouldUpdatePhysicsVolume = false;
+            GhostMesh->SetShouldUpdatePhysicsVolume(false);// = false;
 		}
 	}
 	if (Mesh != NULL && !State.bActive && Role < ROLE_Authority)
@@ -585,7 +585,7 @@ void AUTPickupInventory::GiveTo_Implementation(APawn* Target)
 		const AUTInventory* Inventory = InventoryType.GetDefaultObject();
 		if (Inventory->StatsNameCount != NAME_None)
 		{
-			AUTPlayerState* PS = Cast<AUTPlayerState>(P->PlayerState);
+            AUTPlayerState* PS = Cast<AUTPlayerState>(P->GetPlayerState());
 			if (PS)
 			{
 				PS->ModifyStatsValue(Inventory->StatsNameCount, 1);
@@ -632,7 +632,7 @@ void AUTPickupInventory::AnnouncePickup(AUTCharacter* P)
 	AUTPlayerController* UTPC = (P != nullptr) ? Cast<AUTPlayerController>(P->GetController()) : nullptr;
 	if (UTPC)
 	{
-		UTPC->ClientReceiveLocalizedMessage(UUTPickupMessage::StaticClass(), 0, P->PlayerState, NULL, InventoryType);
+        UTPC->ClientReceiveLocalizedMessage(UUTPickupMessage::StaticClass(), 0, P->GetPlayerState(), NULL, InventoryType);
 		if (GM && GM->bPlayInventoryTutorialAnnouncements)
 		{
 			for (int32 Index = 0; Index < TutorialAnnouncements.Num(); Index++)
@@ -647,7 +647,7 @@ void AUTPickupInventory::AnnouncePickup(AUTCharacter* P)
 	}
 	if (GM && GM->bAllowPickupAnnouncements && InventoryType && (InventoryType.GetDefaultObject()->PickupAnnouncementName != NAME_None))
 	{
-		AUTPlayerState* PS = Cast<AUTPlayerState>(P->PlayerState);
+        AUTPlayerState* PS = Cast<AUTPlayerState>(P->GetPlayerState());
 		if (PS)
 		{
 			PS->AnnounceStatus(InventoryType.GetDefaultObject()->PickupAnnouncementName, 1, true);

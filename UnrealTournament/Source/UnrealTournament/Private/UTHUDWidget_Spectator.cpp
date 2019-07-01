@@ -134,10 +134,10 @@ FText UUTHUDWidget_Spectator::GetSpectatorMessageText(FText& ShortMessage)
 					ViewCharacter = Cast<AUTCharacter>(Flag->GetAttachmentReplication().AttachParent);
 				}
 			}
-			if (ViewCharacter && ViewCharacter->PlayerState)
+            if (ViewCharacter && ViewCharacter->GetPlayerState())
 			{
 				FFormatNamedArguments Args;
-				Args.Add("PlayerName", FText::AsCultureInvariant(ViewCharacter->PlayerState->PlayerName));
+                Args.Add("PlayerName", FText::AsCultureInvariant(ViewCharacter->GetPlayerState()->GetPlayerName()));
 				ShortMessage = NSLOCTEXT("UUTHUDWidget_Spectator", "NowViewing", "Now viewing");
 				SpectatorMessage = FText::Format(NSLOCTEXT("UUTHUDWidget_Spectator", "SpectatorPlayerWatching", "{PlayerName}"), Args);
 			}
@@ -259,15 +259,15 @@ FText UUTHUDWidget_Spectator::GetSpectatorMessageText(FText& ShortMessage)
 						ViewCharacter = Cast<AUTCharacter>(Flag->GetAttachmentReplication().AttachParent);
 					}
 				}
-				if (ViewCharacter && ViewCharacter->PlayerState)
+                if (ViewCharacter && ViewCharacter->GetPlayerState())
 				{
-					if (LastViewedPS != ViewCharacter->PlayerState)
+                    if (LastViewedPS != ViewCharacter->GetPlayerState())
 					{
 						ViewCharChangeTime = ViewCharacter->GetWorld()->GetTimeSeconds();
-						LastViewedPS = Cast<AUTPlayerState>(ViewCharacter->PlayerState);
+                        LastViewedPS = Cast<AUTPlayerState>(ViewCharacter->GetPlayerState());
 					}
 					FFormatNamedArguments Args;
-					Args.Add("PlayerName", FText::AsCultureInvariant(ViewCharacter->PlayerState->PlayerName));
+                    Args.Add("PlayerName", FText::AsCultureInvariant(ViewCharacter->GetPlayerState()->GetPlayerName()));
 					ShortMessage = NSLOCTEXT("UUTHUDWidget_Spectator", "NowViewing", "Now viewing");
 					SpectatorMessage = FText::Format(NSLOCTEXT("UUTHUDWidget_Spectator", "SpectatorPlayerWatching", "{PlayerName}"), Args);
 				}
@@ -303,7 +303,7 @@ FText UUTHUDWidget_Spectator::GetSpectatorMessageText(FText& ShortMessage)
 		else
 		{
 			AUTCharacter* ViewCharacter = Cast<AUTCharacter>(UTHUDOwner->UTPlayerOwner->GetViewTarget());
-			AUTPlayerState* PS = ViewCharacter ? Cast<AUTPlayerState>(ViewCharacter->PlayerState) : NULL;
+            AUTPlayerState* PS = ViewCharacter ? Cast<AUTPlayerState>(ViewCharacter->GetPlayerState()) : NULL;
 			if (UTHUDOwner && UTHUDOwner->bDisplayMatchSummary)
 			{
 				if (UTGameState->GetNetMode() != NM_Standalone)
@@ -331,7 +331,7 @@ FText UUTHUDWidget_Spectator::GetSpectatorMessageText(FText& ShortMessage)
 			else if (PS)
 			{
 				FFormatNamedArguments Args;
-				Args.Add("PlayerName", FText::AsCultureInvariant(PS->PlayerName));
+                Args.Add("PlayerName", FText::AsCultureInvariant(PS->GetPlayerName()));
 				ShortMessage = NSLOCTEXT("UUTHUDWidget_Spectator", "NowViewing", "Now viewing");
 				if (UTGameState->bTeamGame && PS && PS->Team && (!UTGameState->GameModeClass || !UTGameState->GameModeClass->GetDefaultObject<AUTTeamGameMode>() || UTGameState->GameModeClass->GetDefaultObject<AUTTeamGameMode>()->bAnnounceTeam))
 				{

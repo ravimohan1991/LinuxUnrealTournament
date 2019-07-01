@@ -3,6 +3,7 @@
 #pragma once
 
 #include "UTWeaponStateFiringCharged.h"
+#include "UTWeap_RocketLauncher.h"
 #include "UTWeaponStateFiringChargedRocket.generated.h"
 
 /**

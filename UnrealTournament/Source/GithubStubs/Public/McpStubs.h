@@ -58,7 +58,7 @@ class GITHUBSTUBS_API UUtMcpCardPackItem : public UObject
 	GENERATED_UCLASS_BODY()
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct GITHUBSTUBS_API FMcpItemIdAndQuantity
 {
 	GENERATED_USTRUCT_BODY()

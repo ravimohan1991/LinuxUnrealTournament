@@ -1,6 +1,8 @@
-// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
+// (ɔ) The_Cowboy 1000 BC - 2019 AD. All rights reversed.
 
 #pragma once
+
+//#include "CoreMinimal.h"
 
 #include "Engine.h"
 #include "Online.h"
@@ -74,13 +76,13 @@ extern UMeshComponent* CreateCustomDepthOutlineMesh(UMeshComponent* Archetype, A
 /** workaround for FCanvasIcon not having a constructor you can pass in the values to */
 FORCEINLINE FCanvasIcon MakeCanvasIcon(UTexture* Tex, float InU, float InV, float InUL, float InVL)
 {
-	FCanvasIcon Result;
-	Result.Texture = Tex;
-	Result.U = InU;
-	Result.V = InV;
-	Result.UL = InUL;
-	Result.VL = InVL;
-	return Result;
+    FCanvasIcon Result;
+    Result.Texture = Tex;
+    Result.U = InU;
+    Result.V = InV;
+    Result.UL = InUL;
+    Result.VL = InVL;
+    return Result;
 }
 
 /** returns entitlement ID required for the given asset, if any */
@@ -95,7 +97,7 @@ extern UNREALTOURNAMENT_API bool LocallyOwnsItemFor(const FString& Path);
 /** returns whether any local player has the given achievement */
 extern UNREALTOURNAMENT_API bool LocallyHasAchievement(FName Achievement);
 
-/** returns asset data for all assets of the specified class 
+/** returns asset data for all assets of the specified class
  * do not use for Blueprints as you can only query for all blueprints period; use GetAllBlueprintAssetData() to query the blueprint's underlying class
  * if bRequireEntitlements is set, assets on disk for which no local player has the required entitlement will not be returned
  *
@@ -158,4 +160,3 @@ extern UNREALTOURNAMENT_API int32 GetXPForLevel(int32 Level);
 extern UNREALTOURNAMENT_API FText GetBotSkillName(int32 Difficulty);
 
 extern UNREALTOURNAMENT_API FString GetMutatorShortName(const FString& inMutatorPath);
-

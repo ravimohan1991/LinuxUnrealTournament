@@ -34,7 +34,7 @@ void AUTLift::SetEncroachComponent(class UPrimitiveComponent* NewEncroachCompone
 	EncroachComponent = NewEncroachComponent; 
 	if (EncroachComponent)
 	{
-		EncroachComponent->bGenerateOverlapEvents = true;
+        EncroachComponent->SetGenerateOverlapEvents(true);// = true;
 		EncroachComponent->OnComponentBeginOverlap.AddDynamic(this, &AUTLift::OnOverlapBegin);
 	}
 }
@@ -263,8 +263,8 @@ bool AUTLift::HasBasedCharacters()
 
 void AUTLift::GetNavigationData(struct FNavigationRelevantData& Data) const
 {
-	UNavigationSystem* NavSys = GetWorld()->GetNavigationSystem();
-	if (NavSys != NULL && NavSys->GetNavOctree() != NULL && NavSys->GetNavOctree()->ComponentExportDelegate.IsBound())
+   /* UNavigationSystem* NavSys = GetWorld()->GetNavigationSystem();
+    if (NavSys != NULL && NavSys->GetNavOctree() != NULL && NavSys->GetNavOctree()->ComponentExportDelegate.IsBound())
 	{
 		// FIXME: navmesh only supports one set of data per object, so we can only do one stop!
 		//		this is a workaround for navmesh not supporting movers anyway, so hopefully we will be able to eventually just delete this instead of fixing
@@ -290,8 +290,9 @@ void AUTLift::GetNavigationData(struct FNavigationRelevantData& Data) const
 				break; // see above
 			}
 		}
-	}
+    }*/
 }
+
 FBox AUTLift::GetNavigationBounds() const
 {
 	FBox BaseBounds = GetComponentsBoundingBox();

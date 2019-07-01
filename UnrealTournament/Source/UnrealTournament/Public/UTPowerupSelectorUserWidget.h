@@ -17,6 +17,9 @@ class UNREALTOURNAMENT_API UUTPowerupSelectorUserWidget : public UUserWidget
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Powerups)
 	int SelectedPowerupIndex;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Powerups)
+    bool bCanEverTick;
+
 	UFUNCTION(BlueprintCallable, Category = "UI Runnables")
 	FString GetBuyMenuKeyName();
 

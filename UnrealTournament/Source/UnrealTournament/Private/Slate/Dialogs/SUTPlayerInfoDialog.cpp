@@ -175,7 +175,7 @@ SUTPlayerInfoDialog::~SUTPlayerInfoDialog()
 			PlayerPreviewWorld->DestroyWorld(true);
 			GEngine->DestroyWorldContext(PlayerPreviewWorld);
 			PlayerPreviewWorld = NULL;
-			GetPlayerOwner()->GetWorld()->ForceGarbageCollection(true);
+            GEngine->ForceGarbageCollection(true);
 		}
 	}
 	ViewState.Destroy();
@@ -350,12 +350,12 @@ void SUTPlayerInfoDialog::RecreatePlayerPreview()
 	const AUTBaseGameMode* DefaultGameMode = GameState->GetDefaultGameMode<AUTBaseGameMode>();
 	if (DefaultGameMode)
 	{
-		TSubclassOf<class APawn> DefaultPawnClass = Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *DefaultGameMode->PlayerPawnObject.ToStringReference().ToString(), NULL, LOAD_NoWarn));
+        TSubclassOf<class APawn> DefaultPawnClass = Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *DefaultGameMode->PlayerPawnObject.ToSoftObjectPath().ToString(), NULL, LOAD_NoWarn));
 
 		//For game modes without a default pawn class (menu game modes), spawn our default one
 		if (DefaultPawnClass == nullptr)
 		{
-			DefaultPawnClass = Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *AUTGameMode::StaticClass()->GetDefaultObject<AUTGameMode>()->PlayerPawnObject.ToStringReference().ToString(), NULL, LOAD_NoWarn));
+            DefaultPawnClass = Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *AUTGameMode::StaticClass()->GetDefaultObject<AUTGameMode>()->PlayerPawnObject.ToSoftObjectPath().ToString(), NULL, LOAD_NoWarn));
 		}
 
 		PlayerPreviewMesh = PlayerPreviewWorld->SpawnActor<AUTCharacter>(DefaultPawnClass, FVector(300.0f, 0.f, 4.f), ActorRotation);
@@ -377,7 +377,7 @@ void SUTPlayerInfoDialog::RecreatePlayerPreview()
 				}
 			}
 
-			PlayerPreviewMesh->GetMesh()->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPoseAndRefreshBones;
+            PlayerPreviewMesh->GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 			if (CharacterClass.GetDefaultObject()->bIsFemale)
 			{
 				if (PlayerPreviewAnimFemaleBlueprint)
@@ -454,7 +454,7 @@ void SUTPlayerInfoDialog::UpdatePlayerRender(UCanvas* C, int32 Width, int32 Heig
 	PlayerPreviewInitOptions.WorldToMetersScale = GetPlayerOwner()->GetWorld()->GetWorldSettings()->WorldToMeters;
 	PlayerPreviewInitOptions.CursorPos = FIntPoint(-1, -1);
 	
-	ViewFamily.bUseSeparateRenderTarget = true;
+    //ViewFamily.bUseSeparateRenderTarget = true;
 
 	FSceneView* View = new FSceneView(PlayerPreviewInitOptions); // note: renderer gets ownership
 	View->ViewLocation = FVector::ZeroVector;
@@ -465,7 +465,7 @@ void SUTPlayerInfoDialog::UpdatePlayerRender(UCanvas* C, int32 Width, int32 Heig
 
 	View->StartFinalPostprocessSettings(CameraPosition);
 	View->EndFinalPostprocessSettings(PlayerPreviewInitOptions);
-	View->ViewRect = View->UnscaledViewRect;
+    //View->ViewRect = View->UnscaledViewRect;
 
 	// workaround for hacky renderer code that uses GFrameNumber to decide whether to resize render targets
 	--GFrameNumber;

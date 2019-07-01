@@ -116,7 +116,7 @@ void AUTProj_WeaponScreen::OnStop(const FHitResult& Hit)
 	{
 		if (Role == ROLE_Authority)
 		{
-			bTearOff = true;
+            TearOff();//bTearOff = true;
 			bReplicateUTMovement = true; // so position of explosion is accurate even if flight path was a little off
 		}
 		if (ExplosionEffects != NULL)

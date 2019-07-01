@@ -8,7 +8,8 @@
 #include "UTLobbyMatchInfo.h"
 #include "../Widgets/SUTMenuAnchor.h"
 #include "UTGameState.h"
-
+#include "UTLocalPlayer.h"
+#include "SUTTextChatPanel.h"
 #if !UE_SERVER
 
 namespace ETrackedPlayerType
@@ -118,10 +119,15 @@ public:
 		return MakeShareable( new FTrackedPlayer(inHeaderText, inEntryType));
 	}
 
-	FText GetPlayerName()
+    FText GetPlayerName()
 	{
-		return PlayerState.IsValid() ? FText::FromString(PlayerState->PlayerName) : FText::FromString(PlayerName);
-	}
+        return PlayerState.IsValid() ? FText::FromString(PlayerState->GetPlayerName()) : FText::FromString(PlayerName);
+    }
+
+    FString GetPlayerName(bool IsString)// Had to do the overloading!
+    {
+        return PlayerState.IsValid() ? PlayerState->GetPlayerName() : PlayerName;
+    }
 
 	FSlateColor GetNameColor() const
 	{
@@ -273,7 +279,6 @@ public:
 
 DECLARE_DELEGATE_OneParam(FPlayerClicked, FUniqueNetIdRepl);
 
-class SUTTextChatPanel;
 class AUTLobbyMatchInfo;
 
 class UNREALTOURNAMENT_API SUTPlayerListPanel : public SCompoundWidget

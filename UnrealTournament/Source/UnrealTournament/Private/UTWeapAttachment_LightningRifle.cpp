@@ -123,7 +123,7 @@ void AUTWeapAttachment_LightningRifle::ChainEffects()
 			FVector BeamSpawn = VictimPawn->GetActorLocation();
 			UParticleSystemComponent* PSC = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), RealFireEffect, BeamHitLocation, (BeamSpawn - BeamHitLocation).Rotation(), true);
 			PSC->SetVectorParameter(NAME_HitLocation, BeamSpawn);
-			PSC->SetVectorParameter(NAME_LocalHitLocation, PSC->ComponentToWorld.InverseTransformPosition(BeamSpawn));
+            PSC->SetVectorParameter(NAME_LocalHitLocation, PSC->GetComponentToWorld().InverseTransformPosition(BeamSpawn));
 			PSC->CustomTimeDilation = 0.2f;
 		}
 	}

@@ -9,6 +9,7 @@
 #include "UTAnnouncer.h"
 #include "UTUMGHudWidget.h"
 #include "UTATypes.h"
+#include "UTHUDWidget.h"
 #include "UTHUDWidgetMessage.generated.h"
 
 const int32 MESSAGE_QUEUE_LENGTH = 8;

@@ -1,6 +1,8 @@
-// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
+// (ɔ) The_Cowboy 1000 BC - 2019 AD. All rights reversed.
+
 #pragma once
 
+//#include "UTInputDisplayData.h"
 #include "UTATypes.generated.h"
 
 // Const defines for Dialogs
@@ -330,7 +332,7 @@ namespace ChatDestinations
 // Our Dialog results delegate.  It passes in a reference to the dialog triggering it, as well as the button id 
 DECLARE_DELEGATE_TwoParams(FDialogResultDelegate, TSharedPtr<SCompoundWidget>, uint16);
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FTextureUVs
 {
 	GENERATED_USTRUCT_BODY()
@@ -502,6 +504,12 @@ struct UNREALTOURNAMENT_API FLocalizedMessageData
 		, MessageCount(0)
 	{
 		UMGWidget.Reset();
+        ScaleInTime = 0;
+        ScaleInSize = 0;
+        EmphasisColor = FLinearColor();
+        RequestedSlot = 0;
+        ShadowDirection = FVector2D();
+        EmphasisColor = FLinearColor();
 	}
 };
 
@@ -544,6 +552,9 @@ struct FHUDRenderObject
 		RenderPriority = 0.0f;
 		RenderColor = FLinearColor::White;
 		RenderOpacity = 1.0f;
+        bHidden = false;
+        Position = FVector2D();
+        Size = FVector2D();
 	};
 
 	virtual ~FHUDRenderObject()
@@ -603,6 +614,9 @@ struct FHUDRenderObject_Texture : public FHUDRenderObject
 		bUseTeamColors = false;
 		bIsBorderElement = false;
 		Rotation = 0.0f;
+        bIsSlateElement = true;
+        RenderOffset = FVector2D();
+        RotPivot = FVector2D();
 	}
 
 	virtual ~FHUDRenderObject_Texture()
@@ -690,6 +704,7 @@ struct FHUDRenderObject_Text : public FHUDRenderObject
 		HorzPosition = ETextHorzPos::Left;
 		VertPosition = ETextVertPos::Top;
 		BackgroundColor = FLinearColor(0.0f,0.0f,0.0f,0.0f);
+        ShadowDirection = FVector2D();
 	}
 
 	virtual ~FHUDRenderObject_Text()
@@ -795,7 +810,7 @@ namespace ERedirectStatus
 /*
 	Describes a package that might be needed
 */
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FPackageRedirectReference
 {
 	GENERATED_USTRUCT_BODY()
@@ -845,7 +860,7 @@ struct FPackageRedirectReference
  *	Holds information about a map that can be set via config.  This will be used to build the FMapListInfo objects in various places but contains
  *  a cut down copy of the content to make life easier to manage.
  **/
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FConfigMapInfo
 {
 	GENERATED_USTRUCT_BODY()
@@ -1084,6 +1099,11 @@ struct FMatchUpdate
 		NumPlayers = 0;
 		NumSpectators = 0;
 		TeamScores.Empty();
+        TimeLimit  = 0;
+        GoalScore = 0;
+        bMatchHasBegun = true;
+        bMatchHasEnded = false;
+        RankCheck = 0;
 	}
 
 };
@@ -1300,7 +1320,7 @@ namespace EChallengeFilterType
 }
 
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FUTDailyChallengeUnlock
 {
 	GENERATED_USTRUCT_BODY()
@@ -1314,7 +1334,8 @@ struct FUTDailyChallengeUnlock
 	FUTDailyChallengeUnlock()
 		: Tag(NAME_None)
 	{
-	}
+        UnlockTime = FDateTime::Now();
+    }
 
 	FUTDailyChallengeUnlock(FName inTag)
 		: Tag(inTag)
@@ -1324,7 +1345,7 @@ struct FUTDailyChallengeUnlock
 };
 
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FUTChallengeResult
 {
 	GENERATED_USTRUCT_BODY()
@@ -1583,6 +1604,7 @@ struct FMCPPulledData
 		BuildNotesURL = TEXT("");
 		FragCenterCounter=0;
 		CurrentVersionNumber=0;
+        ChallengeRevisionNumber = 0;
 	}
 };
 
@@ -1673,6 +1695,7 @@ struct FRconPlayerData
 		, bInInstance(false)
 	{
 		bPendingDelete = false;
+        bSpectator = true;
 	}
 
 	FRconPlayerData(FString inPlayerName, FString inPlayerID, FString inPlayerIP, int32 inRank, bool inbSpectator)
@@ -1805,7 +1828,7 @@ public:
 	FComMenuCommand DropFlag;
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FScoreboardContextMenuItem
 {
 	GENERATED_USTRUCT_BODY()
@@ -1989,7 +2012,7 @@ struct FUTMath
 	}
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FCustomKeyBinding
 {
 	GENERATED_USTRUCT_BODY()
@@ -2083,6 +2106,8 @@ public:
 	FKeyConfigurationInfo()
 	{
 		bShowInUI = true;
+        Category = TEnumAsByte<EControlCategory::Type>();
+        bOptional = false;
 	}
 
 	FKeyConfigurationInfo(const FName& inGameActionTag, EControlCategory::Type inCategory, FKey inDefaultPrimaryKey, FKey inDefaultSecondayKey, FKey inGamepadKey, const FText& inMenuText, bool inbOptional)
@@ -2257,7 +2282,7 @@ namespace ETutorialSections
 }
 
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FTutorialData
 {
 	GENERATED_USTRUCT_BODY()
@@ -2323,6 +2348,9 @@ struct FHUDandUMGParticleSystemTracker
 	FHUDandUMGParticleSystemTracker()
 		: ParticleSystemComponent(nullptr)
 	{
+        LocationModifier =  FVector();
+        DirectionModifier = FRotator();
+        ScreenLocation = FVector2D();
 	}
 
 
@@ -2332,6 +2360,9 @@ struct FHUDandUMGParticleSystemTracker
 		LocationModifier = inLocationModifier;
 		DirectionModifier = inDirectionModifier;
 		ScreenLocation = inScreenLocation;
+        LocationModifier =  FVector();
+        DirectionModifier = FRotator();
+        ScreenLocation = FVector2D();
 	}
 
 };
@@ -2443,7 +2474,7 @@ struct FMCPAnnouncementBlob
 };
 
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct UNREALTOURNAMENT_API FUTGameRuleset
 {
 	GENERATED_USTRUCT_BODY()
@@ -2560,6 +2591,7 @@ public:
 		MapPrefixes.Empty();
 		CustomMapList.Empty();
 		RequiredPackages.Empty();
+        MaxMapsInList = 0;
 	}
 
 	bool operator == (const FUTGameRuleset& Other) const 
@@ -2684,11 +2716,16 @@ struct FPlaylistItem
 	bool bHideInUI;
 
 	FPlaylistItem()
-		: bAllowBots(true)
+        : PlaylistId(0)
+        , bRanked(true)
+        , bAllowBots(true)
 		, BotDifficulty(3)
 		, SortWeight(0.0f)
 		, bHideInUI(false)
 	{
+        PlaylistId = 0;
+        bRanked = 0;
+        bSkipEloChecks = false;
 	}
 
 };

@@ -7,6 +7,9 @@
 #endif
 
 #include "PartyBeaconState.h"
+#include "OnlineSessionInterface.h"
+#include "OnlineSubsystem.h"
+#include "UTGameSession.h"
 
 #include "UTGameSessionRanked.generated.h"
 
@@ -92,7 +95,7 @@ public:
 
 	virtual void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
 	virtual void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
-	virtual void OnConnectionStatusChanged(EOnlineServerConnectionStatus::Type LastConnectionState, EOnlineServerConnectionStatus::Type ConnectionState);
+    virtual void OnConnectionStatusChanged(const FString& test, EOnlineServerConnectionStatus::Type LastConnectionState, EOnlineServerConnectionStatus::Type ConnectionState);
 
 #if WITH_PROFILE
 	virtual void OnVerifyAuthComplete(bool bWasSuccessful, const class FAuthTokenMcp& AuthToken, const class FAuthTokenVerifyMcp& AuthTokenVerify, const FString& ErrorStr);

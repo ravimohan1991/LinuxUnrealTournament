@@ -106,7 +106,7 @@ void AUTProj_Grenade_Sticky::ExplodeDueToTimeout()
 
 void AUTProj_Grenade_Sticky::Explode_Implementation(const FVector& HitLocation, const FVector& HitNormal, UPrimitiveComponent* HitComp)
 {
-	if (bArmed || Role != ROLE_Authority || bTearOff)
+    if (bArmed || Role != ROLE_Authority || GetTearOff())
 	{
 		// If we still have a fake projectile, AUTProjectile::Explode may skip it
 		SavedFakeProjectile = MyFakeProjectile;
@@ -199,7 +199,7 @@ void AUTProj_Grenade_Sticky::ProcessHit_Implementation(AActor* OtherActor, UPrim
 		int32 InstTeamNum = GetInstigatorTeamNum();
 		if (InstTeamNum != 255)
 		{
-			if (GetInstigatorTeamNum() == UTChar->GetTeamNum())
+            if (GetInstigatorTeamNum() == UTChar->GetTeamNum())
 			{
 				// If we hit a teammate that isn't ourselves, just ignore it
 				return;

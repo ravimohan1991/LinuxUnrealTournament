@@ -131,7 +131,7 @@ void AUTDroppedPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, 
 	if (bFullyInitialized && (OtherActor != Instigator || !GetWorld()->GetTimerManager().IsTimerActive(EnableInstigatorTouchHandle)))
 	{
 		APawn* P = Cast<APawn>(OtherActor);
-		if (P != NULL && !P->bTearOff && !GetWorld()->LineTraceTestByChannel(P->GetActorLocation(), GetActorLocation(), ECC_Pawn, FCollisionQueryParams(), WorldResponseParams))
+        if (P != NULL && !P->GetTearOff() && !GetWorld()->LineTraceTestByChannel(P->GetActorLocation(), GetActorLocation(), ECC_Pawn, FCollisionQueryParams(), WorldResponseParams))
 		{
 			ProcessTouch(P);
 		}
@@ -160,8 +160,8 @@ void AUTDroppedPickup::ProcessTouch_Implementation(APawn* TouchedBy)
 			USoundBase* PickupSound = GetPickupSound();
 			if (PickupSound)
 			{
-				Radius = PickupSound->GetMaxAudibleDistance();
-				const FAttenuationSettings* Settings = PickupSound->GetAttenuationSettingsToApply();
+                Radius = PickupSound->GetMaxDistance();
+                const FSoundAttenuationSettings* Settings = PickupSound->GetAttenuationSettingsToApply();
 				if (Settings != NULL)
 				{
 					Radius = FMath::Max<float>(Radius, Settings->GetMaxDimension());
@@ -214,7 +214,7 @@ void AUTDroppedPickup::GiveTo_Implementation(APawn* Target)
 
 							bool bFoundSkin = false;
 							// Set character's skin back to what the UTPlayerState has
-							AUTPlayerState* PS = Cast<AUTPlayerState>(C->PlayerState);
+                            AUTPlayerState* PS = Cast<AUTPlayerState>(C->GetPlayerState());
 							if (PS)
 							{
 								for (int32 i = 0; i < PS->WeaponSkins.Num(); i++)

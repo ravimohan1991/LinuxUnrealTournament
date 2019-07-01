@@ -24,7 +24,7 @@ AUTRemoteRedeemer::AUTRemoteRedeemer(const class FObjectInitializer& ObjectIniti
 		CollisionComp->BodyInstance.SetCollisionProfileName("ProjectileShootable");			// Collision profiles are defined in DefaultEngine.ini
 		CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &AUTRemoteRedeemer::OnOverlapBegin);
 		CollisionComp->bTraceComplexOnMove = true;
-		CollisionComp->bGenerateOverlapEvents = false;
+        CollisionComp->SetGenerateOverlapEvents(false);//  bGenerateOverlapEvents = false;
 		RootComponent = CollisionComp;
 	}
 
@@ -137,7 +137,7 @@ bool AUTRemoteRedeemer::DriverEnter(APawn* NewDriver)
 					UTChar->UTCharacterMovement->AddDampedImpulse(FVector(0.f, 0.f, 4000.f), false);
 				}
 				UTChar->StartDriving(this);
-				UTChar->PlayerState = PlayerState;
+                UTChar->SetPlayerState(GetPlayerState());// = PlayerState;
 			}
 			DamageInstigator = C;
 		}
@@ -271,7 +271,7 @@ void AUTRemoteRedeemer::BlowUp(FVector HitNormal)
 			GM->BroadcastLocalized(this, UUTRedeemerLaunchAnnounce::StaticClass(), 3);
 		}
 		bExploded = true;
-		bTearOff = true;
+        TearOff();//bTearOff = true;
 
 		if (OverlayMI != NULL)
 		{
@@ -348,7 +348,7 @@ void AUTRemoteRedeemer::OnShotDown()
 
 		if (Role == ROLE_Authority)
 		{
-			bTearOff = true;
+            TearOff(); //bTearOff = true;
 			DriverLeave(true);
 		}
 
@@ -430,7 +430,7 @@ void AUTRemoteRedeemer::PlayExplosionEffects()
 
 uint8 AUTRemoteRedeemer::GetTeamNum() const
 {
-	const IUTTeamInterface* TeamInterface = Cast<IUTTeamInterface>(PlayerState);
+    const IUTTeamInterface* TeamInterface = Cast<IUTTeamInterface>(GetPlayerState());
 	if (TeamInterface != NULL)
 	{
 		return TeamInterface->GetTeamNum();
@@ -533,7 +533,7 @@ void AUTRemoteRedeemer::ServerDriverLeave_Implementation()
 
 void AUTRemoteRedeemer::OnRep_PlayerState()
 {
-	AUTPlayerState* PS = Cast<AUTPlayerState>(PlayerState);
+    AUTPlayerState* PS = Cast<AUTPlayerState>(GetPlayerState());
 	if (PS != nullptr)
 	{
 		CachedTeamNum = PS->GetTeamNum();
@@ -544,7 +544,7 @@ void AUTRemoteRedeemer::OnRep_PlayerState()
 		for (FLocalPlayerIterator It(GEngine, GetWorld()); It; ++It)
 		{
 			AUTPlayerController* UTPC = Cast<AUTPlayerController>(It->PlayerController);
-			if (UTPC && UTPC->LastSpectatedPlayerState == PlayerState)
+            if (UTPC && UTPC->LastSpectatedPlayerState == GetPlayerState())
 			{
 				UTPC->ViewPawn(this);
 			}

@@ -14,7 +14,7 @@ void UUTGhostEvent::ApplyEvent_Implementation(AUTCharacter* UTC)
 
 }
 
-void UUTGhostEvent_Move::ApplyEvent_Implementation(AUTCharacter* UTC)
+void UUTGhostEvent_Move::ApplyEvent(AUTCharacter* UTC)
 {
 	//Copy over the RepMovement so SimulatedMove can play it
 	UTC->UTReplicatedMovement = RepMovement;
@@ -38,13 +38,13 @@ void UUTGhostEvent_Move::ApplyEvent_Implementation(AUTCharacter* UTC)
 	}
 }
 
-void UUTGhostEvent_MovementEvent::ApplyEvent_Implementation(AUTCharacter* UTC)
+void UUTGhostEvent_MovementEvent::ApplyEvent(AUTCharacter* UTC)
 {
 	UTC->MovementEvent = MovementEvent;
 	UTC->MovementEventReplicated();
 }
 
-void UUTGhostEvent_Input::ApplyEvent_Implementation(AUTCharacter* UTC)
+void UUTGhostEvent_Input::ApplyEvent(AUTCharacter* UTC)
 {
 	if (UTC->GetWeapon() != nullptr)
 	{
@@ -68,7 +68,7 @@ void UUTGhostEvent_Input::ApplyEvent_Implementation(AUTCharacter* UTC)
 	}
 }
 
-void UUTGhostEvent_Weapon::ApplyEvent_Implementation(AUTCharacter* UTC)
+void UUTGhostEvent_Weapon::ApplyEvent(AUTCharacter* UTC)
 {
 	if (WeaponClass != nullptr)
 	{
@@ -91,7 +91,7 @@ void UUTGhostEvent_Weapon::ApplyEvent_Implementation(AUTCharacter* UTC)
 	}
 }
 
-void UUTGhostEvent_JumpBoots::ApplyEvent_Implementation(AUTCharacter* UTC)
+void UUTGhostEvent_JumpBoots::ApplyEvent(AUTCharacter* UTC)
 {
 	if (SuperJumpEffect != NULL)
 	{

@@ -3,6 +3,7 @@
 
 #include "UTAnnouncer.h"
 #include "UTATypes.h"
+#include "Runtime/Engine/Classes/GameFramework/LocalMessage.h"
 #include "UTLocalMessage.generated.h"
 
 UCLASS(Blueprintable, Abstract, NotPlaceable, meta = (ShowWorldContextPin))

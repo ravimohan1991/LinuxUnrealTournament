@@ -113,11 +113,11 @@ bool AUTMutator_WeaponReplacement::CheckRelevance_Implementation(AActor* Other)
 					for (const FAssetData& Asset : AssetList)
 					{
 						static FName NAME_Ammo(TEXT("Ammo"));
-						const FString* AmmoData = Asset.TagsAndValues.Find(NAME_Ammo);
+                        const FString* AmmoData = &Asset.TagsAndValues.FindTag(NAME_Ammo).GetValue();
 						if (AmmoData != NULL && AmmoData->Contains(NewWeapon->GetPathName()))
 						{
 							static FName NAME_GeneratedClass(TEXT("GeneratedClass"));
-							const FString* ClassPath = Asset.TagsAndValues.Find(NAME_GeneratedClass);
+                            const FString* ClassPath = &Asset.TagsAndValues.FindTag(NAME_GeneratedClass).GetValue();
 							if (ClassPath != NULL)
 							{
 								UClass* TestClass = LoadObject<UClass>(NULL, **ClassPath);

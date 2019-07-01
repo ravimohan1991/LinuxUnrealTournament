@@ -1,4 +1,4 @@
-// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
+﻿// (ɔ) The_Cowboy 1000 BC - 2019 AD. All rights reversed.
 
 using UnrealBuildTool;
 using System.Collections.Generic;
@@ -8,30 +8,23 @@ public class UnrealTournamentEditorTarget : TargetRules
 {
     bool IsLicenseeBuild()
     {
-        return !Directory.Exists("Runtime/NotForLicensees");
+        return true;
     }
 
-	public UnrealTournamentEditorTarget(TargetInfo Target)
-	{
+    public UnrealTournamentEditorTarget(TargetInfo Target) : base(Target)
+    {
         Type = TargetType.Editor;
-	}
 
-    //
-    // TargetRules interface.
-    //
-    public override void SetupBinaries(
-		TargetInfo Target,
-		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
-		ref List<string> OutExtraModuleNames
-		)
-	{
-		OutExtraModuleNames.Add("UnrealTournament");
-        OutExtraModuleNames.Add("UnrealTournamentEditor");
+        ExtraModuleNames.AddRange(new string[] { 
+            "UnrealTournament",
+            "UnrealTournamentEditor"
+        });
 
-        if (!IsLicenseeBuild())
+        if(!IsLicenseeBuild())
         {
-            OutExtraModuleNames.Add("OnlineSubsystemMcp");
+            ExtraModuleNames.Add("OnlineSubsystemMcp");
         }
-        OutExtraModuleNames.Add("OnlineSubsystemNull");
-	}
+
+        ExtraModuleNames.Add("OnlineSubsystemNull");
+    }
 }

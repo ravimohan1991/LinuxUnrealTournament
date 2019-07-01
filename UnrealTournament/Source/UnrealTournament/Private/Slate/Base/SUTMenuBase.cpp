@@ -57,7 +57,7 @@ void SUTMenuBase::OnMenuOpened(const FString& Parameters)
 	if (UTGameState != nullptr) UTGameState->bLocalMenusAreActive = true;
 
 	GameViewportWidget = FSlateApplication::Get().GetKeyboardFocusedWidget();
-	FSlateApplication::Get().SetKeyboardFocus(SharedThis(this), EKeyboardFocusCause::Keyboard);
+    FSlateApplication::Get().SetKeyboardFocus(SharedThis(this), EFocusCause::Navigation);
 
 	if (!PlayerOnlineStatusChangedDelegate.IsValid())
 	{
@@ -1027,7 +1027,7 @@ FReply SUTMenuBase::OnShowPlayerCard()
 		AUTPlayerState* PlayerState = Cast<AUTPlayerState>(PlayerOwner->PlayerController->PlayerState);
 		if (PlayerState)
 		{
-			PlayerOwner->ShowPlayerInfo(PlayerState->UniqueId.ToString(), PlayerState->PlayerName);
+            PlayerOwner->ShowPlayerInfo(PlayerState->UniqueId.ToString(), PlayerState->GetPlayerName());
 		}
 	}
 	return FReply::Handled();
@@ -1067,7 +1067,7 @@ FReply SUTMenuBase::ToggleFullscreenClicked()
 
 FReply SUTMenuBase::MinimizeClicked()
 {
-	FPlatformMisc::RequestMinimize();
+    //FPlatformMisc::RequestMinimize();
 	return FReply::Handled();
 }
 

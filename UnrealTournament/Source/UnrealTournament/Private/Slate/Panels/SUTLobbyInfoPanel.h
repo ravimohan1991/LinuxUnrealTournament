@@ -10,9 +10,10 @@
 #include "SUTTextChatPanel.h"
 #include "SUTMatchPanel.h"
 #include "UTLobbyMatchInfo.h"
+#include "SUTTextChatPanel.h"
 
-#if !UE_SERVER
-
+#if UE_SERVER == 0
+//class SUTTextChatPanel;
 class UNREALTOURNAMENT_API SUTLobbyInfoPanel : public SUTPanelBase 
 {
 public:

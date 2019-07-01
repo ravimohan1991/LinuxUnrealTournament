@@ -67,7 +67,7 @@ void UUTGlobals::GetRewardsFromSameSource(const FString& SourceName, TArray<FStr
 
 	if (RewardToSourceTable)
 	{
-		for (auto& RowIter : RewardToSourceTable->RowMap)
+        for (auto& RowIter : RewardToSourceTable->GetRowMap())
 		{
 			const FRewardToSource* RewardToSource = (const FRewardToSource*)RowIter.Value;
 
@@ -136,7 +136,7 @@ void UUTGlobals::GetItemData(EUtItemType ItemType, TArray<FAssetData>& AssetList
 	}
 }
 
-int32 UUTGlobals::GetSimpleAssetData(EUTObjectLibrary::Type LibraryType, TArray<class FAssetData> &AssetList, bool bInHasBlueprintClasses)
+int32 UUTGlobals::GetSimpleAssetData(EUTObjectLibrary::Type LibraryType, TArray<struct FAssetData> &AssetList, bool bInHasBlueprintClasses)
 {
 	UObjectLibrary*& ObjectLibrary = ObjectLibraries[LibraryType].Library;
 

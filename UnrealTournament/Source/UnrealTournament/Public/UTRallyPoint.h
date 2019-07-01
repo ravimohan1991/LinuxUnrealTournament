@@ -245,7 +245,7 @@ class UNREALTOURNAMENT_API AUTRallyPoint : public AUTGameObjective, public IUTRe
 
 	/** Arrow component to indicate forward direction of start */
 #if WITH_EDITORONLY_DATA
-	private_subobject :
+    private :
 						  UPROPERTY()
 						  class UArrowComponent* ArrowComponent;
 public:

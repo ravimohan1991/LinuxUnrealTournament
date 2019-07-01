@@ -22,7 +22,7 @@ void AUTHat::OnWearerHeadshot_Implementation()
 
 void AUTHat::OnWearerDeath_Implementation(TSubclassOf<UDamageType> DamageType)
 {
-	DetachRootComponentFromParent(true);
+    DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);//DetachRootComponentFromParent(true);
 	
 	if (DamageType->IsChildOf(UUTDmg_SniperHeadshot::StaticClass()))
 	{

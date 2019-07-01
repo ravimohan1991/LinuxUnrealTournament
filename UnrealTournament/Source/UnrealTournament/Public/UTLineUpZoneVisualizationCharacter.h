@@ -1,5 +1,8 @@
 #pragma once
 
+#include "UTTeamInterface.h"
+#include "Runtime/Engine/Classes/GameFramework/Character.h"
+
 #include "UTLineUpZoneVisualizationCharacter.generated.h"
 
 UCLASS(transient)

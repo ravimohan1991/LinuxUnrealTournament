@@ -142,7 +142,7 @@ void AUTProj_TransDisk::OnLanded_Implementation()
 		}
 
 		//Spawn the landing effect
-		AUTPlayerState* PS = Instigator ? Cast<AUTPlayerState>(Instigator->PlayerState) : NULL;
+        AUTPlayerState* PS = Instigator ? Cast<AUTPlayerState>(Instigator->GetPlayerState()) : NULL;
 		int32 TeamIndex = PS && PS->Team ? PS->Team->TeamIndex : 0;
 		if (LandedEffect.Num() > TeamIndex)
 		{
@@ -310,7 +310,7 @@ void AUTProj_TransDisk::ProcessHit_Implementation(AActor* OtherActor, UPrimitive
 			FHitResult Hit(OtherActor, OtherComp, HitLocation, HitNormal);
 			ProjectileMovement->Velocity = ComputeBounceResult(Hit, 0.0f, FVector::ZeroVector);
 			OnBounce(Hit, ProjectileMovement->Velocity);
-			DetachRootComponentFromParent(true);
+            DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);//DetachRootComponentFromParent(true);
 
 			// if bot, check for telefrag
 			AUTBot* B = Cast<AUTBot>(InstigatorController);

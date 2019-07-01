@@ -437,7 +437,7 @@ void UStatManager::AddMatchToStats(const FString& MapName, const FString& GameTy
 				int32 NewIndex = NewMatchStats.Players.AddZeroed();
 				FMatchStatsPlayer& MatchPlayer = NewMatchStats.Players[NewIndex];
 
-				MatchPlayer.PlayerName = PlayerState.PlayerName;
+                MatchPlayer.PlayerName = PlayerState.GetPlayerName();
 				if (PlayerState.Team != nullptr)
 				{
 					MatchPlayer.TeamIndex = PlayerState.Team->TeamIndex;
@@ -467,7 +467,7 @@ void UStatManager::AddMatchToStats(const FString& MapName, const FString& GameTy
 				int32 NewIndex = NewMatchStats.Players.AddZeroed();
 				FMatchStatsPlayer& MatchPlayer = NewMatchStats.Players[NewIndex];
 
-				MatchPlayer.PlayerName = PlayerState.PlayerName;
+                MatchPlayer.PlayerName = PlayerState.GetPlayerName();
 				if (PlayerState.Team != nullptr)
 				{
 					MatchPlayer.TeamIndex = PlayerState.Team->TeamIndex;

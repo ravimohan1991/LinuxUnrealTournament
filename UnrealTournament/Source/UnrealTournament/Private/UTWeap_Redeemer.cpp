@@ -85,7 +85,7 @@ AUTProjectile* AUTWeap_Redeemer::FireProjectile()
 				RemoteRedeemer->TryToDrive(UTOwner);
 			}
 
-			RemoteRedeemer->CollisionComp->bGenerateOverlapEvents = true;
+            RemoteRedeemer->CollisionComp->SetGenerateOverlapEvents(true);
 			LaunchedMissile = RemoteRedeemer;
 			if (LaunchedMissile != nullptr)
 			{
@@ -121,7 +121,7 @@ void AUTWeap_Redeemer::DropFrom(const FVector& StartLocation, const FVector& Tos
 
 void AUTWeap_Redeemer::AnnounceLaunch()
 {
-	if (LaunchedMissile && !LaunchedMissile->IsPendingKillPending() && !LaunchedMissile->bTearOff && (Cast<AUTProjectile>(LaunchedMissile) ? !Cast<AUTProjectile>(LaunchedMissile)->bExploded : (RemoteRedeemer && !RemoteRedeemer->bExploded)))
+    if (LaunchedMissile && !LaunchedMissile->IsPendingKillPending() && !LaunchedMissile->GetTearOff() && (Cast<AUTProjectile>(LaunchedMissile) ? !Cast<AUTProjectile>(LaunchedMissile)->bExploded : (RemoteRedeemer && !RemoteRedeemer->bExploded)))
 	{
 		for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 		{

@@ -9,7 +9,7 @@
 AUTShowdownGameState::AUTShowdownGameState(const FObjectInitializer& OI)
 : Super(OI)
 {
-	bMatchHasStarted = false;
+    bMatchHasStarted = false;
 	bPersistentKillIconMessages = true;
 	GoalScoreText = NSLOCTEXT("UTScoreboard", "CTFGoalScoreFormat", "Win {0} Rounds");
 }
@@ -82,7 +82,7 @@ void AUTShowdownGameState::OnRep_XRayVision()
 		for (FConstPawnIterator It = GetWorld()->GetPawnIterator(); It; ++It)
 		{
 			AUTCharacter* UTC = Cast<AUTCharacter>(It->Get());
-			if (UTC != NULL && !UTC->bTearOff && (!UTC->IsLocallyControlled() || Cast<APlayerController>(UTC->Controller) == NULL))
+            if (UTC != NULL && !UTC->GetTearOff() && (!UTC->IsLocallyControlled() || Cast<APlayerController>(UTC->Controller) == NULL))
 			{
 				UTC->SetOutlineLocal(true);
 			}

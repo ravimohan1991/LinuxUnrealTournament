@@ -1,8 +1,10 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 
-#include "AI/Navigation/NavigationSystem.h"
-#include "AI/NavigationOctree.h"
+#include "NavigationSystem.h"
+#include "NavigationOctree.h"
+#include "Runtime/Engine/Classes/Components/BrushComponent.h"
+#include "../Runtime/Engine/Classes/GameFramework/Volume.h"
 
 #include "UTNavBlockingVolume.generated.h"
 
@@ -50,23 +52,23 @@ class UNREALTOURNAMENT_API AUTNavBlockingVolume : public AVolume, public INavRel
 	}
 
 	virtual void GetNavigationData(struct FNavigationRelevantData& Data) const override
-	{
+    {
 		// force BrushComponent to be exported for navmesh if we have no collision (because bBlockSpecialMoveTests is false)
-		if (!bBlockSpecialMoveTests)
+        /*if (!bBlockSpecialMoveTests)
 		{
-			UNavigationSystem* NavSys = GetWorld()->GetNavigationSystem();
+            UNavigationSystemBase* NavSys = GetWorld()->GetNavigationSystem();
 			if (NavSys != NULL && NavSys->GetNavOctree() != NULL && NavSys->GetNavOctree()->ComponentExportDelegate.IsBound())
 			{
 				GetBrushComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 				NavSys->GetNavOctree()->ComponentExportDelegate.Execute(GetBrushComponent(), Data);
 				GetBrushComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			}
-		}
+            }
+        }*/
 	}
 
 	virtual FBox GetNavigationBounds() const override
 	{
-		return GetBrushComponent()->Bounds.GetBox();
+        return GetBrushComponent()->GetNavigationBounds();
 	}
 
 	// it would've been nice to have a component that just does the right thing but unfortunately UBrushComponent can't be subclassed by modules

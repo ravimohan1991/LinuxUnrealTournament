@@ -49,7 +49,7 @@ void AUTCTFBaseGame::InitGame(const FString& MapName, const FString& Options, FS
 {
 	if (bGameHasTranslocator && !TranslocatorObject.IsNull())
 	{
-		TranslocatorClass = Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *TranslocatorObject.ToStringReference().ToString(), NULL, LOAD_NoWarn));
+        TranslocatorClass = Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *TranslocatorObject.ToSoftObjectPath().ToString(), NULL, LOAD_NoWarn));
 		DefaultInventory.Add(TranslocatorClass);
 	}
 
@@ -115,7 +115,7 @@ void AUTCTFBaseGame::AddCaptureEventToReplay(AUTPlayerState* Holder, AUTTeamInfo
 	{
 		TArray<uint8> Data;
 
-		FString PlayerName = Holder ? *Holder->PlayerName : TEXT("None");
+        FString PlayerName = Holder ? *Holder->GetPlayerName() : TEXT("None");
 		PlayerName.ReplaceInline(TEXT(" "), TEXT("%20"));
 
 		FString CapInfo = FString::Printf(TEXT("%s"), *PlayerName);
@@ -136,7 +136,7 @@ void AUTCTFBaseGame::AddReturnEventToReplay(AUTPlayerState* Returner, AUTTeamInf
 	{
 		TArray<uint8> Data;
 
-		FString PlayerName = Returner ? *Returner->PlayerName : TEXT("None");
+        FString PlayerName = Returner ? *Returner->GetPlayerName() : TEXT("None");
 		PlayerName.ReplaceInline(TEXT(" "), TEXT("%20"));
 
 		FString ReturnInfo = FString::Printf(TEXT("%s"), *PlayerName);
@@ -147,7 +147,7 @@ void AUTCTFBaseGame::AddReturnEventToReplay(AUTPlayerState* Returner, AUTTeamInf
 		FString MetaTag = Returner->StatsID;
 		if (MetaTag.IsEmpty())
 		{
-			MetaTag = Returner->PlayerName;
+            MetaTag = Returner->GetPlayerName();
 		}
 		DemoNetDriver->AddEvent(TEXT("FlagReturns"), MetaTag, Data);
 	}
@@ -160,10 +160,10 @@ void AUTCTFBaseGame::AddDeniedEventToReplay(APlayerState* KillerPlayerState, AUT
 	{
 		TArray<uint8> Data;
 
-		FString PlayerName = KillerPlayerState ? *KillerPlayerState->PlayerName : TEXT("None");
+        FString PlayerName = KillerPlayerState ? *KillerPlayerState->GetPlayerName() : TEXT("None");
 		PlayerName.ReplaceInline(TEXT(" "), TEXT("%20"));
 
-		FString HolderName = Holder ? *Holder->PlayerName : TEXT("None");
+        FString HolderName = Holder ? *Holder->GetPlayerName() : TEXT("None");
 		HolderName.ReplaceInline(TEXT(" "), TEXT("%20"));
 
 		FString DenyInfo = FString::Printf(TEXT("%s %s"), *PlayerName, *HolderName);
@@ -570,7 +570,7 @@ void AUTCTFBaseGame::PlacePlayersAroundFlagBase(int32 TeamNum, int32 FlagTeamNum
 		{
 			while (PlacementCounter < MaxPlayers)
 			{
-				AUTPlayerState* PS = Cast<AUTPlayerState>(UTChar->PlayerState);
+                AUTPlayerState* PS = Cast<AUTPlayerState>(UTChar->GetPlayerState());
 				if (PS && PS->CarriedObject && PS->CarriedObject->HolderTrail)
 				{
 					PS->CarriedObject->HolderTrail->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
@@ -738,7 +738,7 @@ int32 AUTCTFBaseGame::GetComSwitch(FName CommandTag, AActor* ContextActor, AUTPl
 
 	AUTPlayerState* UTPlayerState = Cast<AUTPlayerState>(InInstigator->PlayerState);
 	AUTCharacter* ContextCharacter = ContextActor != nullptr ? Cast<AUTCharacter>(ContextActor) : nullptr;
-	AUTPlayerState* ContextPlayerState = ContextCharacter != nullptr ? Cast<AUTPlayerState>(ContextCharacter->PlayerState) : nullptr;
+    AUTPlayerState* ContextPlayerState = ContextCharacter != nullptr ? Cast<AUTPlayerState>(ContextCharacter->GetPlayerState()) : nullptr;
 
 	if (ContextCharacter)
 	{

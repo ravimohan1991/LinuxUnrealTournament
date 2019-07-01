@@ -6,7 +6,7 @@
 /**
 *	Holds the bounds and simulated key of a hud element when clicked
 */
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FClickElement
 {
 	GENERATED_USTRUCT_BODY()

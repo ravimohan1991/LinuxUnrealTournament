@@ -166,7 +166,7 @@ bool FUTPathLink::GetJumpMovePoints(const FVector& StartLoc, APawn* Asker, const
 				}
 			}
 			// check for intersection against the wall
-			FBox TestBox(0);
+            FBox TestBox(EForceInit::ForceInitToZero);
 			TestBox += Walls[BestIndex].A;
 			TestBox += Walls[BestIndex].B;
 			TestBox.Min.Z = FMath::Min3<float>(TestBox.Min.Z, DirectLoc.Z, PolyCenter.Z);

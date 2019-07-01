@@ -2,9 +2,9 @@
 #include "UnrealTournament.h"
 #include "UTNavGraphRenderingComponent.h"
 #include "UTRecastNavMesh.h"
-#include "Runtime/Engine/Public/AI/Navigation/PImplRecastNavMesh.h"
+#include "Runtime/NavigationSystem/Public/NavMesh/PImplRecastNavMesh.h"
 #include "Runtime/Navmesh/Public/Detour/DetourNavMesh.h"
-#include "Runtime/Engine/Public/AI/Navigation/RecastHelpers.h"
+#include "Runtime/NavigationSystem/Public/NavMesh/RecastHelpers.h"
 
 UUTNavGraphRenderingComponent::UUTNavGraphRenderingComponent(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -25,7 +25,7 @@ FPrimitiveSceneProxy* UUTNavGraphRenderingComponent::CreateSceneProxy()
 
 FBoxSphereBounds UUTNavGraphRenderingComponent::CalcBounds(const FTransform & LocalToWorld) const
 {
-	FBox BoundingBox(0);
+    FBox BoundingBox(EForceInit::ForceInitToZero);// BoundingBox(0);
 	AUTRecastNavMesh* NavMesh = Cast<AUTRecastNavMesh>(GetOwner());
 	if (NavMesh != NULL)
 	{

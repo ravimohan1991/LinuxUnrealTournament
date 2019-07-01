@@ -4,7 +4,7 @@
 #include "UTWeapon.h"
 #include "UTWeap_RocketLauncher.generated.h"
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FRocketFireMode
 {
 	GENERATED_USTRUCT_BODY()
@@ -18,7 +18,7 @@ struct FRocketFireMode
 
 	/** First Person Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Rocket)
-		USoundBase* FPFireSound;
+    USoundBase* FPFireSound;
 
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Rocket)

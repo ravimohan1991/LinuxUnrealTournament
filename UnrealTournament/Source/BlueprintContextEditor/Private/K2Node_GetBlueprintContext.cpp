@@ -41,7 +41,8 @@ void UK2Node_GetBlueprintContext::AllocateDefaultPins()
 	if ( GetBlueprint()->ParentClass->HasMetaDataHierarchical( FBlueprintMetadata::MD_ShowWorldContextPin ) )
 	{
 		CreatePin( EGPD_Input, K2Schema->PC_Object, TEXT( "" ), UObject::StaticClass(), false, false, TEXT( "WorldContext" ) );
-	}
+        //CreatePin(EEdGraphPinDirection Dir, const FName PinCategory, UObject* PinSubCategoryObject, const FName PinName, const FCreatePinParams& PinParams = FCreatePinParams())
+    }
 
 	// Add blueprint pin
 	if ( !CustomClass )

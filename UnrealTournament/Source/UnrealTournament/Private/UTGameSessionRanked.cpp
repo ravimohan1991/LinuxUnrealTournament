@@ -8,6 +8,7 @@
 #include "UTEmptyServerGameMode.h"
 #include "UTGameInstance.h"
 #include "UTPlaylistManager.h"
+#include "OnlineSubsystem.h"
 #include "UTGameEngine.h"
 
 static const float IdleServerTimeout = 30.0f * 60.0f;
@@ -20,8 +21,8 @@ AUTGameSessionRanked::AUTGameSessionRanked()
 
 	if (!HasAnyFlags(RF_ClassDefaultObject))
 	{
-		OnConnectionStatusChangedDelegate = FOnConnectionStatusChangedDelegate::CreateUObject(this, &AUTGameSessionRanked::OnConnectionStatusChanged);
-		OnCreateSessionCompleteDelegate = FOnCreateSessionCompleteDelegate::CreateUObject(this, &AUTGameSessionRanked::OnCreateSessionComplete);
+        OnConnectionStatusChangedDelegate = FOnConnectionStatusChangedDelegate::CreateUObject(this, &AUTGameSessionRanked::OnConnectionStatusChanged);
+        OnCreateSessionCompleteDelegate = FOnCreateSessionCompleteDelegate::CreateUObject(this, &AUTGameSessionRanked::OnCreateSessionComplete);
 		OnDestroySessionCompleteDelegate = FOnDestroySessionCompleteDelegate::CreateUObject(this, &AUTGameSessionRanked::OnDestroySessionComplete);
 #if WITH_PROFILE
 		OnVerifyAuthCompleteDelegate = FOnVerifyAuthCompleteDelegate::CreateUObject(this, &AUTGameSessionRanked::OnVerifyAuthComplete);
@@ -65,7 +66,7 @@ void AUTGameSessionRanked::StartServerInternal()
 	const auto OnlineSub = IOnlineSubsystem::Get();
 	if (OnlineSub && GetWorld()->GetNetMode() == NM_DedicatedServer)
 	{
-		OnConnectionStatusChangedDelegateHandle = OnlineSub->AddOnConnectionStatusChangedDelegate_Handle(OnConnectionStatusChangedDelegate);
+        //*DelegateHandle = OnlineSub->AddOnConnectionStatusChangedDelegate_Handle(OnConnectionStatusChangedDelegate);
 
 #if WITH_PROFILE
 		IOnlineIdentityPtr OnlineIdentity = OnlineSub->GetIdentityInterface();
@@ -243,15 +244,15 @@ void AUTGameSessionRanked::OnCreateSessionComplete(FName InSessionName, bool bWa
 	}
 }
 
-void AUTGameSessionRanked::OnConnectionStatusChanged(EOnlineServerConnectionStatus::Type LastConnectionStatus, EOnlineServerConnectionStatus::Type ConnectionStatus)
+void AUTGameSessionRanked::OnConnectionStatusChanged(const FString& test, EOnlineServerConnectionStatus::Type LastConnectionState, EOnlineServerConnectionStatus::Type ConnectionState)
 {
-	if (!FPlatformMisc::IsDebuggerPresent())
+    if (!FPlatformMisc::IsDebuggerPresent())
 	{
-		switch (ConnectionStatus)
+        switch (ConnectionState)
 		{
 		case EOnlineServerConnectionStatus::InvalidUser:
 		case EOnlineServerConnectionStatus::NotAuthorized:
-			UE_LOG(LogOnlineGame, Warning, TEXT("Bad user credentials: %s"), EOnlineServerConnectionStatus::ToString(ConnectionStatus));
+            UE_LOG(LogOnlineGame, Warning, TEXT("Bad user credentials: %s"), EOnlineServerConnectionStatus::ToString(ConnectionState));
 			ShutdownDedicatedServer();
 			break;
 		case EOnlineServerConnectionStatus::ConnectionDropped:
@@ -259,15 +260,15 @@ void AUTGameSessionRanked::OnConnectionStatusChanged(EOnlineServerConnectionStat
 		case EOnlineServerConnectionStatus::ServiceUnavailable:
 		case EOnlineServerConnectionStatus::UpdateRequired:
 		case EOnlineServerConnectionStatus::ServersTooBusy:
-			UE_LOG(LogOnlineGame, Warning, TEXT("Connection has been interrupted: %s"), EOnlineServerConnectionStatus::ToString(ConnectionStatus));
+            UE_LOG(LogOnlineGame, Warning, TEXT("Connection has been interrupted: %s"), EOnlineServerConnectionStatus::ToString(ConnectionState));
 			ShutdownDedicatedServer();
 			break;
 		case EOnlineServerConnectionStatus::DuplicateLoginDetected:
-			UE_LOG(LogOnlineGame, Warning, TEXT("Duplicate login detected: %s"), EOnlineServerConnectionStatus::ToString(ConnectionStatus));
+            UE_LOG(LogOnlineGame, Warning, TEXT("Duplicate login detected: %s"), EOnlineServerConnectionStatus::ToString(ConnectionState));
 			ShutdownDedicatedServer();
 			break;
 		case EOnlineServerConnectionStatus::InvalidSession:
-			UE_LOG(LogOnlineGame, Warning, TEXT("Invalid session id: %s"), EOnlineServerConnectionStatus::ToString(ConnectionStatus));
+            UE_LOG(LogOnlineGame, Warning, TEXT("Invalid session id: %s"), EOnlineServerConnectionStatus::ToString(ConnectionState));
 			Restart();
 			break;
 		}

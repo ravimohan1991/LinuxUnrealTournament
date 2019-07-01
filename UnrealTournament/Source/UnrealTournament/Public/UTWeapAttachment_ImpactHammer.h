@@ -2,6 +2,8 @@
 #pragma once
 
 #include "UTWeaponAttachment.h"
+#include "Runtime/Engine/Classes/GameFramework/Actor.h"
+#include "UTImpactEffect.h"
 
 #include "UTWeapAttachment_ImpactHammer.generated.h"
 
@@ -48,7 +50,7 @@ class UNREALTOURNAMENT_API AUTWeapAttachment_ImpactHammer : public AUTWeaponAtta
 				{
 					UParticleSystemComponent* PSC = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEffect[UTOwner->FireMode], SpawnLocation, (UTOwner->FlashLocation.Position - SpawnLocation).Rotation(), true);
 					PSC->SetVectorParameter(NAME_HitLocation, UTOwner->FlashLocation.Position);
-					PSC->SetVectorParameter(NAME_LocalHitLocation, PSC->ComponentToWorld.InverseTransformPosition(UTOwner->FlashLocation.Position));
+                    PSC->SetVectorParameter(NAME_LocalHitLocation, PSC->GetComponentToWorld().InverseTransformPosition(UTOwner->FlashLocation.Position));
 				}
 
 				if ((UTOwner->FlashLocation.Position - LastImpactEffectLocation).Size() >= ImpactEffectSkipDistance || GetWorld()->TimeSeconds - LastImpactEffectTime >= MaxImpactEffectSkipTime)
@@ -56,7 +58,7 @@ class UNREALTOURNAMENT_API AUTWeapAttachment_ImpactHammer : public AUTWeaponAtta
 					if (ImpactEffect.IsValidIndex(UTOwner->FireMode) && ImpactEffect[UTOwner->FireMode] != NULL)
 					{
 						FHitResult ImpactHit = AUTWeapon::GetImpactEffectHit(UTOwner, SpawnLocation, UTOwner->FlashLocation.Position);
-						ImpactEffect[UTOwner->FireMode].GetDefaultObject()->SpawnEffect(GetWorld(), FTransform(ImpactHit.Normal.Rotation(), ImpactHit.Location), ImpactHit.Component.Get(), NULL, UTOwner->Controller);
+                        ImpactEffect[UTOwner->FireMode].GetDefaultObject()->SpawnEffect(GetWorld(), FTransform(ImpactHit.Normal.Rotation(), ImpactHit.Location), ImpactHit.Component.Get(), NULL, UTOwner->Controller);
 					}
 					LastImpactEffectLocation = UTOwner->FlashLocation.Position;
 					LastImpactEffectTime = GetWorld()->TimeSeconds;

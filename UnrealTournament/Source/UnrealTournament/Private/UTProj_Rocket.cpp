@@ -192,7 +192,7 @@ void AUTProj_Rocket::DamageImpactedActor_Implementation(AActor* OtherActor, UPri
 			PC->UTPlayerState->ModifyStatsValue(NAME_AirRox, 1);
 			PC->UTPlayerState->AddCoolFactorMinorEvent();
 			AirRoxCount = PC->UTPlayerState->GetStatsValue(NAME_AirRox);
-			PC->SendPersonalMessage(AirRocketRewardClass, AirRoxCount, PC->UTPlayerState, HitCharacter->PlayerState);
+            PC->SendPersonalMessage(AirRocketRewardClass, AirRoxCount, PC->UTPlayerState, HitCharacter->GetPlayerState());
 		}
 	}
 	bPendingSpecialReward = false;

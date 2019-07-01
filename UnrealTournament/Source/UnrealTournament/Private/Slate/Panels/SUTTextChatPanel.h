@@ -10,6 +10,8 @@
 #include "../Widgets/SUTComboButton.h"
 #include "../Widgets/SUTMenuAnchor.h"
 #include "UTGameEngine.h"
+#include "UTLocalPlayer.h"
+#include "UnrealTournament.h"
 
 #define MAX_CHAT_LINES = 1000;
 
@@ -119,7 +121,7 @@ public:
 					if ( ChatMessage->Message.FindChar(']',Pos) )
 					{
 						SenderName = FText::FromString(ChatMessage->Message.Mid(1, Pos-1));
-						ChatMessage->Message = TEXT("(from Game) ") + ChatMessage->Message.Right(ChatMessage->Message.Len() - Pos - 1).Trim();
+                        ChatMessage->Message = TEXT("(from Game) ") + ChatMessage->Message.Right(ChatMessage->Message.Len() - Pos - 1).TrimStart(); //Trim();
 					}
 				}
 

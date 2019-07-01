@@ -3,6 +3,8 @@
 #pragma once
 
 #include "UTCTFFlagBase.h"
+#include "UTGameState.h"
+
 #include "UTCTFGameState.generated.h"
 
 

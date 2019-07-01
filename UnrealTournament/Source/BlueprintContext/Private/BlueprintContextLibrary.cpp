@@ -55,5 +55,5 @@
 
 /*static*/ UWorld* UBlueprintContextLibrary::GetWorldFrom( UObject* ContextObject )
 {
-	return GEngine->GetWorldFromContextObject( ContextObject );
+    return GEngine->GetWorldFromContextObjectChecked( ContextObject );
 }

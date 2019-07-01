@@ -58,7 +58,7 @@ public:
 		switch (Switch)
 		{
 			case 0:
-				return FText::Format(WinByHealthMsg, FText::FromString(RelatedPlayerState_1 != NULL ? RelatedPlayerState_1->PlayerName : TEXT("Player")));
+                return FText::Format(WinByHealthMsg, FText::FromString(RelatedPlayerState_1 != NULL ? RelatedPlayerState_1->GetPlayerName() : TEXT("Player")));
 			case 1:
 				return TieByHealthMsg;
 			default:

@@ -1,8 +1,8 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 #pragma once
-
 #include "UTCTFFlag.h"
+#include "UTGameObjective.h"
 #include "UTCTFFlagBase.generated.h"
 
 UCLASS(HideCategories = GameObject)

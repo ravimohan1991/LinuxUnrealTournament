@@ -1,4 +1,3 @@
-
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 #include "UnrealTournament.h"
@@ -17,7 +16,6 @@
 #include "Engine/Console.h"
 
 #if !UE_SERVER
-
 SUTTextChatPanel::~SUTTextChatPanel()
 {
 	PlayerOwner->RemoveChatArchiveChangedDelegate(RouteChatHande);
@@ -400,7 +398,4 @@ void SUTTextChatPanel::RouteBufferedChat()
 	}
 
 }
-
-
-
 #endif

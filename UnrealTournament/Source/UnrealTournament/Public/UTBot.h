@@ -61,9 +61,9 @@ struct UNREALTOURNAMENT_API FBestInventoryEval : public FUTNodeEvaluator
 	 */
 	AActor* PrevGoal;
 
-	virtual float Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, const UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance) override;
+    virtual float Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance) override;
 	virtual bool GetRouteGoal(AActor*& OutGoal, FVector& OutGoalLoc) const override;
-	virtual uint32 GetTransientCost(const FUTPathLink& Link, APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, NavNodeRef StartPoly, int32 TotalDistance) override
+    virtual uint32 GetTransientCost(FUTPathLink& Link, APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, NavNodeRef StartPoly, int32 TotalDistance) override
 	{
 		return (MaxDist <= 0 || TotalDistance < MaxDist) ? 0 : BLOCKED_PATH_COST;
 	}
@@ -79,7 +79,7 @@ struct UNREALTOURNAMENT_API FBestInventoryEval : public FUTNodeEvaluator
 };
 struct UNREALTOURNAMENT_API FRandomDestEval : public FUTNodeEvaluator
 {
-	virtual float Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, const UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance) override
+    virtual float Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance) override
 	{
 		return (TotalDistance > 0) ? FMath::FRand() * 1.5f : 0.1f;
 	}
@@ -95,7 +95,7 @@ struct UNREALTOURNAMENT_API FHideLocEval : public FUTNodeEvaluator
 	/** whether to use saved learning data to evaluate previously-used hide points */
 	bool bUseLearningData;
 
-	virtual float Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, const UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance) override;
+    virtual float Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance) override;
 
 	FHideLocEval()
 	{}
@@ -225,9 +225,11 @@ struct FBotEnemyRating
 	float Rating;
 
 	FBotEnemyRating()
-	{}
+    {
+        Rating = 0;
+    }
 	FBotEnemyRating(APawn* InEnemy, float InRating)
-		: PlayerName((InEnemy != NULL && InEnemy->PlayerState != NULL) ? InEnemy->PlayerState->PlayerName : GetNameSafe(InEnemy)), Rating(InRating)
+        : PlayerName((InEnemy != NULL && InEnemy->GetPlayerState() != NULL) ? InEnemy->GetPlayerState()->GetPlayerName() : GetNameSafe(InEnemy)), Rating(InRating)
 	{}
 };
 
@@ -708,7 +710,7 @@ public:
 	virtual void ResetPerceptionProperties();
 
 	virtual void SetPawn(APawn* InPawn) override;
-	virtual void Possess(APawn* InPawn) override;
+    virtual void OnPossess(APawn* InPawn) override;
 	virtual void PawnPendingDestroy(APawn* InPawn) override;
 	virtual void Destroyed() override;
 	virtual void UpdateControlRotation(float DeltaTime, bool bUpdatePawn = true) override;

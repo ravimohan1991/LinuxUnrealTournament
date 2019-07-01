@@ -402,7 +402,7 @@ FText AUTLobbyMatchInfo::GetDebugInfo()
 	FText OwnerText = NSLOCTEXT("UTLobbyMatchInfo","NoOwner","NONE");
 	if (OwnerId.IsValid())
 	{
-		if (Players.Num() > 0 && Players[0].IsValid()) OwnerText = FText::FromString(Players[0]->PlayerName);
+        if (Players.Num() > 0 && Players[0].IsValid()) OwnerText = FText::FromString(Players[0]->GetPlayerName());
 		else OwnerText = FText::FromString(OwnerId.ToString());
 	}
 
@@ -669,11 +669,11 @@ void AUTLobbyMatchInfo::FillPlayerColumnsForDisplay(TArray<FMatchPlayerListStruc
 		{
 			if (Players[i].IsValid())
 			{
-				if (Players[i]->GetTeamNum() == 0) FirstColumn.Add( FMatchPlayerListStruct(Players[i]->PlayerName, Players[i]->UniqueId.ToString(), TEXT("0"),0) );
-				else if (Players[i]->GetTeamNum() == 1) SecondColumn.Add( FMatchPlayerListStruct(Players[i]->PlayerName, Players[i]->UniqueId.ToString() ,TEXT("0"),1) );
+                if (Players[i]->GetTeamNum() == 0) FirstColumn.Add( FMatchPlayerListStruct(Players[i]->GetPlayerName(), Players[i]->UniqueId.ToString(), TEXT("0"),0) );
+                else if (Players[i]->GetTeamNum() == 1) SecondColumn.Add( FMatchPlayerListStruct(Players[i]->GetPlayerName(), Players[i]->UniqueId.ToString() ,TEXT("0"),1) );
 				else 
 				{
-					Spectators = Spectators.IsEmpty() ? Players[i]->PlayerName : FString::Printf(TEXT(", %s"), *Players[i]->PlayerName);
+                    Spectators = Spectators.IsEmpty() ? Players[i]->GetPlayerName() : FString::Printf(TEXT(", %s"), *Players[i]->GetPlayerName());
 				}
 			}
 
@@ -698,17 +698,17 @@ void AUTLobbyMatchInfo::FillPlayerColumnsForDisplay(TArray<FMatchPlayerListStruc
 			{
 				if (Players[i]->bIsSpectator) 
 				{
-					Spectators = Spectators.IsEmpty() ? Players[i]->PlayerName : FString::Printf(TEXT("%s, %s"),*Spectators, *Players[i]->PlayerName);
+                    Spectators = Spectators.IsEmpty() ? Players[i]->GetPlayerName() : FString::Printf(TEXT("%s, %s"),*Spectators, *Players[i]->GetPlayerName());
 				}
 				else 
 				{
 					if (cnt % 2 == 0) 
 					{
-						FirstColumn.Add( FMatchPlayerListStruct(Players[i]->PlayerName, Players[i]->UniqueId.ToString(), TEXT("0"),0));
+                        FirstColumn.Add( FMatchPlayerListStruct(Players[i]->GetPlayerName(), Players[i]->UniqueId.ToString(), TEXT("0"),0));
 					}
 					else
 					{
-						SecondColumn.Add( FMatchPlayerListStruct(Players[i]->PlayerName, Players[i]->UniqueId.ToString(), TEXT("0"),0));
+                        SecondColumn.Add( FMatchPlayerListStruct(Players[i]->GetPlayerName(), Players[i]->UniqueId.ToString(), TEXT("0"),0));
 					}
 					cnt++;
 				}
@@ -827,7 +827,7 @@ uint32 AUTLobbyMatchInfo::GetMatchFlags()
 bool AUTLobbyMatchInfo::ServerInvitePlayer_Validate(AUTLobbyPlayerState* Who, bool bInvite) { return true; }
 void AUTLobbyMatchInfo::ServerInvitePlayer_Implementation(AUTLobbyPlayerState* Who, bool bInvite)
 {
-	UE_LOG(UT,Verbose,TEXT("ServerInvitePlayer: %s -  %s [%s] to the match"), (bInvite ? TEXT("Inviting") : TEXT("Uninviting")), (Who ? *Who->PlayerName : TEXT("[nullptr]")), (Who ? *Who->UniqueId.ToString() : TEXT("[nullptr]")));
+    UE_LOG(UT,Verbose,TEXT("ServerInvitePlayer: %s -  %s [%s] to the match"), (bInvite ? TEXT("Inviting") : TEXT("Uninviting")), (Who ? *Who->GetPlayerName() : TEXT("[nullptr]")), (Who ? *Who->UniqueId.ToString() : TEXT("[nullptr]")));
 
 	if (!Who)
 	{
@@ -859,7 +859,7 @@ void AUTLobbyMatchInfo::ServerInvitePlayer_Implementation(AUTLobbyPlayerState* W
 FString AUTLobbyMatchInfo::GetOwnerName()
 {
 	TWeakObjectPtr<AUTPlayerState> PS = GetOwnerPlayerState();
-	return PS.IsValid() ? PS->PlayerName : TEXT("N/A");
+    return PS.IsValid() ? PS->GetPlayerName() : TEXT("N/A");
 }
 
 void AUTLobbyMatchInfo::MakeJsonReport(TSharedPtr<FJsonObject> JsonObject)

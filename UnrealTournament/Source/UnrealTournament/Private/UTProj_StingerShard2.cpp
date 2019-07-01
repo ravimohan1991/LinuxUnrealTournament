@@ -53,7 +53,7 @@ void AUTProj_StingerShard2::OnPawnSphereOverlapBegin(UPrimitiveComponent* Overla
 {
 	APawn* P = Cast<APawn>(OtherActor);
 	AUTGameState* GS = GetWorld()->GetGameState<AUTGameState>();
-	if (P != nullptr && !P->bTearOff && (P != Instigator || bCanHitInstigator) && (GS == nullptr || !GS->OnSameTeam(P, Instigator)))
+    if (P != nullptr && !P->GetTearOff() && (P != Instigator || bCanHitInstigator) && (GS == nullptr || !GS->OnSameTeam(P, Instigator)))
 	{
 		PotentialTargets.Add(P);
 	}
@@ -73,7 +73,7 @@ void AUTProj_StingerShard2::Tick(float DeltaTime)
 		const FVector MyLoc = GetActorLocation();
 		for (APawn* P : PotentialTargets)
 		{
-			if (P != nullptr && !P->bTearOff && ((P->GetActorLocation() - MyLoc).GetSafeNormal() | MovementDir) <= AirExplodeAngle && !GetWorld()->LineTraceTestByChannel(MyLoc, P->GetActorLocation(), COLLISION_TRACE_WEAPON, FCollisionQueryParams(NAME_None, true, P)))
+            if (P != nullptr && !P->GetTearOff() && ((P->GetActorLocation() - MyLoc).GetSafeNormal() | MovementDir) <= AirExplodeAngle && !GetWorld()->LineTraceTestByChannel(MyLoc, P->GetActorLocation(), COLLISION_TRACE_WEAPON, FCollisionQueryParams(NAME_None, true, P)))
 			{
 				Explode(GetActorLocation(), -MovementDir);
 				break;

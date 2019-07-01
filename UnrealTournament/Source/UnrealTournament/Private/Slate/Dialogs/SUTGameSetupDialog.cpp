@@ -693,7 +693,7 @@ void SUTGameSetupDialog::OnStoreDialogResult(TSharedPtr<SCompoundWidget> Widget,
 		FString Command = TEXT("");
 		FString Error = TEXT("");
 		FPlatformProcess::LaunchURL(*URL, *Command, &Error);
-		FPlatformMisc::RequestMinimize();
+        //FPlatformMisc::RequestMinimize();
 
 		PlayerOwner->ShowMessage(
 			NSLOCTEXT("SUTGameSetupDialog", "ReturnFromStore", "Returned from store..."), 

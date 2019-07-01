@@ -20,7 +20,7 @@ AUTRepulsorBubble::AUTRepulsorBubble(const class FObjectInitializer& ObjectIniti
 		CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &AUTRepulsorBubble::OnOverlapBegin);
 		CollisionComp->bTraceComplexOnMove = true;
 		CollisionComp->bReceivesDecals = false;
-		CollisionComp->bGenerateOverlapEvents = true;
+        CollisionComp->SetGenerateOverlapEvents(true);// = true;
 		RootComponent = CollisionComp;
 	}
 

@@ -138,11 +138,11 @@ void AUTMutator_WeaponArena::Init_Implementation(const FString& Options)
 		for (const FAssetData& Asset : AssetList)
 		{
 			static FName NAME_Ammo(TEXT("Ammo"));
-			const FString* AmmoData = Asset.TagsAndValues.Find(NAME_Ammo);
+            const FString* AmmoData = &Asset.TagsAndValues.FindTag(NAME_Ammo).GetValue();
 			if (AmmoData != NULL && AmmoData->Contains(ArenaWeaponType->GetPathName()))
 			{
 				static FName NAME_GeneratedClass(TEXT("GeneratedClass"));
-				const FString* ClassPath = Asset.TagsAndValues.Find(NAME_GeneratedClass);
+                const FString* ClassPath = &Asset.TagsAndValues.FindTag(NAME_GeneratedClass).GetValue();
 				if (ClassPath != NULL)
 				{
 					ArenaAmmoType = LoadClass<AUTPickupAmmo>(NULL, **ClassPath, NULL, LOAD_None, NULL);

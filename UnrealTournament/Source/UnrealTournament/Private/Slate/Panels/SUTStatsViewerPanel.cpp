@@ -5,6 +5,7 @@
 #include "SUTStatsViewerPanel.h"
 #include "UTMcpUtils.h"
 #include "SUTWebBrowserPanel.h"
+#include "UTGameState.h"
 
 #if !UE_SERVER
 
@@ -189,7 +190,7 @@ void SUTStatsViewerPanel::SetupFriendsList()
 			AUTPlayerState* PS = Cast<AUTPlayerState>(PlayerState);
 			if (PS && !PS->StatsID.IsEmpty() && !FriendStatIDList.Contains(PS->StatsID))
 			{
-				FriendList.Add(MakeShareable(new FString(PS->PlayerName)));
+                FriendList.Add(MakeShareable(new FString(PS->GetPlayerName())));
 				FriendStatIDList.Add(PS->StatsID);
 			}
 		}
@@ -319,7 +320,7 @@ void SUTStatsViewerPanel::DownloadStats()
 				}
 				JSONString += TEXT("];");
 
-				FString SavePath = FPaths::ConvertRelativePathToFull(FPaths::GameSavedDir() + TEXT("Stats/mmrstats.json"));
+                FString SavePath = FPaths::ConvertRelativePathToFull(FPaths::ProjectSavedDir() + TEXT("Stats/mmrstats.json"));
 				FArchive* FileOut = IFileManager::Get().CreateFileWriter(*SavePath);
 				if (FileOut)
 				{
@@ -346,7 +347,7 @@ void SUTStatsViewerPanel::ReadBackendStatsComplete(FHttpRequestPtr HttpRequest, 
 			// Have to hack around chrome access issues, can't open json from local disk, take JSON and turn into javascript variable
 			FString JSONString = FString(TEXT("var BackendStats = ")) + HttpResponse->GetContentAsString() + TEXT("; var QueryWindow=\"") + QueryWindow + TEXT("\";");
 
-			FString SavePath = FPaths::ConvertRelativePathToFull(FPaths::GameSavedDir() + TEXT("Stats/backendstats.json"));
+            FString SavePath = FPaths::ConvertRelativePathToFull(FPaths::ProjectSavedDir() + TEXT("Stats/backendstats.json"));
 			FArchive* FileOut = IFileManager::Get().CreateFileWriter(*SavePath);
 			if (FileOut)
 			{
@@ -405,8 +406,8 @@ void SUTStatsViewerPanel::ReadCloudStatsComplete(FHttpRequestPtr HttpRequest, FH
 	bool bShowingStats = false;
 
 	// Get the html out of the Content dir
-	FString HTMLPath = FPaths::ConvertRelativePathToFull(FPaths::GameSavedDir() + TEXT("Stats/stats.html"));
-	FPlatformFileManager::Get().GetPlatformFile().CopyDirectoryTree(*(FPaths::GameSavedDir() + TEXT("Stats/")), *(FPaths::GameContentDir() + TEXT("RestrictedAssets/UI/Stats/")), true);
+    FString HTMLPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectSavedDir() + TEXT("Stats/stats.html"));
+    FPlatformFileManager::Get().GetPlatformFile().CopyDirectoryTree(*(FPaths::ProjectSavedDir() + TEXT("Stats/")), *(FPaths::ProjectContentDir() + TEXT("RestrictedAssets/UI/Stats/")), true);
 
 	if (bSucceeded)
 	{
@@ -414,7 +415,7 @@ void SUTStatsViewerPanel::ReadCloudStatsComplete(FHttpRequestPtr HttpRequest, FH
 		// Have to hack around chrome access issues, can't open json from local disk, take JSON and turn into javascript variable
 		FString JSONString = FString(TEXT("var Stats = ")) + ANSI_TO_TCHAR((char*)FileContents.GetData()) + TEXT(";");
 
-		FString SavePath = FPaths::ConvertRelativePathToFull(FPaths::GameSavedDir() + TEXT("Stats/stats.json"));
+        FString SavePath = FPaths::ConvertRelativePathToFull(FPaths::ProjectSavedDir() + TEXT("Stats/stats.json"));
 		FArchive* FileOut = IFileManager::Get().CreateFileWriter(*SavePath);
 		if (FileOut)
 		{
@@ -433,7 +434,7 @@ void SUTStatsViewerPanel::ReadCloudStatsComplete(FHttpRequestPtr HttpRequest, FH
 		// Have to hack around chrome access issues, can't open json from local disk, take JSON and turn into javascript variable
 		FString JSONString = FString(TEXT("var Stats = {\"PlayerName\":\"") + SelectedFriend->GetText().ToString() + TEXT("\"};"));
 
-		FString SavePath = FPaths::ConvertRelativePathToFull(FPaths::GameSavedDir() + TEXT("Stats/stats.json"));
+        FString SavePath = FPaths::ConvertRelativePathToFull(FPaths::ProjectSavedDir() + TEXT("Stats/stats.json"));
 		FArchive* FileOut = IFileManager::Get().CreateFileWriter(*SavePath);
 		if (FileOut)
 		{
@@ -454,8 +455,8 @@ void SUTStatsViewerPanel::ReadCloudStatsComplete(FHttpRequestPtr HttpRequest, FH
 
 void SUTStatsViewerPanel::ShowErrorPage()
 {
-	FString HTMLPath = FPaths::ConvertRelativePathToFull(FPaths::GameSavedDir() + TEXT("Stats/nostats.html"));
-	FPlatformFileManager::Get().GetPlatformFile().CopyDirectoryTree(*(FPaths::GameSavedDir() + TEXT("Stats/")), *(FPaths::GameContentDir() + TEXT("RestrictedAssets/UI/Stats/")), true);
+    FString HTMLPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectSavedDir() + TEXT("Stats/nostats.html"));
+    FPlatformFileManager::Get().GetPlatformFile().CopyDirectoryTree(*(FPaths::ProjectSavedDir() + TEXT("Stats/")), *(FPaths::ProjectContentDir() + TEXT("RestrictedAssets/UI/Stats/")), true);
 
 	StatsWebBrowser->Browse(TEXT("file://") + HTMLPath);
 }

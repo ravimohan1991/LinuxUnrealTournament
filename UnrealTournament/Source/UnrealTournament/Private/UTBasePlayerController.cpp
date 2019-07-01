@@ -273,7 +273,7 @@ void AUTBasePlayerController::ServerSay_Implementation(const FString& inMessage,
 		// Look to see if this message is a direct message to a given player.
 
 		FString TrimmedMessage = Message;
-		TrimmedMessage = TrimmedMessage.Trim();
+        TrimmedMessage = TrimmedMessage.TrimStart();//TrimmedMessage = TrimmedMessage.Trim();
 
 		if (TrimmedMessage.Left(1) == TEXT("@"))
 		{
@@ -327,11 +327,11 @@ void AUTBasePlayerController::DirectSay(const FString& Message)
 				AUTPlayerState* TargetPlayerState = Cast<AUTPlayerState>(UTPC->PlayerState);
 				if (TargetPlayerState != nullptr)
 				{
-					TargetPlayerName = TargetPlayerState->PlayerName;
+                    TargetPlayerName = TargetPlayerState->GetPlayerName();
 
 					if (Message.Left(TargetPlayerName.Len()).Equals(TargetPlayerName, ESearchCase::IgnoreCase))
 					{
-						FinalMessage = FinalMessage.Right(FinalMessage.Len() - TargetPlayerName.Len()).Trim();
+                        FinalMessage = FinalMessage.Right(FinalMessage.Len() - TargetPlayerName.Len()).TrimStart();
 						bSent = true;
 		
 						TSharedPtr<const FUniqueNetId> Id = UTPC->PlayerState->UniqueId.GetUniqueNetId();
@@ -1230,7 +1230,7 @@ void AUTBasePlayerController::ServerReceiveStatsID_Implementation(const FString&
 	{
 		if (NewStatsID != UTPlayerState->StatsID)
 		{
-			UE_LOG(LogOnlineParty, Display, TEXT("%s sent stats id %s"), *UTPlayerState->PlayerName, *NewStatsID);
+            UE_LOG(LogOnlineParty, Display, TEXT("%s sent stats id %s"), *UTPlayerState->GetPlayerName(), *NewStatsID);
 
 			UTPlayerState->StatsID = NewStatsID;
 			UTPlayerState->ReadStatsFromCloud();

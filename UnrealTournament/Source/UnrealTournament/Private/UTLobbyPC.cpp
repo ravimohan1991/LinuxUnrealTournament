@@ -194,7 +194,7 @@ void AUTLobbyPC::Say(FString Message)
 			{
 				if (UTLobbyPlayerState->CurrentMatch->Players[i].IsValid())
 				{
-					UE_LOG(UT,Log,TEXT("--- Player %i = %s"), i, *UTLobbyPlayerState->CurrentMatch->Players[i]->PlayerName);
+                    UE_LOG(UT,Log,TEXT("--- Player %i = %s"), i, *UTLobbyPlayerState->CurrentMatch->Players[i]->GetPlayerName());
 				}
 			}
 		}
@@ -315,7 +315,7 @@ bool AUTLobbyPC::ForwardDirectSay(AUTPlayerState* SenderPlayerState, FString& Me
 	// look to see if there is a remote player..
 
 	AUTLobbyGameState* LobbyGameState = GetWorld()->GetGameState<AUTLobbyGameState>();
-	if (LobbyGameState && LobbyGameState->SendSayToInstance(PlayerState->PlayerName, Message))
+    if (LobbyGameState && LobbyGameState->SendSayToInstance(PlayerState->GetPlayerName(), Message))
 	{
 		return true;
 	}

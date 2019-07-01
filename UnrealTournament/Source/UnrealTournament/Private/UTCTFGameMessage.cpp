@@ -52,7 +52,7 @@ void UUTCTFGameMessage::GetEmphasisText(FText& PrefixText, FText& EmphasisText, 
 	{
 		PrefixText = (Switch == 5) ? KilledMessagePrefix : CaptureMessagePrefix;
 		PostfixText = (Switch == 5) ? KilledMessagePostfix : CaptureMessagePostfix;
-		EmphasisText = RelatedPlayerState_1 ? FText::FromString(RelatedPlayerState_1->PlayerName) : FText::GetEmpty();
+        EmphasisText = RelatedPlayerState_1 ? FText::FromString(RelatedPlayerState_1->GetPlayerName()) : FText::GetEmpty();
 		AUTPlayerState* PS = Cast<AUTPlayerState>(RelatedPlayerState_1);
 		EmphasisColor = (PS && PS->Team) ? PS->Team->TeamColor : REDHUDCOLOR;
 

@@ -1,4 +1,4 @@
-// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
+// Copyright 1998-2016 Epic Games, Inc. All Rights Reversed.
 
 #include "UnrealTournament.h"
 #include "UTGameEngine.h"
@@ -412,15 +412,15 @@ bool AUTGameSessionNonRanked::BanPlayer(class APlayerController* BannedPlayer, c
 	APlayerState* PS = BannedPlayer->PlayerState;
 	if (PS)
 	{
-		UE_LOG(UT, Log, TEXT("Adding Ban for user '%s' (uid: %s) Reason '%s'"), *PS->PlayerName, *PS->UniqueId.ToString(), *BanReason.ToString());
-		BannedUsers.Add(FBanInfo(PS->PlayerName, PS->UniqueId.ToString()));
+        UE_LOG(UT, Log, TEXT("Adding Ban for user '%s' (uid: %s) Reason '%s'"), *PS->GetPlayerName(), *PS->UniqueId.ToString(), *BanReason.ToString());
+        BannedUsers.Add(FBanInfo(PS->GetPlayerName(), PS->UniqueId.ToString()));
 		SaveConfig();
 
 		// Send off some analytics so we can track # of bans, etc.
 		if (FUTAnalytics::IsAvailable())
 		{
 			TArray<FAnalyticsEventAttribute> ParamArray;
-			ParamArray.Add(FAnalyticsEventAttribute(TEXT("UserName"), PS->PlayerName));
+            ParamArray.Add(FAnalyticsEventAttribute(TEXT("UserName"), PS->GetPlayerName()));
 			ParamArray.Add(FAnalyticsEventAttribute(TEXT("UniqueId"), PS->UniqueId.ToString()));
 			ParamArray.Add(FAnalyticsEventAttribute(TEXT("Reason"), BanReason.ToString()));
 
@@ -450,7 +450,7 @@ bool AUTGameSessionNonRanked::KickPlayer(APlayerController* KickedPlayer, const 
 				UUTGameEngine* UTGameEngine = Cast<UUTGameEngine>(GEngine);
 				if (UTGameEngine)
 				{
-					UTGameEngine->InstanceBannedUsers.Add(FBanInfo(PS->PlayerName, PS->UniqueId.ToString()));
+                    UTGameEngine->InstanceBannedUsers.Add(FBanInfo(PS->GetPlayerName(), PS->UniqueId.ToString()));
 				}
 			}
 		}
@@ -510,7 +510,7 @@ void AUTGameSessionNonRanked::EndMatch()
 	Super::EndMatch();
 }
 
-void AUTGameSessionNonRanked::OnConnectionStatusChanged(EOnlineServerConnectionStatus::Type LastConnectionState, EOnlineServerConnectionStatus::Type ConnectionState)
+void AUTGameSessionNonRanked::OnConnectionStatusChanged(const FString& sos, EOnlineServerConnectionStatus::Type LastConnectionState, EOnlineServerConnectionStatus::Type ConnectionState)
 {
 	if (ConnectionState == EOnlineServerConnectionStatus::InvalidSession)
 	{

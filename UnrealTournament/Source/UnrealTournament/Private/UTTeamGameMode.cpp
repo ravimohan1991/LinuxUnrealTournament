@@ -134,7 +134,7 @@ APlayerController* AUTTeamGameMode::Login(class UPlayer* NewPlayer, ENetRole InR
 {
 	APlayerController* PC = Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
 
-	UE_LOG(LogOnlineGame, Verbose, TEXT("AUTTeamGameMode::Login %s, Matchmaking: %d"), PC && PC->PlayerState ? *PC->PlayerState->PlayerName : TEXT("no player"), bUseMatchmakingSession ? 1 : 0);
+    UE_LOG(LogOnlineGame, Verbose, TEXT("AUTTeamGameMode::Login %s, Matchmaking: %d"), PC && PC->PlayerState ? *PC->PlayerState->GetPlayerName() : TEXT("no player"), bUseMatchmakingSession ? 1 : 0);
 
 	if (PC && PC->PlayerState && !PC->PlayerState->bOnlySpectator)
 	{
@@ -147,7 +147,7 @@ APlayerController* AUTTeamGameMode::Login(class UPlayer* NewPlayer, ENetRole InR
 				if (UTGameSession)
 				{
 					DesiredTeam = UTGameSession->GetTeamForPlayer(UniqueId);
-					UE_LOG(LogOnlineGame, Verbose, TEXT("AUTTeamGameMode::Login %s GetTeamForPlayer %d"), *PC->PlayerState->PlayerName, DesiredTeam);
+                    UE_LOG(LogOnlineGame, Verbose, TEXT("AUTTeamGameMode::Login %s GetTeamForPlayer %d"), *PC->PlayerState->GetPlayerName(), DesiredTeam);
 				}
 			}
 			else if (GetNetMode() != NM_Standalone)
@@ -850,9 +850,9 @@ bool AUTTeamGameMode::ModifyDamage_Implementation(int32& Damage, FVector& Moment
 			Momentum *= WallRunMomentumPct;
 		}
 		AUTPlayerController* InstigatorPC = Cast<AUTPlayerController>(InstigatedBy);
-		if (InstigatorPC && Cast<AUTPlayerState>(Injured->PlayerState))
+        if (InstigatorPC && Cast<AUTPlayerState>(Injured->GetPlayerState()))
 		{
-			((AUTPlayerState *)(Injured->PlayerState))->AnnounceSameTeam(InstigatorPC);
+            ((AUTPlayerState *)(Injured->GetPlayerState()))->AnnounceSameTeam(InstigatorPC);
 		}
 	}
 	Super::ModifyDamage_Implementation(Damage, Momentum, Injured, InstigatedBy, HitInfo, DamageCauser, DamageType);

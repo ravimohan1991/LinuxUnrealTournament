@@ -111,7 +111,7 @@ void SUTStartMatchWindow::BuildWindow()
 		]
 	];
 
-	FSlateApplication::Get().SetKeyboardFocus(SharedThis(this), EKeyboardFocusCause::Keyboard);
+    FSlateApplication::Get().SetKeyboardFocus(SharedThis(this), EFocusCause::Navigation);
 }
 
 FText SUTStartMatchWindow::GetMainText() const
@@ -207,7 +207,7 @@ FReply SUTStartMatchWindow::OnCancelClick()
 
 void SUTStartMatchWindow::TellSlateIWantKeyboardFocus()
 {
-	FSlateApplication::Get().SetKeyboardFocus(SharedThis(this), EKeyboardFocusCause::Keyboard);
+    FSlateApplication::Get().SetKeyboardFocus(SharedThis(this), EFocusCause::Navigation);
 }
 
 void SUTStartMatchWindow::Tick( const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime )

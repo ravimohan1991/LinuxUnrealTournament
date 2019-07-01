@@ -147,7 +147,7 @@ void UUTParty::OnLeavePartyForNewJoin(const FUniqueNetId& LocalUserId, const ELe
 	}
 	else
 	{
-		UE_LOG(LogParty, Warning, TEXT("Failed to leave existing party to join new party - %s"), ToString(Result));
+        //UE_LOG(LogParty, Warning, TEXT("Failed to leave existing party to join new party - %s"), ToString(Result));
 		InPendingPartyJoin->Delegate.ExecuteIfBound(LocalUserId, EJoinPartyCompletionResult::UnknownClientFailure, 0);
 	}
 }

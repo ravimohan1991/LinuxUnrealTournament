@@ -161,10 +161,10 @@ void AUTHUD_Showdown::DrawMinimap(const FColor& DrawColor, float MapSize, FVecto
 					float XL, YL;
 					FColor TextColor = Canvas->DrawColor;
 					Canvas->DrawColor = FColor(0, 0, 0, 64);
-					Canvas->TextSize(TinyFont, OwningPS->PlayerName, XL, YL);
+                    Canvas->TextSize(TinyFont, OwningPS->GetPlayerName(), XL, YL);
 					Canvas->DrawTile(SpawnHelpTextBG.Texture, Pos.X - XL * 0.5f, Pos.Y - 20.0f * RenderScale - 0.8f*YL, XL, 0.8f*YL, 149, 138, 32, 32, BLEND_Translucent);
 					Canvas->DrawColor = TextColor;
-					Canvas->DrawText(TinyFont, OwningPS->PlayerName, Pos.X - XL * 0.5f, Pos.Y - IconSize * 0.5f - 2.0f - YL);
+                    Canvas->DrawText(TinyFont, OwningPS->GetPlayerName(), Pos.X - XL * 0.5f, Pos.Y - IconSize * 0.5f - 2.0f - YL);
 				}
 				Canvas->DrawColor = FColor::White;
 			}
@@ -408,7 +408,7 @@ void AUTHUD_Showdown::DrawPlayerList()
 	for (AUTPlayerState* UTPS : LivePlayers)
 	{
 		UFont* NameFont = SmallFont;
-		Canvas->TextSize(NameFont, UTPS->PlayerName, XL, YL);
+        Canvas->TextSize(NameFont, UTPS->GetPlayerName(), XL, YL);
 		float TileWidth = 0.22f*Canvas->ClipX;
 		float NameStart = 0.01f*Canvas->ClipX;
 		float NameScale = FMath::Min(1.f, (TileWidth - NameStart + XPos) / XL);
@@ -417,7 +417,7 @@ void AUTHUD_Showdown::DrawPlayerList()
 		Canvas->DrawColor.A = 70;
 		Canvas->DrawTile(SpawnHelpTextBG.Texture, XPos, YPos, TileWidth + ExtraWidth, YL, 149, 138, 32, 32, BLEND_Translucent);
 		Canvas->DrawColor = FColor(255, 255, 255, 255);
-		Canvas->DrawText(NameFont, UTPS->PlayerName, XPos+NameStart, YPos - 0.1f*YL, NameScale, 1.f);
+        Canvas->DrawText(NameFont, UTPS->GetPlayerName(), XPos+NameStart, YPos - 0.1f*YL, NameScale, 1.f);
 		if (UTPS == GS->SpawnSelector)
 		{
 			Canvas->DrawColor = FColor(255, 255, 140, 80);

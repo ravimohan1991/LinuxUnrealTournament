@@ -8,8 +8,12 @@
 
 #include "UTReachSpec.h"
 #include "AI/Navigation/NavigationTypes.h"
+#include "NavigationSystem.h"
+#include "AI/NavigationSystemBase.h"
 #include "UTPathNode.h"
-#include "AI/Navigation/RecastNavMesh.h"
+#include "../Runtime/Engine/Classes/Engine/World.h"
+#include "Engine/Engine.h"
+#include "RecastNavMesh.h"
 
 #include "UTRecastNavMesh.generated.h"
 
@@ -119,7 +123,7 @@ public:
 	FRouteCacheItem()
 		: Node(NULL), Actor(NULL), Location(FVector::ZeroVector), bDirectTarget(false), TargetPoly(INVALID_NAVNODEREF)
 	{}
-	FRouteCacheItem(TWeakObjectPtr<UUTPathNode> InNode, const FVector& InLoc, NavNodeRef InTargetPoly)
+    FRouteCacheItem(TWeakObjectPtr<UUTPathNode> InNode, const FVector& InLoc, NavNodeRef InTargetPoly)
 		: Node(InNode), Actor(NULL), Location(InLoc), bDirectTarget(false), TargetPoly(InTargetPoly)
 	{}
 	FRouteCacheItem(TWeakObjectPtr<AActor> InActor, const FVector& InLoc, NavNodeRef InTargetPoly, TWeakObjectPtr<UUTPathNode> InNode = NULL)
@@ -162,10 +166,10 @@ struct UNREALTOURNAMENT_API FUTNodeEvaluator
 	 * @param TotalDistance - total path distance so far
 	 * @return weighting as a path endpoint
 	 */
-	virtual float Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, const UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance) = 0;
+    virtual float Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance) = 0;
 
 	/** adds optional evaluator specific cost to the given path link; return BLOCKED_PATH_COST to prevent a path from being used even if it would otherwise be valid */
-	virtual uint32 GetTransientCost(const FUTPathLink& Link, APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, NavNodeRef StartPoly, int32 TotalDistance)
+    virtual uint32 GetTransientCost(FUTPathLink& Link, APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, NavNodeRef StartPoly, int32 TotalDistance)
 	{
 		return 0;
 	}
@@ -191,9 +195,9 @@ struct UNREALTOURNAMENT_API FSingleEndpointEval : public FUTNodeEvaluator
 	float StartingDist;
 	bool bFoundGoalNode;
 
-	virtual bool InitForPathfinding(APawn* Asker, const FNavAgentProperties& AgentProps, const FVector& StartLoc, AUTRecastNavMesh* NavData);
-	virtual float Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, const UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance);
-	virtual bool GetRouteGoal(AActor*& OutGoal, FVector& OutGoalLoc) const override
+    virtual bool InitForPathfinding(APawn* Asker, const FNavAgentProperties& AgentProps, const FVector& StartLoc, AUTRecastNavMesh* NavData) override;
+    virtual float Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance) override;
+    virtual bool GetRouteGoal(AActor*& OutGoal, FVector& OutGoalLoc) const override
 	{
 		if (bFoundGoalNode)
 		{
@@ -220,7 +224,7 @@ struct UNREALTOURNAMENT_API FSingleEndpointEvalWeighted : public FSingleEndpoint
 	/** map of additional node costs to bias the path taken to the target */
 	TMap< TWeakObjectPtr<const UUTPathNode>, uint32 > ExtraCosts;
 
-	virtual uint32 GetTransientCost(const FUTPathLink& Link, APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, NavNodeRef StartPoly, int32 TotalDistance)
+    virtual uint32 GetTransientCost(FUTPathLink& Link, APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, NavNodeRef StartPoly, int32 TotalDistance)override
 	{
 		return ExtraCosts.FindRef(Link.End);
 	}
@@ -260,14 +264,14 @@ struct UNREALTOURNAMENT_API FMultiPathNodeEval : public FUTNodeEvaluator
 	 */
 	TSet<FRouteCacheItem, SetKeyFuncs> Goals;
 
-	const UUTPathNode* GoalNode;
+    UUTPathNode* GoalNode;
 	FVector GoalEntryLoc;
 
 	virtual bool InitForPathfinding(APawn* Asker, const FNavAgentProperties& AgentProps, const FVector& StartLoc, AUTRecastNavMesh* NavData) override
 	{
 		return Goals.Num() > 0;
 	}
-	virtual float Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, const UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance) override
+    virtual float Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance) override
 	{
 		if (Goals.Contains(FRouteCacheItem(Node, EntryLoc, INVALID_NAVNODEREF)))
 		{
@@ -602,7 +606,7 @@ public:
 				Node->PhysicsVolume = GetWorld()->GetDefaultPhysicsVolume();
 				VolumeToNode.Add(Node->PhysicsVolume, Node);
 			}
-		}
+        }
 	}
 
 #if WITH_EDITOR
@@ -615,8 +619,12 @@ public:
 
 		if (bFirstTime && bNeedsRebuild)
 		{
-			GetWorld()->GetNavigationSystem()->AddDirtyArea(FBox(FVector(-WORLD_MAX), FVector(WORLD_MAX)), ENavigationDirtyFlag::All);
-		}
+            //GetWorld()->GetNavigationSystem()->AddDirtyArea(FBox(FVector(-WORLD_MAX), FVector(WORLD_MAX)), ENavigationDirtyFlag::All);
+            if((UNavigationSystemV1*) GetWorld()->GetNavigationSystem())
+            {
+                ((UNavigationSystemV1*) GetWorld()->GetNavigationSystem())->AddDirtyArea(FBox(FVector(-WORLD_MAX), FVector(WORLD_MAX)), ENavigationDirtyFlag::All);
+            }
+        }
 	}
 #endif
 
@@ -706,9 +714,9 @@ inline AUTRecastNavMesh* GetUTNavData(UWorld* World)
 	if (World->GetNavigationSystem() == NULL)
 	{
 		// workaround because engine doesn't want to create on clients by default
-		World->SetNavigationSystem(NewObject<UNavigationSystem>(World, GEngine->NavigationSystemClass));
+        World->SetNavigationSystem(NewObject<UNavigationSystemBase>(World, GEngine->NavigationSystemClass));
 	}
-	if (World->GetNavigationSystem()->NavDataSet.Num() == 0 && !World->HasBegunPlay())
+    if ((UNavigationSystemV1*) World->GetNavigationSystem() && ((UNavigationSystemV1*) World->GetNavigationSystem())->NavDataSet.Num() == 0 && !World->HasBegunPlay())
 	{
 		// needed during startup because of NavigationSystem's questionable latent registration
 		// since we handle path sizes ourselves there should only be one nav data so just look it up
@@ -716,8 +724,9 @@ inline AUTRecastNavMesh* GetUTNavData(UWorld* World)
 		{
 			return *It;
 		}
-	}
-	return Cast<AUTRecastNavMesh>(World->GetNavigationSystem()->GetMainNavData(FNavigationSystem::ECreateIfEmpty::DontCreate));
+    }
+    //return Cast<AUTRecastNavMesh>(World->GetNavigationSystem()->GetMainNavData(FNavigationSystem::ECreateIfEmpty::DontCreate));
+    return Cast<AUTRecastNavMesh>(UNavigationSystemV1::GetCurrent(World)->GetDefaultNavDataInstance());
 }
 
 #if WITH_EDITOR

@@ -968,7 +968,7 @@ void UUTProfileSettings::ExportKeyBinds()
 		ExportData.GameActions.Add(FKeyConfigurationImportExportObject(GameActions[i].GameActionTag, GameActions[i].PrimaryKey, GameActions[i].SecondaryKey, GameActions[i].GamepadKey));
 	}
 
-	FString FilePath = FPaths::GameSavedDir() + TEXT("keybinds.json");
+    FString FilePath = FPaths::ProjectSavedDir() + TEXT("keybinds.json");
 	FString jsonText;
 	if (FJsonObjectConverter::UStructToJsonObjectString(FKeyConfigurationImportExport::StaticStruct(), &ExportData, jsonText,0,0))
 	{
@@ -985,7 +985,7 @@ void UUTProfileSettings::ImportKeyBinds()
 {
 	FKeyConfigurationImportExport ImportData;
 
-	FString FilePath = FPaths::GameSavedDir() + TEXT("keybinds.json");
+    FString FilePath = FPaths::ProjectSavedDir() + TEXT("keybinds.json");
 	FString jsonText;
 
 	if ( FFileHelper::LoadFileToString(jsonText, *FilePath) )

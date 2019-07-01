@@ -3,7 +3,7 @@
 #pragma once
 
 #include "UTPathBuilderInterface.h"
-
+#include "Runtime/Engine/Classes/AI/Navigation/NavRelevantInterface.h"
 #include "UTTeamPathBlocker.generated.h"
 
 UCLASS(Abstract, Blueprintable)

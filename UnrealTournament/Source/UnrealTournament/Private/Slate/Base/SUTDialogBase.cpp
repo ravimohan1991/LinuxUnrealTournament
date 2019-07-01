@@ -269,7 +269,7 @@ FReply SUTDialogBase::OnButtonClick(uint16 ButtonID)
 void SUTDialogBase::OnDialogOpened()
 {
 	GameViewportWidget = FSlateApplication::Get().GetKeyboardFocusedWidget();
-	FSlateApplication::Get().SetKeyboardFocus(SharedThis(this), EKeyboardFocusCause::Keyboard);
+    FSlateApplication::Get().SetKeyboardFocus(SharedThis(this), EFocusCause::Navigation);
 }
 
 void SUTDialogBase::OnDialogClosed()
@@ -340,7 +340,7 @@ FReply SUTDialogBase::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& In
 			TabStop = (TabStop + NewStop) % TabTable.Num();
 		}
 
-		FSlateApplication::Get().SetKeyboardFocus(TabTable[TabStop], EKeyboardFocusCause::Keyboard);	
+        FSlateApplication::Get().SetKeyboardFocus(TabTable[TabStop], EFocusCause::Navigation);
 	}
 	return FReply::Handled();
 

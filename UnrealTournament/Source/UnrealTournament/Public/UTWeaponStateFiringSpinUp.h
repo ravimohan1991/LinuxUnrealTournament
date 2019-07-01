@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "UTWeaponStateFiring.h"
 #include "UTWeaponStateFiringSpinUp.generated.h"
 
 UCLASS()

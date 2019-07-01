@@ -18,7 +18,7 @@ void UUTAIAction_TacticalMove::Started()
 
 	if (GetEnemy() == NULL)
 	{
-		UE_LOG(UT, Warning, TEXT("Bot %s in TacticalMove with no enemy"), *GetOuterAUTBot()->PlayerState->PlayerName);
+        UE_LOG(UT, Warning, TEXT("Bot %s in TacticalMove with no enemy"), *GetOuterAUTBot()->PlayerState->GetPlayerName());
 	}
 	else
 	{

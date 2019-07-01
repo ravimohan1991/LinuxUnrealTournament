@@ -333,7 +333,7 @@ void AUTWeap_LightningRifle::FireShot()
 				FireInstantHit(true, &OutHit);
 
 				AUTCharacter* PoweredHitCharacter = bFullPowerShot ? Cast<AUTCharacter>(OutHit.Actor.Get()) : nullptr;
-				if (PoweredHitCharacter && (!PoweredHitCharacter->bTearOff || (PoweredHitCharacter->TimeOfDeath == GetWorld()->GetTimeSeconds())))
+                if (PoweredHitCharacter && (!PoweredHitCharacter->GetTearOff() || (PoweredHitCharacter->TimeOfDeath == GetWorld()->GetTimeSeconds())))
 				{
 					ChainLightning(OutHit);
 				}
@@ -417,7 +417,7 @@ void AUTWeap_LightningRifle::ChainLightning(FHitResult Hit)
 			FVector BeamSpawn = VictimPawn->GetActorLocation();
 			UParticleSystemComponent* PSC = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEffect[0], BeamHitLocation, (BeamSpawn - BeamHitLocation).Rotation(), true);
 			PSC->SetVectorParameter(NAME_HitLocation, BeamSpawn);
-			PSC->SetVectorParameter(NAME_LocalHitLocation, PSC->ComponentToWorld.InverseTransformPosition(BeamSpawn));
+            PSC->SetVectorParameter(NAME_LocalHitLocation, PSC->GetComponentToWorld().InverseTransformPosition(BeamSpawn));
 			PSC->CustomTimeDilation = 0.2f;
 		}
 	}

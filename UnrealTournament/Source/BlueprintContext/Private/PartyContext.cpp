@@ -144,7 +144,7 @@ void UPartyContext::HandlePartyMemberJoined(UPartyGameState* PartyState, const F
 		UUTLocalPlayer* LocalPlayer = GetOwningPlayer<UUTLocalPlayer>();
 		if (LocalPlayer)
 		{
-			TSharedPtr<const FUniqueNetId> LocalUserId = LocalPlayer->GetPreferredUniqueNetId();
+            FUniqueNetIdRepl LocalUserId = LocalPlayer->GetPreferredUniqueNetId();
 			if (LocalUserId.IsValid() && UniqueId.ToString() != LocalUserId->ToString())
 			{
 				if (IsPartyLeader(UniqueId))
@@ -230,7 +230,7 @@ void UPartyContext::Finalize()
 void UPartyContext::JoinParty(const FUniqueNetId& PartyMemberId)
 {
 	const ULocalPlayer* LocalPlayer = GetOwningPlayer();
-	TSharedPtr<const FUniqueNetId> LocalUserId = LocalPlayer->GetPreferredUniqueNetId();
+    FUniqueNetIdRepl LocalUserId = LocalPlayer->GetPreferredUniqueNetId();
 
 	if (LocalUserId.IsValid())
 	{
@@ -255,7 +255,7 @@ void UPartyContext::JoinParty(const FUniqueNetId& PartyMemberId)
 void UPartyContext::OnFriendsListJoinParty(const FUniqueNetId& SenderId, const TSharedRef<class IOnlinePartyJoinInfo>& PartyJoinInfo, bool bIsFromInvite)
 {
 	const ULocalPlayer* LocalPlayer = GetOwningPlayer();
-	TSharedPtr<const FUniqueNetId> LocalUserId = LocalPlayer->GetPreferredUniqueNetId();
+    FUniqueNetIdRepl LocalUserId = LocalPlayer->GetPreferredUniqueNetId();
 
 	if (LocalUserId.IsValid())
 	{
@@ -484,7 +484,7 @@ void UPartyContext::PromotePartyMemberToLeader(const FUniqueNetIdRepl& PartyMemb
 	{
 		TSharedPtr<const FUniqueNetId> PartyLeaderId = PersistentParty->GetPartyLeader();
 		const ULocalPlayer* LocalPlayer = GetOwningPlayer();
-		TSharedPtr<const FUniqueNetId> LocalUserId = LocalPlayer->GetPreferredUniqueNetId();
+        FUniqueNetIdRepl LocalUserId = LocalPlayer->GetPreferredUniqueNetId();
 		if (ensure(PartyLeaderId.IsValid()) && *LocalUserId == *PartyLeaderId)
 		{
 			PersistentParty->PromoteMember(PartyMemberId);
@@ -514,7 +514,7 @@ void UPartyContext::KickPartyMember(const FUniqueNetIdRepl& PartyMemberId)
 	{
 		TSharedPtr<const FUniqueNetId> PartyLeaderId = PersistentParty->GetPartyLeader();
 		const ULocalPlayer* LocalPlayer = GetOwningPlayer();
-		TSharedPtr<const FUniqueNetId> LocalUserId = LocalPlayer->GetPreferredUniqueNetId();
+        FUniqueNetIdRepl LocalUserId = LocalPlayer->GetPreferredUniqueNetId();
 		if (ensure(PartyLeaderId.IsValid()) && *LocalUserId == *PartyLeaderId)
 		{
 			PersistentParty->KickMember(PartyMemberId);
@@ -529,7 +529,7 @@ void UPartyContext::KickPartyMember(const FUniqueNetIdRepl& PartyMemberId)
 void UPartyContext::LeaveParty()
 {
 	UUTLocalPlayer* LocalPlayer = GetOwningPlayer<UUTLocalPlayer>();
-	TSharedPtr<const FUniqueNetId> LocalUserId = LocalPlayer->GetPreferredUniqueNetId();
+    FUniqueNetIdRepl LocalUserId = LocalPlayer->GetPreferredUniqueNetId();
 	if (LocalUserId.IsValid())
 	{
 		UUTGameInstance* GameInstance = GetGameInstance<UUTGameInstance>();

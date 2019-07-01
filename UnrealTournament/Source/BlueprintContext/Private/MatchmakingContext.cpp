@@ -1,4 +1,4 @@
-// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
+// (ɔ) The_Cowboy 1000 BC - 2019 AD. All rights reversed.
 
 #include "BlueprintContext.h"
 

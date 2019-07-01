@@ -536,7 +536,7 @@ void SUTCreateGamePanel::OnStoreDialogResult(TSharedPtr<SCompoundWidget> Widget,
 		FString Error = TEXT("");
 		FPlatformProcess::LaunchURL(*URL, *Command, &Error);
 		FPlatformMisc::RequestMinimize();
-		if (PlayerOwner.IsValid())
+        if (PlayerOwner.IsValid())
 		{
 			PlayerOwner->ShowMessage(
 				NSLOCTEXT("SUTGameSetupDialog", "ReturnFromStore", "Returned from store..."), 

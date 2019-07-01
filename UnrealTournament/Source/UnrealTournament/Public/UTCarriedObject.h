@@ -16,7 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCarriedObjectStateChangedDelegat
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCarriedObjectHolderChangedDelegate, class AUTCarriedObject*, Sender);
 const int32 NUM_MIDPOINTS = 3;
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FAssistTracker
 {
 	GENERATED_USTRUCT_BODY()
@@ -73,7 +73,7 @@ struct FFlagTrailPos
 
 };
 
-UCLASS()
+UCLASS(BlueprintType)
 class UNREALTOURNAMENT_API AUTCarriedObject : public AActor, public IUTTeamInterface
 {
 	GENERATED_UCLASS_BODY()

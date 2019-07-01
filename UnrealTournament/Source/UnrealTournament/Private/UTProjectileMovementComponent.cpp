@@ -45,7 +45,7 @@ void UUTProjectileMovementComponent::SetUpdatedComponent(USceneComponent* NewUpd
 	if (bKeepPhysicsVolumeWhenStopped && OldUpdatedComponent && OldPhysicsVolume && !OldUpdatedComponent->IsPendingKill())
 	{
 		OldUpdatedComponent->SetPhysicsVolume(OldPhysicsVolume, true);
-		OldUpdatedComponent->bShouldUpdatePhysicsVolume = true;
+        OldUpdatedComponent->SetShouldUpdatePhysicsVolume(true);
 	}
 }
 
@@ -91,7 +91,7 @@ bool UUTProjectileMovementComponent::MoveUpdatedComponentImpl(const FVector& Del
 			DeferredUpdates.Add(new FNewableScopedMovementUpdate(AddlUpdatedComponents[i]));
 		}
 
-		FRotator RotChange = NewRotation.Rotator().GetNormalized() - UpdatedComponent->ComponentToWorld.GetRotation().Rotator().GetNormalized();
+        FRotator RotChange = NewRotation.Rotator().GetNormalized() - UpdatedComponent->GetComponentToWorld().GetRotation().Rotator().GetNormalized();
 
 		FHitResult EarliestHit;
 		// move root
@@ -111,7 +111,7 @@ bool UUTProjectileMovementComponent::MoveUpdatedComponentImpl(const FVector& Del
 			AddlUpdatedComponents[i]->RelativeLocation.Z += 0.1f;
 
 			FHitResult NewHit;
-			AddlUpdatedComponents[i]->MoveComponent(Delta, AddlUpdatedComponents[i]->ComponentToWorld.GetRotation().Rotator() + RotChange, bSweep, &NewHit, MoveComponentFlags);
+            AddlUpdatedComponents[i]->MoveComponent(Delta, AddlUpdatedComponents[i]->GetComponentToWorld().GetRotation().Rotator() + RotChange, bSweep, &NewHit, MoveComponentFlags);
 			if (NewHit.bBlockingHit)
 			{
 				if (NewHit.bStartPenetrating)

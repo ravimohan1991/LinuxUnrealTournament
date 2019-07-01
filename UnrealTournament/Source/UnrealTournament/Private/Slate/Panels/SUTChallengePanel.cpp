@@ -979,13 +979,13 @@ FReply SUTChallengePanel::ChallengeClicked(FName ChallengeTag)
 			FString MapPackageName = Asset.PackageName.ToString();
 			if (MapPackageName == Map)
 			{
-				const FString* Screenshot = Asset.TagsAndValues.Find(NAME_MapInfo_ScreenshotReference);
-				const FString* MapDescription = Asset.TagsAndValues.Find(NAME_MapInfo_Description);
+                const FString* Screenshot = &Asset.TagsAndValues.FindTag(NAME_MapInfo_ScreenshotReference).GetValue();
+                const FString* MapDescription = &Asset.TagsAndValues.FindTag(NAME_MapInfo_Description).GetValue();
 
 				FText Parsed = FText::GetEmpty();
 				if (MapDescription != nullptr)
 				{
-					FTextStringHelper::ReadFromString(**MapDescription, Parsed);
+                    FTextStringHelper::ReadFromBuffer(**MapDescription, Parsed);
 				}
 
 				if (MapDescription != NULL)

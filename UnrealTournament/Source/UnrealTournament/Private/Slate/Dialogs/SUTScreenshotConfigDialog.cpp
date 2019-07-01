@@ -274,8 +274,8 @@ FReply SUTScreenshotConfigDialog::OnButtonClick(uint16 ButtonID)
 	UUTProfileSettings* ProfileSettings = GetPlayerOwner()->GetProfileSettings();
 	if (ProfileSettings)
 	{
-		LexicalConversion::FromString(ProfileSettings->ReplayScreenshotResX, *ResXText);
-		LexicalConversion::FromString(ProfileSettings->ReplayScreenshotResY, *ResYText);
+        LexFromString(ProfileSettings->ReplayScreenshotResX, *ResXText);
+        /*LexicalConversion::FromString*/LexFromString(ProfileSettings->ReplayScreenshotResY, *ResYText);
 
 		ProfileSettings->bReplayCustomPostProcess = CustomPostCheckBox->IsChecked();
 		ProfileSettings->ReplayCustomBloomIntensity = 8.0f * BloomIntensitySlider->GetValue();

@@ -11,7 +11,7 @@ AUTWeapAttachment_Enforcer::AUTWeapAttachment_Enforcer(const FObjectInitializer&
 {
 	LeftMesh = OI.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("Mesh3P_Left"));
 	LeftMesh->SetupAttachment(RootComponent);
-	LeftMesh->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::OnlyTickPoseWhenRendered;
+    LeftMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 	LeftMesh->bLightAttachmentsAsGroup = true;
 	LeftMesh->bReceivesDecals = false;
 	LeftMesh->bUseAttachParentBound = true;
@@ -121,14 +121,14 @@ void AUTWeapAttachment_Enforcer::PlayFiringEffects()
 		{
 			UParticleSystemComponent* PSC = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), FireEffect[CalculatedMuzzleFlashIndex], SpawnLocation, (UTOwner->FlashLocation.Position - SpawnLocation).Rotation(), true);
 			PSC->SetVectorParameter(NAME_HitLocation, UTOwner->FlashLocation.Position);
-			PSC->SetVectorParameter(NAME_LocalHitLocation, PSC->ComponentToWorld.InverseTransformPosition(UTOwner->FlashLocation.Position));
+            PSC->SetVectorParameter(NAME_LocalHitLocation, PSC->GetComponentToWorld().InverseTransformPosition(UTOwner->FlashLocation.Position));
 		}
 
 		// perhaps the muzzle flash also contains hit effect (constant beam, etc) so set the parameter on it instead
 		else if (MuzzleFlash.IsValidIndex(CalculatedMuzzleFlashIndex) && MuzzleFlash[CalculatedMuzzleFlashIndex] != NULL)
 		{
 			MuzzleFlash[CalculatedMuzzleFlashIndex]->SetVectorParameter(NAME_HitLocation, UTOwner->FlashLocation.Position);
-			MuzzleFlash[CalculatedMuzzleFlashIndex]->SetVectorParameter(NAME_LocalHitLocation, MuzzleFlash[CalculatedMuzzleFlashIndex]->ComponentToWorld.InverseTransformPosition(UTOwner->FlashLocation.Position));
+            MuzzleFlash[CalculatedMuzzleFlashIndex]->SetVectorParameter(NAME_LocalHitLocation, MuzzleFlash[CalculatedMuzzleFlashIndex]->GetComponentToWorld().InverseTransformPosition(UTOwner->FlashLocation.Position));
 		}
 
 		if ((UTOwner->FlashLocation.Position - LastImpactEffectLocation).Size() >= ImpactEffectSkipDistance || GetWorld()->TimeSeconds - LastImpactEffectTime >= MaxImpactEffectSkipTime)

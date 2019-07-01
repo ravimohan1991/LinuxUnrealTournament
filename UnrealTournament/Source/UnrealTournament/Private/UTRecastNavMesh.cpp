@@ -3,11 +3,11 @@
 #include "UTRecastNavMesh.h"
 #include "UTNavGraphRenderingComponent.h"
 #include "RecastNavMeshGenerator.h"
-#include "Runtime/Engine/Public/AI/Navigation/PImplRecastNavMesh.h"
+#include "Runtime/NavigationSystem/Public/NavMesh/PImplRecastNavMesh.h"
 #include "Runtime/Navmesh/Public/Detour/DetourNavMesh.h"
 #include "Runtime/Navmesh/Public/Detour/DetourNavMeshQuery.h"
 #include "Runtime/Navmesh/Public/DetourCrowd/DetourPathCorridor.h"
-#include "Runtime/Engine/Public/AI/Navigation/RecastHelpers.h"
+#include "Runtime/NavigationSystem/Public/NavMesh/RecastHelpers.h"
 #include "UTPathBuilderInterface.h"
 #include "UTDroppedPickup.h"
 #include "UTReachSpec_HighJump.h"
@@ -21,9 +21,9 @@
 #if WITH_EDITOR
 #include "EditorBuildUtils.h"
 #include "MapErrors.h"
-#include "Classes/AI/Navigation/NavLinkProxy.h"
-#include "Classes/AI/Navigation/NavModifierVolume.h"
-#include "Classes/AI/Navigation/NavAreas/NavArea_LowHeight.h"
+#include "Runtime/AIModule/Classes/Navigation/NavLinkProxy.h"
+#include "Runtime/NavigationSystem/Public/NavModifierVolume.h"
+#include "Runtime/NavigationSystem/Public/NavAreas/NavArea_LowHeight.h"
 #endif
 #if !UE_SERVER && WITH_EDITOR
 #include "SNotificationList.h"
@@ -289,7 +289,7 @@ bool AUTRecastNavMesh::JumpTraceTest(FVector Start, const FVector& End, NavNodeR
 		bLastJumpBlocked = false;
 		while (TimeRemaining > 0.0f)
 		{
-			FBox TestBox(0);
+            FBox TestBox(EForceInit::ForceInitToZero);
 			TestBox += CurrentLoc + ScoutShape.GetExtent();
 			TestBox += CurrentLoc - ScoutShape.GetExtent();
 			if (FMath::PointBoxIntersection(End, TestBox))
@@ -1299,7 +1299,7 @@ void AUTRecastNavMesh::BuildSpecialLinks(int32 NumToProcess)
 														FVector CurrentLoc = WallCenter;
 														while (true)
 														{
-															FBox TestBox(0);
+                                                            FBox TestBox(EForceInit::ForceInitToZero);
 															TestBox += CurrentLoc + PathSize.GetExtent();
 															TestBox += CurrentLoc - PathSize.GetExtent();
 															if (FMath::PointBoxIntersection(TestLoc, TestBox))
@@ -1714,7 +1714,7 @@ bool FSingleEndpointEval::InitForPathfinding(APawn* Asker, const FNavAgentProper
 	}
 	return GoalNode != NULL;
 }
-float FSingleEndpointEval::Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, const UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance)
+float FSingleEndpointEval::Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance)
 {
 	if (Node == GoalNode)
 	{
@@ -1826,7 +1826,7 @@ bool AUTRecastNavMesh::RaycastWithZCheck(const FVector& RayStart, const FVector&
 
 	const dtQueryFilter* QueryFilter = GetDefaultDetourFilter();
 
-	FRecastSpeciaLinkFilter LinkFilter(UNavigationSystem::GetCurrent(GetWorld()), NULL);
+    FRecastSpeciaLinkFilter LinkFilter(FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld()), NULL);
 	
 	dtNavMeshQuery NavQuery;
 	dtNavMeshQuery& NavQueryVariable = IsInGameThread() ? GetRecastNavMeshImpl()->SharedNavQuery : NavQuery;
@@ -2001,7 +2001,7 @@ NavNodeRef AUTRecastNavMesh::FindLiftPoly(APawn* Asker, const FNavAgentPropertie
 					// do a more precise intersection against the poly bounding box
 					TArray<FVector> PolyVerts;
 					GetPolyVerts(ResultPolys[i], PolyVerts);
-					FBox PolyBox(0);
+                    FBox PolyBox(EForceInit::ForceInitToZero);
 					for (const FVector& Vert : PolyVerts)
 					{
 						PolyBox += Vert;
@@ -2167,7 +2167,7 @@ bool AUTRecastNavMesh::FindBestPath(APawn* Asker, const FNavAgentProperties& Age
 
 		struct FEvaluatedNode
 		{
-			const UUTPathNode* Node;
+            const UUTPathNode* Node;
 			NavNodeRef Poly;
 			int32 TotalDistance;
 			FEvaluatedNode* PrevPath;
@@ -2193,7 +2193,7 @@ bool AUTRecastNavMesh::FindBestPath(APawn* Asker, const FNavAgentProperties& Age
 		while (CurrentNode != NULL)
 		{
 			CurrentNode->bAlreadyVisited = true;
-			float ThisWeight = NodeEval.Eval(Asker, AgentProps, RequestOwner, CurrentNode->Node, (CurrentNode->TotalDistance == 0) ? StartLoc : GetPolyCenter(CurrentNode->Poly), CurrentNode->TotalDistance);
+            float ThisWeight = NodeEval.Eval(Asker, AgentProps, RequestOwner, const_cast <UUTPathNode*>(CurrentNode->Node), (CurrentNode->TotalDistance == 0) ? StartLoc : GetPolyCenter(CurrentNode->Poly), CurrentNode->TotalDistance);
 			if (ThisWeight > Weight)
 			{
 				Weight = ThisWeight;
@@ -2219,7 +2219,9 @@ bool AUTRecastNavMesh::FindBestPath(APawn* Asker, const FNavAgentProperties& Age
 						NextDistance = CurrentNode->Node->Paths[i].CostFor(Asker, AgentProps, ReachParams, RequestOwner, CurrentNode->Poly, this);
 						if (NextDistance < BLOCKED_PATH_COST)
 						{
-							NextDistance += NodeEval.GetTransientCost(CurrentNode->Node->Paths[i], Asker, AgentProps, RequestOwner, CurrentNode->Poly, NextDistance + CurrentNode->TotalDistance);
+                            const FUTPathLink* temp = &CurrentNode->Node->Paths[i];
+                            FUTPathLink* temp1 = const_cast <FUTPathLink*> (temp);
+                            NextDistance += NodeEval.GetTransientCost(*temp1, Asker, AgentProps, RequestOwner, CurrentNode->Poly, NextDistance + CurrentNode->TotalDistance);
 						}
 						if (NextDistance < BLOCKED_PATH_COST)
 						{
@@ -2297,7 +2299,7 @@ bool AUTRecastNavMesh::FindBestPath(APawn* Asker, const FNavAgentProperties& Age
 			FEvaluatedNode* NextRouteNode = BestDest;
 			while (NextRouteNode->PrevPath != NULL) // don't need first node, we're already there
 			{
-				NodeRoute.Insert(FRouteCacheItem(NextRouteNode->Node, GetPolyCenter(NextRouteNode->Poly), NextRouteNode->Poly), 0);
+                NodeRoute.Insert(FRouteCacheItem(const_cast <UUTPathNode*>(NextRouteNode->Node), GetPolyCenter(NextRouteNode->Poly), NextRouteNode->Poly), 0);
 				if (NodeCosts != NULL)
 				{
 					NodeCosts->Insert(NextRouteNode->TotalDistance - NextRouteNode->PrevPath->TotalDistance, 0);
@@ -2342,7 +2344,8 @@ bool AUTRecastNavMesh::FindBestPath(APawn* Asker, const FNavAgentProperties& Age
 
 			if (bNeedMoveToStartNode || NodeRoute.Num() == 0) // make sure success always returns a route
 			{
-				NodeRoute.Insert(FRouteCacheItem(NextRouteNode->Node, GetPolyCenter(NextRouteNode->Poly), NextRouteNode->Poly), 0);
+                TWeakObjectPtr<UUTPathNode> InNode = const_cast<UUTPathNode*> (NextRouteNode->Node);
+                NodeRoute.Insert(FRouteCacheItem(InNode, GetPolyCenter(NextRouteNode->Poly), NextRouteNode->Poly), 0);
 				if (NodeCosts != NULL)
 				{
 					NodeCosts->Insert(FMath::TruncToInt((NodeRoute[0].GetLocation(Asker) - StartLoc).Size()), 0);
@@ -2351,7 +2354,7 @@ bool AUTRecastNavMesh::FindBestPath(APawn* Asker, const FNavAgentProperties& Age
 
 			if (bAllowDetours && !bNeedMoveToStartNode && Asker != NULL && (RequestOwner == NULL || RequestOwner == Asker->Controller) && NodeRoute.Num() > ((RouteGoal != NULL) ? 2 : 1))
 			{
-				AUTPlayerState* PS = Cast<AUTPlayerState>(Asker->PlayerState);
+                AUTPlayerState* PS = Cast<AUTPlayerState>(Asker->GetPlayerState());
 				FVector NextLoc = NodeRoute[0].GetLocation(Asker);
 				FVector NextDir = (NextLoc - StartLoc).GetSafeNormal();
 				float MaxDetourDist = (StartLoc - NextLoc).Size() * 1.5f;
@@ -2499,7 +2502,7 @@ bool AUTRecastNavMesh::DoStringPulling(const FVector& OrigStartLoc, const TArray
 		float RecastStart[3] = { StartLoc.X, StartLoc.Y, StartLoc.Z };
 		FVector RecastEndVect = Unreal2RecastPoint(GetPolySurfaceCenter(PolyRoute.Last()));
 		float RecastEnd[3] = { RecastEndVect.X, RecastEndVect.Y, RecastEndVect.Z };
-		int32 NumResultPoints = PolyRoute.Num() * 3;
+        const int32 NumResultPoints = PolyRoute.Num() * 3;
 		float* ResultPoints = (float*)FMemory_Alloca(sizeof(float)* 3 * NumResultPoints);
 		unsigned char* ResultFlags = (unsigned char*)FMemory_Alloca(sizeof(unsigned char)* NumResultPoints);
 		NavNodeRef* ResultPolys = (NavNodeRef*)FMemory_Alloca(sizeof(NavNodeRef)* NumResultPoints);
@@ -2510,8 +2513,7 @@ bool AUTRecastNavMesh::DoStringPulling(const FVector& OrigStartLoc, const TArray
 		Corridor.reset(PolyRoute[0], RecastStart);
 		Corridor.optimizePathTopology(&GetRecastNavMeshImpl()->SharedNavQuery, GetDefaultDetourFilter()); // could probably skip this if perf is a concern
 		Corridor.setCorridor(RecastEnd, PolyRoute.GetData(), PolyRoute.Num());
-		int32 ReturnedPoints = Corridor.findCorners(ResultPoints, ResultFlags, ResultPolys, NumResultPoints, &GetRecastNavMeshImpl()->SharedNavQuery, GetDefaultDetourFilter(), AgentProps.AgentRadius);
-
+        int32 ReturnedPoints = Corridor.findCorners(ResultPoints, ResultFlags, ResultPolys, NumResultPoints, &GetRecastNavMeshImpl()->SharedNavQuery, GetDefaultDetourFilter(), AgentProps.AgentRadius, 0, false);
 		if (ReturnedPoints <= 0)
 		{
 			return false;
@@ -2647,7 +2649,7 @@ bool AUTRecastNavMesh::HasReachedTarget(APawn* Asker, const FNavAgentProperties&
 			else if (Target.IsDirectTarget() || !Target.Node.IsValid())
 			{
 				// if direct location with no nav data then require pawn box to touch target point
-				FBox TestBox(0);
+                FBox TestBox(EForceInit::ForceInitToZero);
 				FVector Extent(AgentProps.AgentRadius, AgentProps.AgentRadius, AgentProps.AgentHeight * 0.5);
 				FVector AskerLoc = Asker->GetActorLocation();
 				TestBox += AskerLoc + Extent;
@@ -2669,7 +2671,7 @@ bool AUTRecastNavMesh::HasReachedTarget(APawn* Asker, const FNavAgentProperties&
 				{
 					// in cases of multiple Z axis walkable surfaces adjacent to each other, we might not quite get the polygon we expect
 					// if we think we're in the right place, do a more general intersection test to see if we're touching the right polygon even though the mesh doesn't judge it the "best" one
-					FBox TestBox(0);
+                    FBox TestBox(EForceInit::ForceInitToZero);
 					FVector Extent(AgentProps.AgentRadius * 0.5f, AgentProps.AgentRadius * 0.5f, AgentProps.AgentHeight * 0.5); // intentionally half radius
 					FVector AskerLoc = Asker->GetActorLocation(); // note: using Actor location here, not agent location
 					TestBox += AskerLoc + Extent;
@@ -2836,7 +2838,7 @@ FString AUTRecastNavMesh::GetMapLearningDataFilename() const
 	{
 		GameModeName = GetWorld()->GetGameState()->GameModeClass->GetFName();
 	}
-	return FPaths::GameSavedDir() + GetOutermost()->GetGuid().ToString() + TEXT("-") + GameModeName.ToString() + TEXT(".ai");
+    return FPaths::ProjectSavedDir() + GetOutermost()->GetGuid().ToString() + TEXT("-") + GameModeName.ToString() + TEXT(".ai");
 }
 
 void AUTRecastNavMesh::SaveMapLearningData()
@@ -2872,7 +2874,8 @@ void AUTRecastNavMesh::SaveMapLearningData()
 		TArray<uint8> CompressedData;
 		int32 CompressedSize = UncompressedSize;
 		CompressedData.SetNum(CompressedSize);
-		if (FCompression::CompressMemory(ECompressionFlags(COMPRESS_ZLIB | COMPRESS_BiasMemory), CompressedData.GetData(), CompressedSize, Data.GetData(), Data.Num()))
+        //ECompressionFlags(/*COMPRESS_ZLIB | COMPRESS_BiasMemory)
+        if (FCompression::CompressMemory(NAME_Zlib, CompressedData.GetData(), CompressedSize, Data.GetData(), Data.Num()))
 		{
 			CompressedData.SetNum(CompressedSize);
 			FArchive* FileAr = IFileManager::Get().CreateFileWriter(*Filename);
@@ -2910,7 +2913,7 @@ void AUTRecastNavMesh::LoadMapLearningData()
 					else
 					{
 						Data.AddUninitialized(UncompressedSize);
-						if (FCompression::UncompressMemory(ECompressionFlags(COMPRESS_ZLIB | COMPRESS_BiasMemory), Data.GetData(), UncompressedSize, CompressedData.GetData(), CompressedData.Num()))
+                        if (FCompression::UncompressMemory(/*ECompressionFlags(COMPRESS_ZLIB | COMPRESS_BiasMemory)*/NAME_Zlib, Data.GetData(), UncompressedSize, CompressedData.GetData(), CompressedData.Num()))
 						{
 							DataAr = new FMemoryReader(Data, true);
 						}

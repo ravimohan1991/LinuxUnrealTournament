@@ -60,7 +60,7 @@ bool AUTSupplyChest::GiveAmmo(AUTCharacter* Char)
 			const AUTInventory* Inventory = (Weapons[i] != nullptr) ? Weapons[i].GetDefaultObject() : nullptr;
 			if (Inventory && Inventory->StatsNameCount != NAME_None)
 			{
-				AUTPlayerState* PS = Cast<AUTPlayerState>(Char->PlayerState);
+                AUTPlayerState* PS = Cast<AUTPlayerState>(Char->GetPlayerState());
 				if (PS)
 				{
 					PS->ModifyStatsValue(Inventory->StatsNameCount, 1);
@@ -120,7 +120,7 @@ void AUTSupplyChest::BeginPlay()
 		for (auto CompIt = OverlappingComponents.CreateIterator(); CompIt; ++CompIt)
 		{
 			UPrimitiveComponent* OtherComponent = *CompIt;
-			if (OtherComponent && OtherComponent->bGenerateOverlapEvents)
+            if (OtherComponent && OtherComponent->GetGenerateOverlapEvents())
 			{
 				AUTGameVolume* V = Cast<AUTGameVolume>(OtherComponent->GetOwner());
 				if (V && V->Priority > BestPriority)

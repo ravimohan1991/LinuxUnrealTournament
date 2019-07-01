@@ -39,7 +39,7 @@ void UUTVictimMessage::GetEmphasisText(FText& PrefixText, FText& EmphasisText, F
 	}
 	PrefixText = YouWereKilledByPrefix;
 	PostfixText = YouWereKilledByPostfix;
-	EmphasisText = RelatedPlayerState_1 ? FText::FromString(RelatedPlayerState_1->PlayerName) : FText::GetEmpty();
+    EmphasisText = RelatedPlayerState_1 ? FText::FromString(RelatedPlayerState_1->GetPlayerName()) : FText::GetEmpty();
 	AUTPlayerState* KillerPS = Cast<AUTPlayerState>(RelatedPlayerState_1);
 	EmphasisColor = (KillerPS && KillerPS->Team) ? KillerPS->Team->TeamColor : FLinearColor::Red;
 }

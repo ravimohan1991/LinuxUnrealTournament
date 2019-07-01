@@ -272,7 +272,7 @@ void AUTImpactEffect::SetNoLocalPlayerLOD(UWorld* World, USceneComponent* NewCom
 		UParticleSystemComponent* PSC = Cast<UParticleSystemComponent>(NewComp);
 		if (PSC)
 		{
-			PSC->SetLODLevel(0);
+            PSC->SetLODLevel(0);
 		}
 	}
 }

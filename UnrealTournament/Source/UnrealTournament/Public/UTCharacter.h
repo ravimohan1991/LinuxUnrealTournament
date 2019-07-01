@@ -7,7 +7,7 @@
 #include "UTHat.h"
 #include "UTHatLeader.h"
 #include "UTEyewear.h"
-
+#include "UTReplicatedEmitter.h"
 #include "UTCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCharacterDiedSignature, class AController*, Killer, const class UDamageType*, DamageType);
@@ -18,7 +18,7 @@ class AUTDroppedArmor;
 /** Replicated movement data of our RootComponent.
 * More efficient than engine's FRepMovement
 */
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FRepUTMovement
 {
 	GENERATED_USTRUCT_BODY()
@@ -269,26 +269,28 @@ struct FPhysicalSoundResponse
 UCLASS(config=Game, collapsecategories, hidecategories=(Clothing,Lighting,AutoExposure,LensFlares,AmbientOcclusion,DepthOfField,MotionBlur,Misc,ScreenSpaceReflections,Bloom,SceneColor,Film,AmbientCubemap,AgentPhysics,Attachment,Avoidance,PlanarMovement,AI,Replication,Input,Actor,Tags,GlobalIllumination,CharacterData))
 class UNREALTOURNAMENT_API AUTCharacter : public ACharacter, public IUTTeamInterface
 {
-	GENERATED_UCLASS_BODY()
+    GENERATED_UCLASS_BODY()
 
 	friend class UUTGhostComponent;
-	friend void UUTCharacterMovement::PerformMovement(float DeltaSeconds);
+    friend void UUTCharacterMovement::PerformMovement(float DeltaSeconds);
 
 	virtual void SetBase(UPrimitiveComponent* NewBase, const FName BoneName = NAME_None, bool bNotifyActor = true) override;
 
 	//====================================
 	// Networking
+    virtual void PawnClientRestart() override;
 
-	virtual void PawnClientRestart() override;
+    //bool UTServerMove_Validate(float TimeStamp, FVector_NetQuantize InAccel, FVector_NetQuantize ClientLoc, uint8 MoveFlags, float ViewYaw, float ViewPitch, UPrimitiveComponent* ClientMovementBase, FName ClientBaseBoneName, uint8 ClientMovementMode);
+    //bool UTServerMove_Validate(float TimeStamp, FVector_NetQuantize InAccel, FVector_NetQuantize ClientLoc, unsigned char something1, float ViewYaw, float ViewPitch, UPrimitiveComponent* ClientMovementBase, FName ClientBaseBoneName, unsigned char something2, unsigned char something3);
 
-	/** Used for replication of our RootComponent's position and velocity */
+    /** Used for replication of our RootComponent's position and velocity */
 	UPROPERTY(ReplicatedUsing = OnRep_UTReplicatedMovement)
 	struct FRepUTMovement UTReplicatedMovement;
 
 	/** @TODO FIXMESTEVE Temporary different name until engine team makes UpdateSimulatedPosition() virtual */
 	virtual void UTUpdateSimulatedPosition(const FVector & NewLocation, const FRotator & NewRotation, const FVector& NewVelocity);
 
-	virtual void PostNetReceiveLocationAndRotation();
+    virtual void PostNetReceiveLocationAndRotation() override;
 
 	/** True if character is currently wall sliding. */
 	UPROPERTY(Category = "Wall Slide", BlueprintReadOnly, Replicated)
@@ -309,15 +311,15 @@ class UNREALTOURNAMENT_API AUTCharacter : public ACharacter, public IUTTeamInter
 	virtual void OnRep_ReplicatedMovement() override;
 
 	/** Replicated function sent by client to server - contains client movement and view info. */
-	UFUNCTION(unreliable, server, WithValidation)
-	virtual void UTServerMove(float TimeStamp, FVector_NetQuantize InAccel, FVector_NetQuantize ClientLoc, uint8 CompressedMoveFlags, float ViewYaw, float ViewPitch, UPrimitiveComponent* ClientMovementBase, FName ClientBaseBoneName, uint8 ClientMovementMode);
+    //UFUNCTION(unreliable, server, WithValidation)
+    //virtual void UTServerMove(float TimeStamp, FVector_NetQuantize InAccel, FVector_NetQuantize ClientLoc, uint8 CompressedMoveFlags, float ViewYaw, float ViewPitch, UPrimitiveComponent* ClientMovementBase, FName ClientBaseBoneName,  uint8 StartPackedMovementMode, uint8 EndPackedMovementMode);
 
 	/* Resending an (important) old move. Process it if not already processed. */
-	UFUNCTION(unreliable, server, WithValidation)
+    UFUNCTION(unreliable, server, WithValidation)
 	virtual void UTServerMoveOld(float OldTimeStamp, FVector_NetQuantize OldAccel, float OldYaw, uint8 OldMoveFlags);
 
 	/** Replicated function sent by client to server - contains client movement for a pending move, but no expectation of correction. */
-	UFUNCTION(unreliable, server, WithValidation)
+    UFUNCTION(unreliable, server, WithValidation)
 	virtual void UTServerMoveQuick(float TimeStamp, FVector_NetQuantize InAccel, uint8 PendingFlags);
 
 	/** Replicated function sent by client to server - contains client movement for an important pending move where rotation is needed. */
@@ -1029,7 +1031,7 @@ public:
 	virtual bool ShouldTakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) const override
 	{
 		// we want to allow zero damage (momentum only) hits so never pass 0 to super call
-		return bTearOff || Super::ShouldTakeDamage(FMath::Max<float>(1.0f, Damage), DamageEvent, EventInstigator, DamageCauser);
+        return GetTearOff() || Super::ShouldTakeDamage(FMath::Max<float>(1.0f, Damage), DamageEvent, EventInstigator, DamageCauser);
 	}
 
 	virtual float TakeDamage(float Damage, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -1324,7 +1326,7 @@ public:
 	virtual void MoveUp(float Val);
 
 	/** Also call UTCharacterMovement ClearJumpInput() */
-	virtual void ClearJumpInput() override;
+    virtual void ClearJumpInput(float DeltaTime) override;
 
 	virtual void MoveBlockedBy(const FHitResult& Impact) override;
 
@@ -1349,7 +1351,7 @@ public:
 
 	/** particle component for teleport */
 	UPROPERTY(EditAnywhere, Category = "Effects")
-	TArray< TSubclassOf<class AUTReplicatedEmitter> > TeleportEffect;
+    TArray< TSubclassOf<class AUTReplicatedEmitter> > TeleportEffect;
 
 	/** particle component for rally */
 	UPROPERTY(EditAnywhere, Category = "Effects")
@@ -2300,7 +2302,7 @@ protected:
 
 inline bool AUTCharacter::IsDead() const
 {
-	return bTearOff || IsPendingKillPending();
+    return GetTearOff() || IsPendingKillPending();
 }
 
 

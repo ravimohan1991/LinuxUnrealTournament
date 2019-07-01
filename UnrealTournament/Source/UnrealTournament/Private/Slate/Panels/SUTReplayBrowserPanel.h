@@ -73,7 +73,7 @@ protected:
 
 	bool bShouldShowAllReplays;
 
-	void OnEnumerateStreamsComplete(const TArray<FNetworkReplayStreamInfo>& Streams);
+    void OnEnumerateStreamsComplete(const FEnumerateStreamsResult& Streams);
 
 	TSharedRef<ITableRow> OnGenerateWidgetForList(TSharedPtr<FReplayData> InItem, const TSharedRef<STableViewBase>& OwnerTable);
 	void OnReplayListSelectionChanged(TSharedPtr<FReplayData> SelectedItem, ESelectInfo::Type SelectInfo);

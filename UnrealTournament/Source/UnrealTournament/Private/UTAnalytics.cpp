@@ -28,10 +28,10 @@
 
 #include "UTPickupToken.h"
 
-
-#if WITH_QOSREPORTER
-	#include "QoSReporter.h"
+#ifndef WITH_QOSREPORTER
+    #include "Runtime/Analytics/QoSReporter/Public/QoSReporter.h"
 #endif // WITH_QOSREPORTER
+
 #include "IAnalyticsProvider.h"
 #include "IAnalyticsProviderET.h"
 #include "Analytics.h"
@@ -470,7 +470,7 @@ void FUTAnalytics::SetServerInitialParameters(TArray<FAnalyticsEventAttribute>& 
 
 	ParamArray.Add(FAnalyticsEventAttribute(GetGenericParamName(EGenericAnalyticParam::Hostname), FPlatformProcess::ComputerName()));
 	ParamArray.Add(FAnalyticsEventAttribute(GetGenericParamName(EGenericAnalyticParam::SystemId), FPlatformMisc::GetOperatingSystemId()));
-#if WITH_QOSREPORTER
+#ifndef WITH_QOSREPORTER
 	ParamArray.Add(FAnalyticsEventAttribute(GetGenericParamName(EGenericAnalyticParam::InstanceId), FQoSReporter::GetQoSReporterInstanceId()));
 #endif
 	ParamArray.Add(FAnalyticsEventAttribute(GetGenericParamName(EGenericAnalyticParam::BuildVersion), ENGINE_VERSION_STRING));
@@ -516,8 +516,8 @@ void FUTAnalytics::AddPlayerListToParameters(AUTGameMode* UTGM, TArray<FAnalytic
 			AUTBot* UTBotC = Cast<AUTBot>(*It);
 			if (UTBotC && UTBotC->PlayerState)
 			{
-				BotTeamNums.Add(UTBotC->PlayerState->PlayerName, UTBotC->GetTeamNum());
-				BotSkillLevels.Add(UTBotC->PlayerState->PlayerName, UTBotC->Skill);
+                BotTeamNums.Add(UTBotC->PlayerState->GetPlayerName(), UTBotC->GetTeamNum());
+                BotSkillLevels.Add(UTBotC->PlayerState->GetPlayerName(), UTBotC->Skill);
 			}
 		}
 		ParamArray.Add(FAnalyticsEventAttribute(GetGenericParamName(EGenericAnalyticParam::PlayerList), PlayerGUIDs));
@@ -550,7 +550,7 @@ void FUTAnalytics::AddPlayerStatsToParameters(AUTGameMode* UTGM, TArray <FAnalyt
 			AUTPlayerState* UTPS = Cast<AUTPlayerState>((*It)->PlayerState);
 			if (UTPS)
 			{
-				FString PlayerName = UTPS->PlayerName;
+                FString PlayerName = UTPS->GetPlayerName();
 			
 				//try and pull Epic Account Name
 				AUTPlayerController* UTPC = Cast<AUTPlayerController>(*It);
@@ -911,7 +911,7 @@ void FUTAnalytics::FireEvent_UTServerFPSCharts(AUTGameMode* UTGM, TArray<FAnalyt
 			AnalyticsProvider->RecordEvent(GetGenericParamName(EGenericAnalyticParam::UTServerFPSCharts), InParamArray);
 		}
 
-#if WITH_QOSREPORTER
+#ifndef WITH_QOSREPORTER
 		if (FQoSReporter::IsAvailable())
 		{
 			FQoSReporter::GetProvider().RecordEvent(GetGenericParamName(EGenericAnalyticParam::UTServerFPSCharts), InParamArray);
@@ -966,7 +966,7 @@ void FUTAnalytics::FireEvent_ServerUnplayableCondition(AUTGameMode* UTGM, double
 				ParamArray.Add(FAnalyticsEventAttribute(GetGenericParamName(EGenericAnalyticParam::TotalUnplayableTimeInMs), TotalUnplayableTimeInMs));
 
 				AnalyticsProvider->RecordEvent(GetGenericParamName(EGenericAnalyticParam::ServerUnplayableCondition), ParamArray);
-#if WITH_QOSREPORTER
+#ifndef WITH_QOSREPORTER
 				if (FQoSReporter::IsAvailable())
 				{
 					FQoSReporter::GetProvider().RecordEvent(GetGenericParamName(EGenericAnalyticParam::ServerUnplayableCondition), ParamArray);

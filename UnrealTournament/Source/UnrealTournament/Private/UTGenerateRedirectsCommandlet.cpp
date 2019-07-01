@@ -111,7 +111,7 @@ int32 UUTGenerateRedirectsCommandlet::Main(const FString& Params)
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 
 	FoundPaks.Empty();
-	PlatformFile.IterateDirectoryRecursively(*FPaths::Combine(*FPaths::GameContentDir(), TEXT("Paks")), PakVisitor);
+    PlatformFile.IterateDirectoryRecursively(*FPaths::Combine(*FPaths::ProjectContentDir(), TEXT("Paks")), PakVisitor);
 	for (const auto& PakPath : FoundPaks)
 	{
 		FString PakFilename = FPaths::GetBaseFilename(PakPath);
@@ -133,7 +133,7 @@ int32 UUTGenerateRedirectsCommandlet::Main(const FString& Params)
 	if (!bFoundPackage)
 	{
 		FoundPaks.Empty();
-		PlatformFile.IterateDirectoryRecursively(*FPaths::Combine(*FPaths::GameSavedDir(), TEXT("Paks"), TEXT("MyContent")), PakVisitor);
+        PlatformFile.IterateDirectoryRecursively(*FPaths::Combine(*FPaths::ProjectContentDir(), TEXT("Paks"), TEXT("MyContent")), PakVisitor);
 		for (const auto& PakPath : FoundPaks)
 		{
 			FString PakFilename = FPaths::GetBaseFilename(PakPath);

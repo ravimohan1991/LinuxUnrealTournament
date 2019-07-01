@@ -186,12 +186,12 @@ void AUTGameMode::NotifySpeedHack(ACharacter* Character)
 	}
 }
 
-void AUTGameMode::BeginPlayMutatorHack(FFrame& Stack, RESULT_DECL)
+void AUTGameMode::BeginPlayMutatorHack(UObject* Context, FFrame& Stack, RESULT_DECL )
 {
 	P_FINISH;
 
 	// WARNING: 'this' is actually an AActor! Only do AActor things!
-	if (!IsA(ALevelScriptActor::StaticClass()) && !IsA(AUTMutator::StaticClass()) &&
+    if (!IsA(ALevelScriptActor::StaticClass()) && !IsA(AUTMutator::StaticClass()) &&
 		(RootComponent == NULL || RootComponent->Mobility != EComponentMobility::Static || (!IsA(AStaticMeshActor::StaticClass()) && !IsA(ALight::StaticClass()))) )
 	{
 		AUTGameMode* Game = GetWorld()->GetAuthGameMode<AUTGameMode>();
@@ -200,7 +200,7 @@ void AUTGameMode::BeginPlayMutatorHack(FFrame& Stack, RESULT_DECL)
 		{
 			Destroy();
 		}
-	}
+    }
 }
 
 bool AUTGameMode::AllowCheats(APlayerController* P)
@@ -219,11 +219,11 @@ void AUTGameMode::InitGame( const FString& MapName, const FString& Options, FStr
 	// HACK: workaround to inject CheckRelevance() into the BeginPlay sequence
 	UFunction* Func = AActor::GetClass()->FindFunctionByName(FName(TEXT("ReceiveBeginPlay")));
 	Func->FunctionFlags |= FUNC_Native;
-	Func->SetNativeFunc((Native)&AUTGameMode::BeginPlayMutatorHack);
+    //Func->SetNativeFunc(AUTGameMode::BeginPlayMutatorHack);
 
 	if (bGameHasImpactHammer && !ImpactHammerObject.IsNull())
 	{
-		ImpactHammerClass = Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *ImpactHammerObject.ToStringReference().ToString(), NULL, LOAD_NoWarn));
+        ImpactHammerClass = Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *ImpactHammerObject.ToSoftObjectPath().ToString(), NULL, LOAD_NoWarn));
 		DefaultInventory.Add(ImpactHammerClass);
 	}
 
@@ -443,7 +443,7 @@ void AUTGameMode::InitGame( const FString& MapName, const FString& Options, FStr
 	bPlayersStartWithArmor = EvalBoolOptions(InOpt, bPlayersStartWithArmor);
 	if (!StartingArmorObject.IsNull())
 	{
-		StartingArmorClass = Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *StartingArmorObject.ToStringReference().ToString(), NULL, LOAD_NoWarn));
+        StartingArmorClass = Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *StartingArmorObject.ToSoftObjectPath().ToString(), NULL, LOAD_NoWarn));
 	}
 
 	if (UGameplayStatics::HasOption(Options, TEXT("TutorialMask")))
@@ -481,10 +481,10 @@ void AUTGameMode::AddMutator(const FString& MutatorPath)
 		FName MutatorModuleName = FName(*MutatorPath.Left(PeriodIndex));
 		if (!FModuleManager::Get().IsModuleLoaded(MutatorModuleName))
 		{
-			if (!FModuleManager::Get().LoadModule(MutatorModuleName).IsValid())
+            /*if (!FModuleManager::Get().LoadModule(MutatorModuleName).IsValid())
 			{
 				UE_LOG(UT, Warning, TEXT("Failed to load module for mutator %s"), *MutatorModuleName.ToString());
-			}
+            }*/
 		}
 	}
 	TSubclassOf<AUTMutator> MutClass = LoadClass<AUTMutator>(NULL, *MutatorPath, NULL, LOAD_NoWarn | LOAD_Quiet, NULL);
@@ -506,7 +506,7 @@ void AUTGameMode::AddMutator(const FString& MutatorPath)
 
 					TMap<FName, FString> TagsAndValuesMap;
 					TagsAndValuesMap.Add(NAME_GeneratedClass, It->GetPathName());
-					NewData.TagsAndValues = MakeSharedMapView(MoveTemp(TagsAndValuesMap));
+                    //NewData.TagsAndValues = MakeSharedMapView(MoveTemp(TagsAndValuesMap)); What is the purpose of MakeSharedMapView?
 
 					MutatorAssets.Add(NewData);
 				}
@@ -517,7 +517,7 @@ void AUTGameMode::AddMutator(const FString& MutatorPath)
 		{
 			if (Asset.AssetName == FName(*MutatorPath) || Asset.AssetName == FName(*FString(TEXT("Mutator_") + MutatorPath)) || Asset.AssetName == FName(*FString(TEXT("UTMutator_") + MutatorPath)))
 			{
-				const FString* ClassPath = Asset.TagsAndValues.Find(NAME_GeneratedClass);
+                const FString* ClassPath = &Asset.TagsAndValues.FindTag(NAME_GeneratedClass).GetValue();
 				if (ClassPath != NULL)
 				{
 					MutClass = LoadObject<UClass>(NULL, **ClassPath);
@@ -811,7 +811,7 @@ APlayerController* AUTGameMode::Login(UPlayer* NewPlayer, ENetRole InRemoteRole,
 			PS->PartySize = UGameplayStatics::GetIntOption(Options, TEXT("PartySize"), 1);
 			PS->PartyLeader = UGameplayStatics::ParseOption(Options, TEXT("PartyLeader"));
 
-			UE_LOG(LogOnlineParty, Display, TEXT("%s joined with Party Leader %s"), *PS->PlayerName, *PS->PartyLeader);
+            UE_LOG(LogOnlineParty, Display, TEXT("%s joined with Party Leader %s"), *PS->GetPlayerName(), *PS->PartyLeader);
 		}
 	}
 
@@ -1156,7 +1156,7 @@ void AUTGameMode::BeginLineUp(const FString& LineUpTypeName)
 	{
 		for (int EnumIndex = 0; EnumIndex < LineUpTypeEnum->NumEnums(); ++EnumIndex)
 		{
-			if (LineUpTypeEnum->GetEnumName(EnumIndex).Equals(LineUpTypeName, ESearchCase::IgnoreCase))
+            if (LineUpTypeEnum->GetNameStringByIndex(EnumIndex).Equals(LineUpTypeName, ESearchCase::IgnoreCase))
 			{
 				LineUpTypes TypeToCreate = static_cast<LineUpTypes>(EnumIndex);
 				
@@ -1725,8 +1725,8 @@ void AUTGameMode::AddKillEventToReplay(AController* Killer, AController* Other, 
 		AUTPlayerState* KillerPlayerState = Cast<AUTPlayerState>(Killer->PlayerState);
 		AUTPlayerState* OtherPlayerState = Cast<AUTPlayerState>(Other->PlayerState);
 
-		FString KillerName = KillerPlayerState ? *KillerPlayerState->PlayerName : TEXT("None");
-		FString VictimName = OtherPlayerState ? *OtherPlayerState->PlayerName : TEXT("None");
+        FString KillerName = KillerPlayerState ? *KillerPlayerState->GetPlayerName() : TEXT("None");
+        FString VictimName = OtherPlayerState ? *OtherPlayerState->GetPlayerName() : TEXT("None");
 
 		KillerName.ReplaceInline(TEXT(" "), TEXT("%20"));
 		VictimName.ReplaceInline(TEXT(" "), TEXT("%20"));
@@ -1745,7 +1745,7 @@ void AUTGameMode::AddKillEventToReplay(AController* Killer, AController* Other, 
 			MetaTag = KillerPlayerState->StatsID;
 			if (MetaTag.IsEmpty())
 			{
-				MetaTag = KillerPlayerState->PlayerName;
+                MetaTag = KillerPlayerState->GetPlayerName();
 			}
 		}
 		DemoNetDriver->AddEvent(TEXT("Kills"), MetaTag, Data);
@@ -1758,7 +1758,7 @@ void AUTGameMode::AddMultiKillEventToReplay(AController* Killer, int32 MultiKill
 	if (Killer && DemoNetDriver != nullptr && DemoNetDriver->ServerConnection == nullptr)
 	{
 		AUTPlayerState* KillerPlayerState = Cast<AUTPlayerState>(Killer->PlayerState);
-		FString KillerName = KillerPlayerState ? *KillerPlayerState->PlayerName : TEXT("None");
+        FString KillerName = KillerPlayerState ? *KillerPlayerState->GetPlayerName() : TEXT("None");
 		KillerName.ReplaceInline(TEXT(" "), TEXT("%20"));
 
 		TArray<uint8> Data;
@@ -1773,7 +1773,7 @@ void AUTGameMode::AddMultiKillEventToReplay(AController* Killer, int32 MultiKill
 			MetaTag = KillerPlayerState->StatsID;
 			if (MetaTag.IsEmpty())
 			{
-				MetaTag = KillerPlayerState->PlayerName;
+                MetaTag = KillerPlayerState->GetPlayerName();
 			}
 		}
 		DemoNetDriver->AddEvent(TEXT("MultiKills"), MetaTag, Data);
@@ -1786,7 +1786,7 @@ void AUTGameMode::AddSpreeKillEventToReplay(AController* Killer, int32 SpreeLeve
 	if (Killer && DemoNetDriver != nullptr && DemoNetDriver->ServerConnection == nullptr)
 	{
 		AUTPlayerState* KillerPlayerState = Cast<AUTPlayerState>(Killer->PlayerState);
-		FString KillerName = KillerPlayerState ? *KillerPlayerState->PlayerName : TEXT("None");
+        FString KillerName = KillerPlayerState ? *KillerPlayerState->GetPlayerName() : TEXT("None");
 		KillerName.ReplaceInline(TEXT(" "), TEXT("%20"));
 
 		TArray<uint8> Data;
@@ -1801,7 +1801,7 @@ void AUTGameMode::AddSpreeKillEventToReplay(AController* Killer, int32 SpreeLeve
 			MetaTag = KillerPlayerState->StatsID;
 			if (MetaTag.IsEmpty())
 			{
-				MetaTag = KillerPlayerState->PlayerName;
+                MetaTag = KillerPlayerState->GetPlayerName();
 			}
 		}
 		DemoNetDriver->AddEvent(TEXT("SpreeKills"), MetaTag, Data);
@@ -1829,7 +1829,7 @@ void AUTGameMode::DiscardInventory(APawn* Other, AController* Killer)
 					UTC->TossInventory(UTC->GetWeapon());
 					if (OldWeapon && !OldWeapon->IsPendingKillPending() && OldWeapon->bShouldAnnounceDrops && (OldWeapon->Ammo > 0) && (OldWeapon->PickupAnnouncementName != NAME_None) && bAllowPickupAnnouncements && IsMatchInProgress())
 					{
-						AUTPlayerState* UTPS = Cast<AUTPlayerState>(Other->PlayerState);
+                        AUTPlayerState* UTPS = Cast<AUTPlayerState>(Other->GetPlayerState());
 						if (UTPS)
 						{
 							UTPS->AnnounceStatus(OldWeapon->PickupAnnouncementName, 2);
@@ -1854,7 +1854,7 @@ void AUTGameMode::DiscardInventory(APawn* Other, AController* Killer)
 					UTC->TossInventory(*It, FVector(FMath::FRandRange(0.0f, 200.0f), FMath::FRandRange(-400.0f, 400.0f), FMath::FRandRange(0.0f, 200.0f)));
 					if (It->bShouldAnnounceDrops && (It->PickupAnnouncementName != NAME_None) && bAllowPickupAnnouncements && IsMatchInProgress())
 					{
-						AUTPlayerState* UTPS = Cast<AUTPlayerState>(Other->PlayerState);
+                        AUTPlayerState* UTPS = Cast<AUTPlayerState>(Other->GetPlayerState());
 						AUTWeapon* Weap = Cast<AUTWeapon>(*It);
 						if (UTPS && (!Weap || Weap->Ammo > 0))
 						{
@@ -2510,7 +2510,7 @@ void AUTGameMode::PickMostCoolMoments(bool bClearCoolMoments, int32 CoolMomentsT
 
 		PlayerStates.Remove(CoolestPlayer);
 
-		UE_LOG(UT, Log, TEXT("PickMostCoolMoments found cool moment #%d at %f by %s"), CoolestPlayers.Num(), BestTimeOccurred, *CoolestPlayer->PlayerName);
+        UE_LOG(UT, Log, TEXT("PickMostCoolMoments found cool moment #%d at %f by %s"), CoolestPlayers.Num(), BestTimeOccurred, *CoolestPlayer->GetPlayerName());
 
 		for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 		{
@@ -2818,8 +2818,8 @@ bool AUTGameMode::PrepareMapVote()
 		FString PackageName = MapAsset.PackageName.ToString();
 		if (MapList.Find(PackageName) != INDEX_NONE)
 		{
-			const FString* Title = MapAsset.TagsAndValues.Find(NAME_MapInfo_Title);
-			const FString* Screenshot = MapAsset.TagsAndValues.Find(NAME_MapInfo_ScreenshotReference);
+            const FString* Title = &MapAsset.TagsAndValues.FindTag(NAME_MapInfo_Title).GetValue();
+            const FString* Screenshot = &MapAsset.TagsAndValues.FindTag(NAME_MapInfo_ScreenshotReference).GetValue();
 			UTGameState->CreateMapVoteInfo(PackageName, (Title != NULL && !Title->IsEmpty()) ? *Title : *MapAsset.AssetName.ToString(), Screenshot != nullptr ? *Screenshot : TEXT(""));
 		}
 	}
@@ -2929,7 +2929,7 @@ bool AUTGameMode::AllowSuicideBy(AUTPlayerController* PC)
 
 void AUTGameMode::RestartPlayer(AController* aPlayer)
 {
-	if ((aPlayer == NULL) || (aPlayer->PlayerState == NULL) || aPlayer->PlayerState->PlayerName.IsEmpty())
+    if ((aPlayer == NULL) || (aPlayer->PlayerState == NULL) || aPlayer->PlayerState->GetPlayerName().IsEmpty())
 	{
 		UE_LOG(UT, Warning, TEXT("RestartPlayer with a bad player, bad playerstate, or empty player name"));
 		return;
@@ -3022,7 +3022,7 @@ void AUTGameMode::GiveDefaultInventory(APawn* PlayerPawn)
 			}
 		}
 		UTCharacter->AddDefaultInventory(DefaultInventory);
-		AUTPlayerState * PS = Cast<AUTPlayerState>(UTCharacter->PlayerState);
+        AUTPlayerState * PS = Cast<AUTPlayerState>(UTCharacter->GetPlayerState());
 		if (StartingArmorClass && PS && PS->PlayerCard && (PS->PlayerCard->ExtraArmor > 0))
 		{
 			UTCharacter->SetArmorAmount(StartingArmorClass.GetDefaultObject(), FMath::Max(FMath::Max(UTCharacter->GetArmorAmount(), PS->PlayerCard->ExtraArmor), FMath::Min(100, UTCharacter->GetArmorAmount() + PS->PlayerCard->ExtraArmor)));
@@ -3253,7 +3253,7 @@ float AUTGameMode::RatePlayerStart(APlayerStart* P, AController* Player)
 			AController* OtherController = Iterator->Get();
 			ACharacter* OtherCharacter = Cast<ACharacter>( OtherController->GetPawn());
 
-			if ( OtherCharacter && OtherCharacter->PlayerState && (!UTGameState || !UTGameState->IsLineUpActive()) )
+            if ( OtherCharacter && OtherCharacter->GetPlayerState() && (!UTGameState || !UTGameState->IsLineUpActive()) )
 			{
 				if (FMath::Abs(StartLoc.Z - OtherCharacter->GetActorLocation().Z) < P->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() + OtherCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()
 					&& (StartLoc - OtherCharacter->GetActorLocation()).Size2D() < P->GetCapsuleComponent()->GetScaledCapsuleRadius() + OtherCharacter->GetCapsuleComponent()->GetScaledCapsuleRadius())
@@ -3303,7 +3303,7 @@ float AUTGameMode::AdjustNearbyPlayerStartScore(const AController* Player, const
 	if (((NextDist < 5000.0f) || bTwoPlayerGame) && !UTGameState->OnSameTeam(Player, OtherController))
 	{
 		static FName NAME_RatePlayerStart = FName(TEXT("RatePlayerStart"));
-		bool bIsLastKiller = (OtherCharacter->PlayerState == Cast<AUTPlayerState>(Player->PlayerState)->LastKillerPlayerState);
+        bool bIsLastKiller = (OtherCharacter->GetPlayerState() == Cast<AUTPlayerState>(Player->PlayerState)->LastKillerPlayerState);
 		if (bIsInstagib && !bIsLastKiller)
 		{
 			return 0.f;
@@ -3929,7 +3929,7 @@ void AUTGameMode::SendLogoutAnalytics(AUTPlayerState* PS)
 		float TotalTimeOnline = UTGameState->ElapsedTime - PS->StartTime;
 		TArray<FAnalyticsEventAttribute> ParamArray;
 		ParamArray.Add(FAnalyticsEventAttribute(TEXT("ID"), PS->StatsID));
-		ParamArray.Add(FAnalyticsEventAttribute(TEXT("PlayerName"), PS->PlayerName));
+        ParamArray.Add(FAnalyticsEventAttribute(TEXT("PlayerName"), PS->GetPlayerName()));
 		ParamArray.Add(FAnalyticsEventAttribute(TEXT("TimeOnline"), TotalTimeOnline));
 		ParamArray.Add(FAnalyticsEventAttribute(TEXT("Kills"), PS->Kills));
 		ParamArray.Add(FAnalyticsEventAttribute(TEXT("Deaths"), PS->Deaths));
@@ -5240,7 +5240,7 @@ bool AUTGameMode::FindInactivePlayer(APlayerController* PC)
 	bool bIsConsole = GEngine->IsConsoleBuild();
 
 	FString NewNetworkAddress = PC->PlayerState->SavedNetworkAddress;
-	FString NewName = PC->PlayerState->PlayerName;
+    FString NewName = PC->PlayerState->GetPlayerName();
 	for (int32 i = 0; i<InactivePlayerArray.Num(); i++)
 	{
 		APlayerState* CurrentPlayerState = InactivePlayerArray[i];
@@ -5250,7 +5250,7 @@ bool AUTGameMode::FindInactivePlayer(APlayerController* PC)
 			i--;
 		}
 		else if ((bIsConsole && (CurrentPlayerState->UniqueId == PC->PlayerState->UniqueId)) ||
-			(!bIsConsole && (FCString::Stricmp(*CurrentPlayerState->SavedNetworkAddress, *NewNetworkAddress) == 0) && (FCString::Stricmp(*CurrentPlayerState->PlayerName, *NewName) == 0)))
+            (!bIsConsole && (FCString::Stricmp(*CurrentPlayerState->SavedNetworkAddress, *NewNetworkAddress) == 0) && (FCString::Stricmp(*CurrentPlayerState->GetPlayerName(), *NewName) == 0)))
 		{
 			// found it!
 			APlayerState* OldPlayerState = PC->PlayerState;
@@ -5334,7 +5334,7 @@ void AUTGameMode::GetRankedTeamInfo(int32 TeamId, FRankedTeamInfo& RankedTeamInf
 			RankedMemberInfo.IsBot = PS->bIsABot;
 			if (PS->bIsABot)
 			{
-				RankedMemberInfo.AccountId = PS->PlayerName;
+                RankedMemberInfo.AccountId = PS->GetPlayerName();
 			}
 			RankedTeamInfoOut.Members.Add(RankedMemberInfo);
 			RankedTeamInfoOut.SocialPartySize = FMath::Max(RankedTeamInfoOut.SocialPartySize, PS->PartySize);
@@ -5351,7 +5351,7 @@ void AUTGameMode::GetRankedTeamInfo(int32 TeamId, FRankedTeamInfo& RankedTeamInf
 			RankedMemberInfo.IsBot = PS->bIsABot;
 			if (PS->bIsABot)
 			{
-				RankedMemberInfo.AccountId = PS->PlayerName;
+                RankedMemberInfo.AccountId = PS->GetPlayerName();
 			}
 			RankedTeamInfoOut.Members.Add(RankedMemberInfo);
 			RankedTeamInfoOut.SocialPartySize = FMath::Max(RankedTeamInfoOut.SocialPartySize, PS->PartySize);
@@ -5435,7 +5435,7 @@ void AUTGameMode::ReportRankedMatchResults(const FString& MatchRatingType)
 		if (!Result.bSucceeded)
 		{
 			// best we can do is log an error
-			UE_LOG(UT, Warning, TEXT("Failed to report Match Results to the server. User ELOs will not be updated. (%d) %s %s"), Result.HttpResult, *Result.ErrorCode, *Result.ErrorMessage.ToString());
+            UE_LOG(UT, Warning, TEXT("Failed to report Match Results to the server. User ELOs will not be updated. %s %s"), /*Result.HttpResult,*/ *Result.ErrorCode, *Result.ErrorMessage.ToString());
 		}
 		else
 		{
@@ -5460,7 +5460,7 @@ void AUTGameMode::SendLobbyMessage(const FString& Message, AUTPlayerState* Sende
 {
 	if (LobbyBeacon && Sender)
 	{
-		LobbyBeacon->Lobby_ReceiveUserMessage(Message, Sender->PlayerName);
+        LobbyBeacon->Lobby_ReceiveUserMessage(Message, Sender->GetPlayerName());
 	}
 }
 

@@ -18,8 +18,8 @@ static inline TArray<FAnalyticsEventAttribute> ConvertAttrs(const TArray<FUTAnal
 	Converted.AddZeroed(Attributes.Num());
 	for (int32 Index = 0; Index < Attributes.Num(); Index++)
 	{
-		Converted[Index].AttrName = Attributes[Index].Name;
-		Converted[Index].AttrValue = Attributes[Index].Value;
+        //Converted[Index].AttrName = Attributes[Index].Name;
+        //Converted[Index].AttrValue = Attributes[Index].Value;
 	}
 	return Converted;
 }

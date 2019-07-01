@@ -9,7 +9,7 @@ UUTListItem::UUTListItem( const FObjectInitializer& Initializer )
 {
 }
 
-void IUTListItem::SetSelected_Implementation( bool bSelected )
+/*void IUTListItem::SetSelected_Implementation( bool bSelected )
 {
 	// stub
 }
@@ -51,4 +51,4 @@ void IUTListItem::Private_OnExpanderArrowShiftClicked_Implementation()
 void IUTListItem::RegisterOnClicked_Implementation(const FOnItemClicked& Callback)
 {
 	// stub
-}
+}*/

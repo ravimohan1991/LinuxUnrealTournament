@@ -3,13 +3,14 @@
 #pragma once
 
 #include "UTListItem.h"
+#include "STableRow.h"
 #include "Slate/SObjectWidget.h"
 
 template <typename ItemType>
-class SObjectTableRow : public SObjectWidget, public ITableRow
+class SObjectTableRowUT : public SObjectWidget, public ITableRow
 {
 public:
-	SLATE_BEGIN_ARGS( SObjectTableRow ) 
+    SLATE_BEGIN_ARGS( SObjectTableRowUT )
 		{	
 		}
 

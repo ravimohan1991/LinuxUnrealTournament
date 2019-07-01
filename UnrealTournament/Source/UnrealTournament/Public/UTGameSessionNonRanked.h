@@ -3,7 +3,7 @@
 #pragma once
 
 #include "UTGameEngine.h"
-
+#include "UTGameSession.h"
 #include "UTGameSessionNonRanked.generated.h"
 
 const float SERVER_REREGISTER_WAIT_TIME = 120.0;  // 2 minutes
@@ -29,7 +29,7 @@ public:
 
 	virtual void StartMatch() override;
 	virtual void EndMatch() override;
-	virtual void CleanUpOnlineSubsystem();
+    virtual void CleanUpOnlineSubsystem() override;
 
 protected:
 
@@ -41,11 +41,13 @@ protected:
 	FDelegateHandle OnConnectionStatusDelegate;
 
 	virtual void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
-	virtual void OnStartSessionComplete(FName SessionName, bool bWasSuccessful);
-	virtual void OnEndSessionComplete(FName SessionName, bool bWasSuccessful);
+    virtual void OnStartSessionComplete(FName SessionName, bool bWasSuccessful) override;
+    virtual void OnEndSessionComplete(FName SessionName, bool bWasSuccessful) override;
 	virtual void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
 	virtual void OnUpdateSessionComplete(FName SessionName, bool bWasSuccessful);
-	virtual void OnConnectionStatusChanged(EOnlineServerConnectionStatus::Type LastConnectionState, EOnlineServerConnectionStatus::Type ConnectionState);
+    virtual void OnConnectionStatusChanged(const FString& sos,
+                                           EOnlineServerConnectionStatus::Type LastConnectionState,
+                                           EOnlineServerConnectionStatus::Type ConnectionState);
 
 protected:
 

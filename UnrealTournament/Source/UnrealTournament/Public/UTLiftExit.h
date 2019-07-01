@@ -4,6 +4,7 @@
 #pragma once
 
 #include "UTPathBuilderInterface.h"
+#include "Runtime/Engine/Classes/Components/BillboardComponent.h"
 
 #include "UTLiftExit.generated.h"
 

@@ -143,7 +143,7 @@ bool AUTWeaponLocker::IsTaken(APawn* TestPawn)
 {
 	for (int32 i = Customers.Num() - 1; i >= 0; i--)
 	{
-		if (Customers[i].P == NULL || Customers[i].P->bTearOff || Customers[i].P->IsPendingKillPending())
+        if (Customers[i].P == NULL || Customers[i].P->GetTearOff() || Customers[i].P->IsPendingKillPending())
 		{
 			Customers.RemoveAt(i);
 		}
@@ -251,9 +251,9 @@ void AUTWeaponLocker::GiveTo_Implementation(APawn* Target)
 	if (P != NULL)
 	{
 		P->DeactivateSpawnProtection();
-		if (P->PlayerState && (Cast<APlayerController>(P->GetController()) != nullptr))
+        if (P->GetPlayerState() && (Cast<APlayerController>(P->GetController()) != nullptr))
 		{
-			((APlayerController*)P->GetController())->ClientReceiveLocalizedMessage(UUTPickupMessage::StaticClass(), 0, P->PlayerState, NULL, GetClass());
+            ((APlayerController*)P->GetController())->ClientReceiveLocalizedMessage(UUTPickupMessage::StaticClass(), 0, P->GetPlayerState(), NULL, GetClass());
 		}
 		for (const FWeaponLockerItem& Item : WeaponList)
 		{
@@ -275,7 +275,7 @@ void AUTWeaponLocker::GiveTo_Implementation(APawn* Target)
 			const AUTInventory* Inventory = (Item.WeaponType != nullptr) ? Item.WeaponType.GetDefaultObject() : nullptr;
 			if (Inventory && Inventory->StatsNameCount != NAME_None)
 			{
-				AUTPlayerState* PS = Cast<AUTPlayerState>(P->PlayerState);
+                AUTPlayerState* PS = Cast<AUTPlayerState>(P->GetPlayerState());
 				if (PS)
 				{
 					PS->ModifyStatsValue(Inventory->StatsNameCount, 1);

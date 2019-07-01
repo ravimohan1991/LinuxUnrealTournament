@@ -34,7 +34,7 @@ AUTDualWeapon::AUTDualWeapon(const FObjectInitializer& ObjectInitializer)
 	LeftMesh = ObjectInitializer.CreateDefaultSubobject<USkeletalMeshComponent>(this, TEXT("LeftMesh"));
 	LeftMesh->SetOnlyOwnerSee(true);
 	LeftMesh->SetupAttachment(RootComponent);
-	LeftMesh->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::OnlyTickPoseWhenRendered;
+    LeftMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;//EMeshComponentUpdateFlag::OnlyTickPoseWhenRendered;
 	LeftMesh->bSelfShadowOnly = true;
 	LeftMesh->bHiddenInGame = true;
 
@@ -280,12 +280,12 @@ void AUTDualWeapon::AttachLeftMesh()
 
 			if (ShouldPlay1PVisuals())
 			{
-				LeftMesh->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPose; // needed for anims to be ticked even if weapon is not currently displayed, e.g. sniper zoom
+                LeftMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPose;//EMeshComponentUpdateFlag::AlwaysTickPose; // needed for anims to be ticked even if weapon is not currently displayed, e.g. sniper zoom
 				LeftMesh->LastRenderTime = GetWorld()->TimeSeconds;
 				LeftMesh->bRecentlyRendered = true;
 				if (LeftOverlayMesh != NULL)
 				{
-					LeftOverlayMesh->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPose;
+                    LeftOverlayMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPose;
 					LeftOverlayMesh->LastRenderTime = GetWorld()->TimeSeconds;
 					LeftOverlayMesh->bRecentlyRendered = true;
 				}
@@ -505,13 +505,13 @@ void AUTDualWeapon::PlayImpactEffects_Implementation(const FVector& TargetLoc, u
 					? LeftSpawnLocation + MaxTracerDist * (TargetLoc - LeftSpawnLocation).GetSafeNormal()
 					: TargetLoc;
 				PSC->SetVectorParameter(NAME_HitLocation, AdjustedTargetLoc);
-				PSC->SetVectorParameter(NAME_LocalHitLocation, PSC->ComponentToWorld.InverseTransformPosition(AdjustedTargetLoc));
+                PSC->SetVectorParameter(NAME_LocalHitLocation, PSC->GetComponentToWorld().InverseTransformPosition(AdjustedTargetLoc));
 			}
 			// perhaps the muzzle flash also contains hit effect (constant beam, etc) so set the parameter on it instead
 			else if (MuzzleFlash.IsValidIndex(LeftHandMuzzleFlashIndex) && MuzzleFlash[LeftHandMuzzleFlashIndex] != NULL)
 			{
 				MuzzleFlash[LeftHandMuzzleFlashIndex]->SetVectorParameter(NAME_HitLocation, TargetLoc);
-				MuzzleFlash[LeftHandMuzzleFlashIndex]->SetVectorParameter(NAME_LocalHitLocation, MuzzleFlash[LeftHandMuzzleFlashIndex]->ComponentToWorld.InverseTransformPositionNoScale(TargetLoc));
+                MuzzleFlash[LeftHandMuzzleFlashIndex]->SetVectorParameter(NAME_LocalHitLocation, MuzzleFlash[LeftHandMuzzleFlashIndex]->GetComponentToWorld().InverseTransformPositionNoScale(TargetLoc));
 			}
 
 			if ((TargetLoc - LastImpactEffectLocation).Size() >= ImpactEffectSkipDistance || GetWorld()->TimeSeconds - LastImpactEffectTime >= MaxImpactEffectSkipTime)

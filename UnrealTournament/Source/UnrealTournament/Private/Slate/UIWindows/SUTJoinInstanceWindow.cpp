@@ -111,7 +111,7 @@ void SUTJoinInstanceWindow::BuildWindow()
 	];
 
 	BeginJoin();
-	FSlateApplication::Get().SetKeyboardFocus(SharedThis(this), EKeyboardFocusCause::Keyboard);
+    FSlateApplication::Get().SetKeyboardFocus(SharedThis(this), EFocusCause::Navigation);
 }
 
 
@@ -335,7 +335,7 @@ FReply SUTJoinInstanceWindow::OnCancelClick()
 
 void SUTJoinInstanceWindow::TellSlateIWantKeyboardFocus()
 {
-	FSlateApplication::Get().SetKeyboardFocus(SharedThis(this), EKeyboardFocusCause::Keyboard);
+    FSlateApplication::Get().SetKeyboardFocus(SharedThis(this), EFocusCause::Navigation);
 }
 
 

@@ -59,7 +59,7 @@ void AUTFlagRunPvEHUD::DrawHUD()
 		}
 		const float Size = FMath::Min<float>(Canvas->ClipX * 0.1f, Canvas->ClipY * 0.1f);
 		{
-			FCanvasTileItem TileItem(FVector2D(Canvas->ClipX * 0.8f, Canvas->ClipY * 0.8f), ChargeIndicatorMID->GetRenderProxy(0), FVector2D(Size, Size), FVector2D(1.0f, 0.0f), FVector2D(0.0f, 1.0f));
+            FCanvasTileItem TileItem(FVector2D(Canvas->ClipX * 0.8f, Canvas->ClipY * 0.8f), ChargeIndicatorMID->GetRenderProxy(), FVector2D(Size, Size), FVector2D(1.0f, 0.0f), FVector2D(0.0f, 1.0f));
 			TileItem.Rotation.Yaw = -90.0f;
 			TileItem.PivotPoint = FVector2D(0.5f, 0.5f);
 			TileItem.SetColor(FLinearColor(1.0f, 1.0f, 0.0f, 1.0f));
@@ -68,7 +68,7 @@ void AUTFlagRunPvEHUD::DrawHUD()
 		if (UTPlayerOwner->UTPlayerState->GetRemainingBoosts() > 0)
 		{
 			const float ScaleAdd = FMath::InterpEaseOut<float>(0.0f, 1.0f, GetWorld()->TimeSeconds - FMath::TruncToFloat(GetWorld()->TimeSeconds), 2.0f);
-			FCanvasTileItem TileItem(FVector2D(Canvas->ClipX * 0.8f - Size * ScaleAdd * 0.5f, Canvas->ClipY * 0.8f - Size * ScaleAdd * 0.5f), ChargeIndicatorMID->GetRenderProxy(0), FVector2D(Size * (1.0f + ScaleAdd), Size * (1.0f + ScaleAdd)), FVector2D(0.0f, 0.0f), FVector2D(1.0f, 1.0f));
+            FCanvasTileItem TileItem(FVector2D(Canvas->ClipX * 0.8f - Size * ScaleAdd * 0.5f, Canvas->ClipY * 0.8f - Size * ScaleAdd * 0.5f), ChargeIndicatorMID->GetRenderProxy(), FVector2D(Size * (1.0f + ScaleAdd), Size * (1.0f + ScaleAdd)), FVector2D(0.0f, 0.0f), FVector2D(1.0f, 1.0f));
 			TileItem.SetColor(FLinearColor(1.0f, 1.0f, 0.0f, 0.7f - 0.65f * ScaleAdd));
 			Canvas->DrawItem(TileItem);
 		}

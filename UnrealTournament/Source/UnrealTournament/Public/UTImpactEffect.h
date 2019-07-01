@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include "Runtime/Engine/Classes/GameFramework/Actor.h"
+#include "Runtime/Engine/Classes/Particles/ParticleSystemComponent.h"
+#include "UTGameplayStatics.h"
 #include "UTImpactEffect.generated.h"
 
 USTRUCT(BlueprintType)

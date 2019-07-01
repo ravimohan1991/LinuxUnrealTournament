@@ -4,7 +4,7 @@
 #include "UTLocalMessage.h"
 #include "UTCharacterVoice.generated.h"
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FCharacterSpeech
 {
 	GENERATED_USTRUCT_BODY()
@@ -16,7 +16,7 @@ struct FCharacterSpeech
 	USoundBase* SpeechSound;
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FGameVolumeLines
 {
 	GENERATED_USTRUCT_BODY()

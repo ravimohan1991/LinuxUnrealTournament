@@ -99,7 +99,7 @@ class AUTReplicatedMapInfo;
 class AUTRconAdminInfo;
 class SUTWebBrowserPanel;
 
-UCLASS()
+UCLASS(BlueprintType)
 class UNREALTOURNAMENT_API AUTPlayerState : public APlayerState, public IUTTeamInterface
 {
 	GENERATED_UCLASS_BODY()
@@ -855,6 +855,9 @@ private:
 	/** map of per round stats used for scoring display. GameMode/scoring responsible for clearing this between rounds. */
 	TMap< FName, float > RoundStatsData;
 
+    /** No clue what for.  Was there in the UT code.*/
+    float NetUpdateTime;
+
 public:
 	/** Last time StatsData was updated - used when replicating the data. */
 	UPROPERTY()
@@ -1321,7 +1324,7 @@ struct FRemotePlayerInfo
 	FRemotePlayerInfo(AUTPlayerState* PlayerState, int32 InRankCheck)
 		: PlayerID(PlayerState->UniqueId)
 		, bIsSpectator(PlayerState->bOnlySpectator)
-		, PlayerName(PlayerState->PlayerName)
+        , PlayerName(PlayerState->GetPlayerName())
 		, PlayerScore(PlayerState->Score)
 		, RankCheck(InRankCheck)
 		, XPLevel(PlayerState->GetPrevXP())

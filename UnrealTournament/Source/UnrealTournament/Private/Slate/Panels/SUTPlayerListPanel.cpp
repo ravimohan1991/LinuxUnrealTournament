@@ -1,4 +1,3 @@
-
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 #include "UnrealTournament.h"
@@ -15,7 +14,7 @@
 #include "SUTTextChatPanel.h"
 #include "SUTChatEditBox.h"
 
-#if !UE_SERVER
+#if  !UE_SERVER
 
 struct FPlayerCompare 
 {
@@ -574,7 +573,7 @@ void SUTPlayerListPanel::Tick( const FGeometry& AllottedGeometry, const double I
 						bListNeedsUpdate = true;
 						// This is a new player.. Add them.
 
-						TrackedPlayers.Add(FTrackedPlayer::Make(PlayerState, PlayerState->UniqueId, PlayerState->PlayerName, TeamNum, PlayerState->Avatar, PlayerState == PlayerOwner->PlayerController->PlayerState,bIsHost, LobbyPlayerState ? (LobbyPlayerState->DesiredTeamNum == 255) : false, 0, 0));
+                        TrackedPlayers.Add(FTrackedPlayer::Make(PlayerState, PlayerState->UniqueId, PlayerState->GetPlayerName(), TeamNum, PlayerState->Avatar, PlayerState == PlayerOwner->PlayerController->PlayerState, bIsHost, LobbyPlayerState ? (LobbyPlayerState->DesiredTeamNum == 255) : false, 0, 0));
 					}
 				}
 			}
@@ -713,11 +712,11 @@ void SUTPlayerListPanel::OnSubMenuSelect(FName InTag, TSharedPtr<FTrackedPlayer>
 			{
 				if ( InItem->PlayerState.IsValid() )
 				{
-					PlayerOwner->ShowPlayerInfo(InItem->PlayerState->UniqueId.ToString(),InItem->PlayerState->PlayerName);
+                    PlayerOwner->ShowPlayerInfo(InItem->PlayerState->UniqueId.ToString(),InItem->PlayerState->GetPlayerName());
 				}
 				else
 				{
-					PlayerOwner->ShowPlayerInfo(InItem->PlayerID.ToString(),InItem->PlayerName);
+                    PlayerOwner->ShowPlayerInfo(InItem->PlayerID.ToString(),InItem->GetPlayerName(true));
 				}
 			}
 		}
@@ -770,7 +769,7 @@ void SUTPlayerListPanel::BuildInvite()
 						.HAlign(HAlign_Center)
 						[
 							SNew(STextBlock)
-							.Text(FText::FromString(InviteOwner->PlayerName))
+                            .Text(FText::FromString(InviteOwner->GetPlayerName()))
 							.TextStyle(SUTStyle::Get(), "UT.Font.NormalText.Medium")
 						]
 						+SVerticalBox::Slot()

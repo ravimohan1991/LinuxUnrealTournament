@@ -161,10 +161,10 @@ class UNREALTOURNAMENT_API AUTFlagRunGameState : public AUTGameState
 	UFUNCTION(BlueprintCallable, Category = GameState)
 		FString GetPowerupSelectWidgetPath(int32 TeamNumber);
 
-	UFUNCTION(BlueprintCallable, Category = GameState)
+    //UFUNCTION(BlueprintCallable, Category = GameState)
 		virtual TSubclassOf<class AUTInventory> GetSelectableBoostByIndex(AUTPlayerState* PlayerState, int Index) const override;
 
-	UFUNCTION(BlueprintCallable, Category = GameState)
+    //UFUNCTION(BlueprintCallable, Category = GameState)
 		virtual bool IsSelectedBoostValid(AUTPlayerState* PlayerState) const override;
 
 	UFUNCTION(BlueprintCallable, Category = Team)

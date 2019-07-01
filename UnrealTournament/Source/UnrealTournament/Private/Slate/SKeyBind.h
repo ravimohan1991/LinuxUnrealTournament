@@ -102,7 +102,7 @@ public:
 	virtual void SetKey(FKey NewKey, bool bCanReset = true, bool bNotify = true)
 	{
 		bWaitingForKey = false;
-		FSlateApplication::Get().ClearKeyboardFocus(EKeyboardFocusCause::SetDirectly);
+        FSlateApplication::Get().ClearKeyboardFocus(EFocusCause::SetDirectly);
 		FSlateApplication::Get().GetPlatformApplication().Get()->Cursor->Lock(nullptr);
 
 		AbortButton->SetVisibility(EVisibility::Collapsed);
@@ -136,7 +136,7 @@ protected:
 		KeyText->SetText(FString());
 		bWaitingForKey = false;
 		FSlateApplication::Get().GetPlatformApplication().Get()->Cursor->Lock(nullptr);
-		FSlateApplication::Get().ClearKeyboardFocus(EKeyboardFocusCause::SetDirectly);
+        FSlateApplication::Get().ClearKeyboardFocus(EFocusCause::SetDirectly);
 		ClearButton->SetVisibility(EVisibility::Collapsed);
 		AbortButton->SetVisibility(EVisibility::Collapsed);
 		return FReply::Handled();
@@ -145,7 +145,7 @@ protected:
 	FReply AbortClicked()
 	{
 		bWaitingForKey = false;
-		FSlateApplication::Get().ClearKeyboardFocus(EKeyboardFocusCause::SetDirectly);
+        FSlateApplication::Get().ClearKeyboardFocus(EFocusCause::SetDirectly);
 		FSlateApplication::Get().GetPlatformApplication().Get()->Cursor->Lock(nullptr);
 
 		KeyText->SetText(Key == FKey() ? FString() : Key.ToString());

@@ -681,7 +681,7 @@ void UUTScoreboard::DrawPlayer(int32 Index, AUTPlayerState* PlayerState, float R
 
 	float NameXL, NameYL;
 	float ClanXL = 0.f;
-	FString DisplayName = PlayerState->PlayerName;
+    FString DisplayName = PlayerState->GetPlayerName();
 	FString ClanName = PlayerState->ClanName;
 	if (!PlayerState->ClanName.IsEmpty())
 	{
@@ -802,7 +802,7 @@ void UUTScoreboard::DrawPlayer(int32 Index, AUTPlayerState* PlayerState, float R
 	{
 		float Height = 8.0f;
 		float XL, YL;
-		Canvas->TextSize(UTHUDOwner->SmallFont, (PlayerState->PlayerName + PlayerState->ClanName), XL, YL, RenderScale, RenderScale);
+        Canvas->TextSize(UTHUDOwner->SmallFont, (PlayerState->GetPlayerName() + PlayerState->ClanName), XL, YL, RenderScale, RenderScale);
 		float StrikeWidth = FMath::Min(0.475f*ScaledCellWidth, XL);
 		DrawTexture(UTHUDOwner->HUDAtlas, XOffset + (ScaledCellWidth * ColumnHeaderPlayerX), YOffset + ColumnY, StrikeWidth, Height, 185.f, 400.f, 4.f, 4.f, 1.0f, FLinearColor::Red);
 	}
@@ -992,7 +992,7 @@ void UUTScoreboard::SelectionClick()
 		UUTLocalPlayer* LP = Cast<UUTLocalPlayer>(UTHUDOwner->UTPlayerOwner->Player);
 		if (LP)
 		{
-			LP->ShowPlayerInfo(SelectedPlayer->UniqueId.ToString(), SelectedPlayer->PlayerName);
+            LP->ShowPlayerInfo(SelectedPlayer->UniqueId.ToString(), SelectedPlayer->GetPlayerName());
 			ClearSelection();
 		}
 	}

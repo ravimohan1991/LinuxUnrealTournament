@@ -33,6 +33,7 @@
 #include "UTDemoRecSpectator.h"
 #include "UTGameVolume.h"
 #include "UserActivityTracking.h"
+#include "Engine.h"
 
 AUTGameState::AUTGameState(const class FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -254,7 +255,7 @@ AUTGameState::AUTGameState(const class FObjectInitializer& ObjectInitializer)
 	HighlightPriority.Add(HighlightNames::BestKD, 2.f);
 	HighlightPriority.Add(HighlightNames::MostWeaponKills, 2.f);
 	HighlightPriority.Add(HighlightNames::BestCombo, 2.f);
-	HighlightPriority.Add(HighlightNames::MostHeadShots, 2.f);
+    HighlightPriority.Add(HighlightNames::MostHeadShots, 2.f);
 	HighlightPriority.Add(HighlightNames::MostAirRockets, 2.f);
 
 	HighlightPriority.Add(NAME_AmazingCombos, 1.f);
@@ -1058,7 +1059,7 @@ void AUTGameState::StartFPSCharts()
 			FPSChartLabel = TEXT("UTServerFPSChart");
 		}
 
-		if (!GameplayFPSChart.IsValid())
+        if (!GameplayFPSChart.IsValid())
 		{
 			GameplayFPSChart = MakeShareable(new FPerformanceTrackingChart(FDateTime::Now(),FPSChartLabel));
 			GEngine->AddPerformanceDataConsumer(GameplayFPSChart);
@@ -1135,7 +1136,7 @@ void AUTGameState::StopFPSCharts()
 	}
 }
 
-void AUTGameState::OnHitchDetected(float DurationInSeconds)
+void AUTGameState::OnHitchDetected(EFrameHitchType sos, float DurationInSeconds)
 {
 	const float DurationInMs = DurationInSeconds * 1000.0f;
 	if (IsRunningDedicatedServer())
@@ -1407,7 +1408,7 @@ void AUTGameState::OnRep_MatchState()
 		for (int32 i = 0; i<PawnsToDestroy.Num(); i++)
 		{
 			APawn* Pawn = PawnsToDestroy[i];
-			if (Pawn != NULL && !Pawn->IsPendingKill() && Pawn->bTearOff)
+            if (Pawn != NULL && !Pawn->IsPendingKill() && Pawn->GetTearOff())
 			{
 				Pawn->Destroy();
 			}
@@ -1606,7 +1607,7 @@ bool AUTGameState::VoteForTempBan(AUTPlayerState* BadGuy, AUTPlayerState* Voter)
 		}
 		float Perc = (float(BadGuy->CountBanVotes()) / float(NumPlayers)) * 100.0f;
 		BadGuy->KickCount = BadGuy->CountBanVotes();
-		UE_LOG(UT,Log,TEXT("[KICK VOTE] Target = %s - # of Votes = %i (%i players), % = %f"), * BadGuy->PlayerName, BadGuy->KickCount, NumPlayers, Perc);
+        UE_LOG(UT,Log,TEXT("[KICK VOTE] Target = %s - # of Votes = %i (%i players), % = %f"), * BadGuy->GetPlayerName(), BadGuy->KickCount, NumPlayers, Perc);
 
 		if ( Perc >=  KickThreshold )
 		{
@@ -1657,7 +1658,7 @@ void AUTGameState::GetAvailableGameData(TArray<UClass*>& GameModes, TArray<UClas
 		for (const FAssetData& Asset : AssetList)
 		{
 			static FName NAME_GeneratedClass(TEXT("GeneratedClass"));
-			const FString* ClassPath = Asset.TagsAndValues.Find(NAME_GeneratedClass);
+            const FString* ClassPath = &Asset.TagsAndValues.FindTag(NAME_GeneratedClass).GetValue();
 			if ((ClassPath != NULL) && !ClassPath->IsEmpty())
 			{
 				UE_LOG(UTLoading, Log, TEXT("load gamemode object classpath %s"), **ClassPath);
@@ -1677,7 +1678,7 @@ void AUTGameState::GetAvailableGameData(TArray<UClass*>& GameModes, TArray<UClas
 		for (const FAssetData& Asset : AssetList)
 		{
 			static FName NAME_GeneratedClass(TEXT("GeneratedClass"));
-			const FString* ClassPath = Asset.TagsAndValues.Find(NAME_GeneratedClass);
+            const FString* ClassPath = &Asset.TagsAndValues.FindTag(NAME_GeneratedClass).GetValue();
 			if ((ClassPath != NULL) && !ClassPath->IsEmpty())
 			{
 				UE_LOG(UTLoading, Log, TEXT("load mutator object classpath %s"), **ClassPath);
@@ -1728,19 +1729,19 @@ void AUTGameState::ScanForMaps(const TArray<FString>& AllowedMapPrefixes, TArray
  **/
 AUTReplicatedMapInfo* AUTGameState::CreateMapInfo(const FAssetData& MapAsset)
 {
-	const FString* Title = MapAsset.TagsAndValues.Find(NAME_MapInfo_Title); 
-	const FString* Author = MapAsset.TagsAndValues.Find(NAME_MapInfo_Author);
-	const FString* Description = MapAsset.TagsAndValues.Find(NAME_MapInfo_Description);
-	const FString* Screenshot = MapAsset.TagsAndValues.Find(NAME_MapInfo_ScreenshotReference);
+    const FString* Title = &MapAsset.TagsAndValues.FindTag(NAME_MapInfo_Title).GetValue();
+    const FString* Author = &MapAsset.TagsAndValues.FindTag(NAME_MapInfo_Author).GetValue();
+    const FString* Description = &MapAsset.TagsAndValues.FindTag(NAME_MapInfo_Description).GetValue();
+    const FString* Screenshot = &MapAsset.TagsAndValues.FindTag(NAME_MapInfo_ScreenshotReference).GetValue();
 
-	const FString* OptimalPlayerCountStr = MapAsset.TagsAndValues.Find(NAME_MapInfo_OptimalPlayerCount);
+    const FString* OptimalPlayerCountStr = &MapAsset.TagsAndValues.FindTag(NAME_MapInfo_OptimalPlayerCount).GetValue();
 	int32 OptimalPlayerCount = 6;
 	if (OptimalPlayerCountStr != NULL)
 	{
 		OptimalPlayerCount = FCString::Atoi(**OptimalPlayerCountStr);
 	}
 
-	const FString* OptimalTeamPlayerCountStr = MapAsset.TagsAndValues.Find(NAME_MapInfo_OptimalTeamPlayerCount);
+    const FString* OptimalTeamPlayerCountStr = &MapAsset.TagsAndValues.FindTag(NAME_MapInfo_OptimalTeamPlayerCount).GetValue();
 	int32 OptimalTeamPlayerCount = 10;
 	if (OptimalTeamPlayerCountStr != NULL)
 	{
@@ -1756,7 +1757,7 @@ AUTReplicatedMapInfo* AUTGameState::CreateMapInfo(const FAssetData& MapAsset)
 		FText LocDesc = FText::GetEmpty();
 		if (Description != nullptr)
 		{
-			FTextStringHelper::ReadFromString(**Description, LocDesc);
+            FTextStringHelper::ReadFromBuffer(**Description, LocDesc); //FTextStringHelper::ReadFromString(**Description, LocDesc);
 		}
 
 		MapInfo->MapPackageName = MapAsset.PackageName.ToString();
@@ -2309,7 +2310,7 @@ void AUTGameState::FillOutRconPlayerList(TArray<FRconPlayerData>& PlayerList)
 					AUTBaseGameMode* DefaultGame = GameModeClass ? GameModeClass->GetDefaultObject<AUTBaseGameMode>() : NULL;
 					int32 Rank = UTPlayerState && DefaultGame ? DefaultGame->GetEloFor(UTPlayerState, bRankedSession) : 0;
 					FString PlayerIP = PlayerController->GetPlayerNetworkAddress();
-					FRconPlayerData PlayerInfo(PlayerArray[i]->PlayerName, PlayerID, PlayerIP, Rank, UTPlayerState->bOnlySpectator);
+                    FRconPlayerData PlayerInfo(PlayerArray[i]->GetPlayerName(), PlayerID, PlayerIP, Rank, UTPlayerState->bOnlySpectator);
 					PlayerList.Add( PlayerInfo );
 				}
 			}

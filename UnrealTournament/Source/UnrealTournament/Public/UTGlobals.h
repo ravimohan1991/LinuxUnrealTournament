@@ -78,7 +78,7 @@ class UNREALTOURNAMENT_API UUTGlobals : public UObject
 		{
 			SCOPE_LOG_TIME_IN_SECONDS(*FString::Printf(TEXT("Loaded UTGlobals asset %s"), *StringReference.ToString()), nullptr)
 				FStreamableManager& Streamable = UUTGlobals::Get().StreamableManager;
-			AssetType* LoadedAsset = Cast<AssetType>(Streamable.SynchronousLoad(StringReference));
+            AssetType* LoadedAsset = Cast<AssetType>(Streamable.LoadSynchronous(StringReference, true));//  SynchronousLoad(StringReference));
 			if (ensureMsgf(LoadedAsset, TEXT("Unable to load asset %s"), *StringReference.ToString()))
 			{
 				return LoadedAsset;
@@ -104,7 +104,7 @@ class UNREALTOURNAMENT_API UUTGlobals : public UObject
 	class UUTWidgetData* GetWidgetData();
 
 	/** This function handles simple assetdata-only dictionaries, and will reload the library if required. Returns number loaded */
-	int32 GetSimpleAssetData(EUTObjectLibrary::Type LibraryType, TArray<class FAssetData>& AssetList, bool bInHasBlueprintClasses = false);
+    int32 GetSimpleAssetData(EUTObjectLibrary::Type LibraryType, TArray<struct FAssetData>& AssetList, bool bInHasBlueprintClasses = false);
 
 	/** Gets the list of MCP Items depending on type */
 	void GetItemData(EUtItemType ItemType, TArray<FAssetData> &AssetList);

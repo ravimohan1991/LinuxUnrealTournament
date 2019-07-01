@@ -597,9 +597,9 @@ void UUTCheatManager::ViewBot()
 		{
 			int32 CurrentIndex = -1;
 			APawn* PTarget = Cast<APawn>(GetOuterAUTPlayerController()->GetViewTarget());
-			if (PTarget != nullptr && PTarget->PlayerState != nullptr)
+            if (PTarget != nullptr && PTarget->GetPlayerState() != nullptr)
 			{
-				CurrentIndex = GS->PlayerArray.Find(PTarget->PlayerState);
+                CurrentIndex = GS->PlayerArray.Find(PTarget->GetPlayerState());
 			}
 			int32 Start = CurrentIndex;
 			bool bFoundBot = false;
@@ -715,7 +715,7 @@ void UUTCheatManager::ReportWaitTime(FString RatingType, int32 Seconds)
 		if (!Result.bSucceeded)
 		{
 			// best we can do is log an error
-			UE_LOG(UT, Warning, TEXT("Failed to report wait time to the server. (%d) %s %s"), Result.HttpResult, *Result.ErrorCode, *Result.ErrorMessage.ToString());
+            UE_LOG(UT, Warning, TEXT("Failed to report wait time to the server. (%s) %s %s"), *Result.ErrorRaw, *Result.ErrorCode, *Result.ErrorMessage.ToString());
 		}
 		else
 		{
@@ -739,7 +739,7 @@ void UUTCheatManager::EstimateWaitTimes()
 		if (!Result.bSucceeded)
 		{
 			// best we can do is log an error
-			UE_LOG(UT, Warning, TEXT("Failed to get estimated wait times from the server. (%d) %s %s"), Result.HttpResult, *Result.ErrorCode, *Result.ErrorMessage.ToString());
+            UE_LOG(UT, Warning, TEXT("Failed to get estimated wait times from the server. (%s) %s %s"), *Result.ErrorRaw, *Result.ErrorCode, *Result.ErrorMessage.ToString());
 		}
 		else
 		{
@@ -765,12 +765,12 @@ void UUTCheatManager::UnlockTutorials()
 }
 
 void UUTCheatManager::TestAMDAllocation()
-{
+{/*
 #if WITH_EDITOR
 	FTexture2DRHIRef ReadbackTextures[2];
 	int32 VideoWidth = 1920;
 	int32 VideoHeight = 1080;
-	ENQUEUE_UNIQUE_RENDER_COMMAND_THREEPARAMETER(
+    ENQUEUE_UNIQUE_RENDER_COMMAND_THREEPARAMETER(
 		FWebMRecordCreateBufers,
 		int32, InVideoWidth, VideoWidth,
 		int32, InVideoHeight, VideoHeight,
@@ -818,7 +818,7 @@ void UUTCheatManager::TestAMDAllocation()
 			RHICmdList.CopyToResolveTarget(
 				DestRenderTarget.TargetableTexture,
 				InReadbackTextures[0],
-				bKeepOriginalSurface,
+				//bKeepOriginalSurface,
 				FResolveParams());
 		});
 	FlushRenderingCommands();
@@ -833,5 +833,5 @@ void UUTCheatManager::TestAMDAllocation()
 		});
 	FlushRenderingCommands();
 	UE_LOG(UT, Warning, TEXT("Unmapped readback textures"));
-#endif
+#endif */
 }

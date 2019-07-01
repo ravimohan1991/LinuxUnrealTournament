@@ -4,6 +4,8 @@
 
 #include "UTPathBuilderInterface.h"
 #include "UTJumpPadRenderingComponent.h"
+//#include "Runtime/Engine/Classes/GameFramework/Actor.h"
+
 #include "UTJumpPad.generated.h"
 
 /**
@@ -146,6 +148,6 @@ public:
 	virtual void GetNavigationData(FNavigationRelevantData& Data) const override;
 	virtual FBox GetNavigationBounds() const override
 	{
-		return (TriggerBox != nullptr) ? TriggerBox->Bounds.GetBox() : FBox(0);
+        return (TriggerBox != nullptr) ? TriggerBox->Bounds.GetBox() : FBox(EForceInit::ForceInitToZero);// For the deprecated FBox(int8) warning.
 	}
 };

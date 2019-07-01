@@ -39,6 +39,7 @@
 #include "UTRallyPoint.h"
 #include "Panels/SUTWebBrowserPanel.h"
 #include "UTBotCharacter.h"
+#include "PlatformApplicationMisc.h"
 
 #if !UE_SERVER
 #include "SlateBasics.h"
@@ -220,7 +221,7 @@ bool AUTPlayerState::IsFemale()
 
 void AUTPlayerState::SetPlayerName(const FString& S)
 {
-	PlayerName = S;
+    SetPlayerNameInternal(S);//PlayerName = S;
 
 	// RepNotify callback won't get called by net code if we are the server
 	ENetMode NetMode = GetNetMode();
@@ -243,12 +244,12 @@ FString AUTPlayerState::ValidatePlayerName()
 			EpicAccountName = UTGameState->GetEpicAccountNameForAccount(UserId).ToString();
 			if (!EpicAccountName.IsEmpty() && (EpicAccountName != TEXT("InvalidMCPUser")))
 			{
-				PlayerName = EpicAccountName;
+                SetPlayerNameInternal(EpicAccountName);//PlayerName = EpicAccountName;
 				bHasValidClampedName = false;
 			}
 		}
 	}
-	return PlayerName;
+    return GetPlayerName();//PlayerName;
 }
 
 void AUTPlayerState::OnRep_HasHighScore()
@@ -424,7 +425,7 @@ bool AUTPlayerState::ShouldBroadCastWelcomeMessage(bool bExiting)
 void AUTPlayerState::NotifyTeamChanged_Implementation()
 {
 	AUTCharacter* P = GetUTCharacter();
-	if (P != NULL && !P->bTearOff)
+    if (P != NULL && !P->GetTearOff())
 	{
 		P->NotifyTeamChanged();
 	}
@@ -932,12 +933,12 @@ AUTCharacter* AUTPlayerState::GetUTCharacter()
 	
 	// iterate through all pawns and find matching playerstate ref
 	// note: this is set up to use the old character as long as possible after death, until the player respawns
-	if (CachedCharacter == NULL || CachedCharacter->IsDead() || CachedCharacter->PlayerState != this)
+    if (CachedCharacter == NULL || CachedCharacter->IsDead() || CachedCharacter->GetPlayerState() != this)
 	{
 		for (FConstPawnIterator Iterator = GetWorld()->GetPawnIterator(); Iterator; ++Iterator)
 		{
 			AUTCharacter* UTChar = Cast<AUTCharacter>(*Iterator);
-			if (UTChar != NULL && UTChar->PlayerState == this && !UTChar->IsDead())
+            if (UTChar != NULL && UTChar->GetPlayerState() == this && !UTChar->IsDead())
 			{
 				CachedCharacter = UTChar;
 				return UTChar;
@@ -1649,7 +1650,7 @@ void AUTPlayerState::ProfileNotification(const FOnlineNotification& Notification
 		{
 			FString OutputJsonString;
 			TSharedRef< TJsonWriter< TCHAR, TCondensedJsonPrintPolicy<TCHAR> > > Writer = TJsonWriterFactory< TCHAR, TCondensedJsonPrintPolicy<TCHAR> >::Create(&OutputJsonString);
-			FJsonSerializer::Serialize(Notification.Payload->AsObject().ToSharedRef(), Writer);
+            //FJsonSerializer::Serialize(Notification.Payload->AsObject().ToSharedRef(), Writer);
 			PC->ClientBackendNotify(Notification.TypeStr, OutputJsonString);
 		}
 	}
@@ -1722,7 +1723,7 @@ void AUTPlayerState::ReadMMRFromBackend()
 		if (!Result.bSucceeded)
 		{
 			// best we can do is log an error
-			UE_LOG(UT, Warning, TEXT("Failed to read MMR from the server. (%d) %s %s"), Result.HttpResult, *Result.ErrorCode, *Result.ErrorMessage.ToString());
+            UE_LOG(UT, Warning, TEXT("Failed to read MMR from the server. %s %s"),/* Result.HttpResult,*/ *Result.ErrorCode, *Result.ErrorMessage.ToString());
 		}
 		else
 		{
@@ -1759,7 +1760,7 @@ void AUTPlayerState::ReadMMRFromBackend()
 				BaseGame->ReceivedRankForPlayer(WeakPlayerState.Get());
 			}
 
-			UE_LOG(UT, Log, TEXT("%s MMR fetched from the backend (Duel:%d) (TDM:%d) (FFA:%d)"), *WeakPlayerState->PlayerName, WeakPlayerState->DuelRank, WeakPlayerState->TDMRank, WeakPlayerState->DMRank);
+            UE_LOG(UT, Log, TEXT("%s MMR fetched from the backend (Duel:%d) (TDM:%d) (FFA:%d)"), *WeakPlayerState->GetPlayerName(), WeakPlayerState->DuelRank, WeakPlayerState->TDMRank, WeakPlayerState->DMRank);
 			UE_LOG(UT, Log, TEXT("(CTF:%d) (Showdown:%d) (Ranked Showdown:%d)"), WeakPlayerState->CTFRank, WeakPlayerState->ShowdownRank, WeakPlayerState->RankedShowdownRank);
 			UE_LOG(UT, Log, TEXT("(Ranked Duel:%d) (Ranked CTF:%d) (Ranked FlagRun:%d)"), WeakPlayerState->RankedDuelRank, WeakPlayerState->RankedCTFRank, WeakPlayerState->RankedFlagRunRank);
 		}
@@ -1882,7 +1883,7 @@ void AUTPlayerState::WriteStatsToCloud()
 {
 	if (bWroteStatsToCloud)
 	{
-		UE_LOG(LogGameStats, Warning, TEXT("Attempted to write stats twice for %s, skipping"), *PlayerName);
+        UE_LOG(LogGameStats, Warning, TEXT("Attempted to write stats twice for %s, skipping"), *GetPlayerName());
 		return;
 	}
 
@@ -1894,7 +1895,7 @@ void AUTPlayerState::WriteStatsToCloud()
 			TArray<uint8> FileContents;
 			TSharedPtr<FJsonObject> StatsJson = MakeShareable(new FJsonObject);
 			StatsJson->SetStringField(TEXT("StatsID"), StatsID);
-			StatsJson->SetStringField(TEXT("PlayerName"), PlayerName);
+            StatsJson->SetStringField(TEXT("PlayerName"), GetPlayerName());
 			StatManager->PopulateJsonObjectForNonBackendStats(StatsJson);
 
 			FString OutputJsonString;
@@ -1905,7 +1906,7 @@ void AUTPlayerState::WriteStatsToCloud()
 				MemoryWriter.Serialize(TCHAR_TO_ANSI(*OutputJsonString), OutputJsonString.Len() + 1);
 			}
 
-			UE_LOG(LogGameStats, Log, TEXT("Writing stats for %s, previously read stats: %d"), *PlayerName, bSuccessfullyReadStatsFromCloud ? 1 : 0);
+            UE_LOG(LogGameStats, Log, TEXT("Writing stats for %s, previously read stats: %d"), *GetPlayerName(), bSuccessfullyReadStatsFromCloud ? 1 : 0);
 			UE_LOG(LogGameStats, VeryVerbose, TEXT("JSON: %s"), *OutputJsonString);
 
 			OnlineUserCloudInterface->WriteUserFile(FUniqueNetIdString(*StatsID), GetStatsFilename(), FileContents);
@@ -2241,16 +2242,16 @@ FString AUTPlayerState::LeagueTierToBrushName(int32 Tier)
 	{
 	case 5:
 	case 4:
-		return L"UT.RankedMaster";
+        return "UT.RankedMaster";
 	case 3:
-		return L"UT.RankedPlatinum";
+        return "UT.RankedPlatinum";
 	case 2:
-		return L"UT.RankedGold";
+        return "UT.RankedGold";
 	case 1:
-		return L"UT.RankedSilver";
+        return "UT.RankedSilver";
 	}
 
-	return L"UT.RankedBronze";
+    return "UT.RankedBronze";
 }
 
 TSharedRef<SWidget> AUTPlayerState::BuildLeague(AUTBaseGameMode* DefaultGame, FText LeagueName)
@@ -3314,7 +3315,7 @@ FText AUTPlayerState::GetTrainingLevelText()
 
 void AUTPlayerState::EpicIDClicked()
 {
-	FPlatformMisc::ClipboardCopy(*StatsID);
+    FPlatformApplicationMisc::ClipboardCopy(*StatsID);
 }
 #endif
 
@@ -3362,14 +3363,14 @@ void AUTPlayerState::OnPlayerCardLoadError()
 
 void AUTPlayerState::UpdateOldName()
 {
-	OldName = PlayerName;
+    SetOldPlayerName(GetPlayerName()); // OldName = PlayerName;
 }
 
 void AUTPlayerState::OnRep_PlayerName()
 {
 	bHasValidClampedName = false;
 
-	if (PlayerName.IsEmpty())
+    if (GetPlayerName().IsEmpty())
 	{
 		// Demo rec spectator is allowed empty name
 		return;
@@ -3377,7 +3378,7 @@ void AUTPlayerState::OnRep_PlayerName()
 
 	if (GetWorld()->TimeSeconds < 2.f)
 	{
-		OldName = PlayerName;
+        SetOldPlayerName(GetPlayerName()); //OldName = PlayerName;
 		bHasBeenWelcomed = true;
 		return;
 	}
@@ -3502,7 +3503,7 @@ void AUTPlayerState::OnRepSpecialPlayer()
 {
 	AUTPlayerController* UTPC = Cast<AUTPlayerController>(GetWorld()->GetFirstPlayerController());
 	AUTCharacter* Character = GetUTCharacter();
-	if (Character != NULL && !Character->bTearOff)
+    if (Character != NULL && !Character->GetTearOff())
 	{
 		UpdateSpecialTacComFor(Character, UTPC);
 	}
@@ -3512,7 +3513,7 @@ void AUTPlayerState::OnRepSpecialTeamPlayer()
 {
 	AUTPlayerController* UTPC = Cast<AUTPlayerController>(GetWorld()->GetFirstPlayerController());
 	AUTCharacter* Character = GetUTCharacter();
-	if (Character != NULL && !Character->bTearOff)
+    if (Character != NULL && !Character->GetTearOff())
 	{
 		UpdateSpecialTacComFor(Character, UTPC);
 	}
@@ -3740,7 +3741,7 @@ void AUTPlayerState::OnRep_ActiveGroupTaunt()
 			{
 				if (ActiveGroupTaunt->GetDefaultObject<AUTGroupTaunt>()->bCascading)
 				{
-					if (UTChar->PlayerState == this)
+                    if (UTChar->GetPlayerState() == this)
 					{
 						UTChar->PlayGroupTaunt(ActiveGroupTaunt);
 					}
@@ -3918,7 +3919,7 @@ const FSlateBrush* AUTPlayerState::GetELOBadgeNumberImage(AUTBaseGameMode* Defau
 
 void AUTPlayerState::MakeJsonReport(TSharedPtr<FJsonObject> JsonObject)
 {
-	JsonObject->SetStringField(TEXT("PlayerName"), PlayerName);
+    JsonObject->SetStringField(TEXT("PlayerName"), GetPlayerName());
 	JsonObject->SetStringField(TEXT("UniqueId"), UniqueId.ToString());
 	JsonObject->SetNumberField(TEXT("Score"), Score);
 	JsonObject->SetNumberField(TEXT("Team Num"), GetTeamNum());
@@ -4002,7 +4003,7 @@ void AUTPlayerState::AddCoolFactorEvent(float CoolFactorAddition)
 
 	if (CurrentCoolFactor >= MinimumConsiderationForCoolFactorHistory)
 	{
-		UE_LOG(UT, Verbose, TEXT("CoolFactorHistory updated for %s at %f"), *PlayerName, CurrentWorldTime);
+        UE_LOG(UT, Verbose, TEXT("CoolFactorHistory updated for %s at %f"), *GetPlayerName(), CurrentWorldTime);
 
 		if (CoolFactorHistory.Num() > 0 && CoolFactorHistory[CoolFactorHistory.Num() - 1].TimeOccurred - CurrentWorldTime < CoolFactorCombinationWindow)
 		{
@@ -4065,7 +4066,7 @@ void AUTPlayerState::PostRenderFor(APlayerController* PC, UCanvas* Canvas, FVect
 		float TextXL, YL;
 		float Scale = Canvas->ClipX / 1920.f;
 		UFont* ChatFont = AUTHUD::StaticClass()->GetDefaultObject<AUTHUD>()->ChatFont;
-		Canvas->TextSize(ChatFont, PlayerName, TextXL, YL, Scale, Scale);
+        Canvas->TextSize(ChatFont, GetPlayerName(), TextXL, YL, Scale, Scale);
 		if (!bDrawNameOnDeathIndicator)
 		{
 			TextXL = 1.0f;
@@ -4110,7 +4111,7 @@ void AUTPlayerState::PostRenderFor(APlayerController* PC, UCanvas* Canvas, FVect
 			
 				FLinearColor BeaconTextColor = FLinearColor::White;
 				BeaconTextColor.A = 0.8f * CenterFade;
-				FUTCanvasTextItem TextItem(FVector2D(FMath::TruncToFloat(Canvas->OrgX + XPos + 0.5f*(XL - TextXL)), FMath::TruncToFloat(Canvas->OrgY + YPos - 1.2f*YL)), FText::FromString(PlayerName), ChatFont, BeaconTextColor, NULL);
+                FUTCanvasTextItem TextItem(FVector2D(FMath::TruncToFloat(Canvas->OrgX + XPos + 0.5f*(XL - TextXL)), FMath::TruncToFloat(Canvas->OrgY + YPos - 1.2f*YL)), FText::FromString(GetPlayerName()), ChatFont, BeaconTextColor, NULL);
 				TextItem.Scale = FVector2D(TextScaling*Scale, TextScaling*Scale);
 				TextItem.BlendMode = SE_BLEND_Translucent;
 				FLinearColor ShadowColor = FLinearColor::Black;

@@ -190,7 +190,7 @@ public:
 			{
 				AffectedPawnPSCs.RemoveAt(i);
 			}
-			else if (AffectedPawnPSCs[i]->GetOwner()->bTearOff || AffectedPawnPSCs[i]->GetOwner()->IsPendingKillPending())
+            else if (AffectedPawnPSCs[i]->GetOwner()->GetTearOff() || AffectedPawnPSCs[i]->GetOwner()->IsPendingKillPending())
 			{
 				if (AffectedPawnPSCs[i]->bIsActive)
 				{

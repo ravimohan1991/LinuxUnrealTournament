@@ -346,7 +346,7 @@ void UUTRadialMenu_Coms::Execute()
 	if (ComSwitch != INDEX_NONE)
 	{
 		AUTCharacter* ContextCharacter = Cast<AUTCharacter>(ContextActor);
-		AUTPlayerState* ContextPlayerState = ContextCharacter != nullptr ? Cast<AUTPlayerState>(ContextCharacter->PlayerState) : nullptr;
+        AUTPlayerState* ContextPlayerState = ContextCharacter != nullptr ? Cast<AUTPlayerState>(ContextCharacter->GetPlayerState()) : nullptr;
 		UTHUDOwner->UTPlayerOwner->SendComsMessage(ContextPlayerState, ComSwitch);
 	}
 }

@@ -545,7 +545,7 @@ void AUTLineUpHelper::SpawnPlayerWeapon(AUTCharacter* UTChar)
 {
 	if (UTChar)
 	{
-		AUTPlayerState* UTPS = Cast<AUTPlayerState>(UTChar->PlayerState);
+        AUTPlayerState* UTPS = Cast<AUTPlayerState>(UTChar->GetPlayerState());
 		TSubclassOf<AUTWeapon> WeaponClass = NULL;
 
 		if (UTPS)
@@ -742,7 +742,7 @@ void AUTLineUpHelper::ApplyCharacterAnimsForLineUp(AUTCharacter* UTChar)
 		{
 			//Want to still update the animations and bones even though we have turned off the Pawn, so re-enable those.
 			UTChar->GetMesh()->bPauseAnims = false;
-			UTChar->GetMesh()->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::AlwaysTickPoseAndRefreshBones;
+            UTChar->GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 
 			//Turn off local physics sim and collisions during line-ups
 			UTChar->GetMesh()->SetSimulatePhysics(false);
@@ -1040,8 +1040,8 @@ void AUTLineUpHelper::IntroSetFirstSlotToLocalPlayer()
 					IntroSwapMeshComponentLocations(Intro_MyTeamLineUpSlots[0]->CharacterInSpot, CurrentLocalPlayerSlot->CharacterInSpot);
 
 					//Swap LineUpLocations
-					AUTPlayerState* LocalUTPS = Intro_MyTeamLineUpSlots[0]->CharacterInSpot ? Cast<AUTPlayerState>(Intro_MyTeamLineUpSlots[0]->CharacterInSpot->PlayerState) : nullptr;
-					AUTPlayerState* OtherUTPS = CurrentLocalPlayerSlot->CharacterInSpot ? Cast<AUTPlayerState>(CurrentLocalPlayerSlot->CharacterInSpot->PlayerState) : nullptr;
+                    AUTPlayerState* LocalUTPS = Intro_MyTeamLineUpSlots[0]->CharacterInSpot ? Cast<AUTPlayerState>(Intro_MyTeamLineUpSlots[0]->CharacterInSpot->GetPlayerState()) : nullptr;
+                    AUTPlayerState* OtherUTPS = CurrentLocalPlayerSlot->CharacterInSpot ? Cast<AUTPlayerState>(CurrentLocalPlayerSlot->CharacterInSpot->GetPlayerState()) : nullptr;
 					if (LocalUTPS && OtherUTPS)
 					{
 						int LocalLineUpLoc = LocalUTPS->LineUpLocation;
@@ -1089,7 +1089,7 @@ void AUTLineUpHelper::PlayIntroClientAnimationOnCharacter(AUTCharacter* UTChar, 
 		UTGS->GetAppropriateSpawnList(ActiveType)->OnPlayIntroAnimationOnCharacter(UTChar);
 	}
 
-	AUTPlayerState* UTPS = UTChar ? Cast<AUTPlayerState>(UTChar->PlayerState) : nullptr;
+    AUTPlayerState* UTPS = UTChar ? Cast<AUTPlayerState>(UTChar->GetPlayerState()) : nullptr;
 	if (UTPS)
 	{
 		UTPS->bHasPlayedLineUpIntro = true;
@@ -1141,7 +1141,7 @@ FLineUpSlot* AUTLineUpHelper::Intro_GetRandomUnSpawnedLineUpSlot()
 		//Search from random point forward
 		for (int SlotIndex = StartingIndex; SlotIndex < LineUpSlots.Num(); ++SlotIndex)
 		{
-			AUTPlayerState* UTPS = (LineUpSlots[SlotIndex].CharacterInSpot) ? Cast<AUTPlayerState>(LineUpSlots[SlotIndex].CharacterInSpot->PlayerState) : nullptr;
+            AUTPlayerState* UTPS = (LineUpSlots[SlotIndex].CharacterInSpot) ? Cast<AUTPlayerState>(LineUpSlots[SlotIndex].CharacterInSpot->GetPlayerState()) : nullptr;
 			if (UTPS)
 			{
 				if (!UTPS->bHasPlayedLineUpIntro)
@@ -1157,7 +1157,7 @@ FLineUpSlot* AUTLineUpHelper::Intro_GetRandomUnSpawnedLineUpSlot()
 		{
 			for (int SlotIndex = 0; SlotIndex < StartingIndex; ++SlotIndex)
 			{
-				AUTPlayerState* UTPS = (LineUpSlots[SlotIndex].CharacterInSpot) ? Cast<AUTPlayerState>(LineUpSlots[SlotIndex].CharacterInSpot->PlayerState) : nullptr;
+                AUTPlayerState* UTPS = (LineUpSlots[SlotIndex].CharacterInSpot) ? Cast<AUTPlayerState>(LineUpSlots[SlotIndex].CharacterInSpot->GetPlayerState()) : nullptr;
 				if (UTPS)
 				{
 					if (!UTPS->bHasPlayedLineUpIntro)
@@ -1218,7 +1218,7 @@ void AUTLineUpHelper::IntroTransitionToWeaponReadyAnims()
 	{
 		if (Slot.CharacterInSpot)
 		{
-			AUTPlayerState* UTPS = Cast<AUTPlayerState>(Slot.CharacterInSpot->PlayerState);
+            AUTPlayerState* UTPS = Cast<AUTPlayerState>(Slot.CharacterInSpot->GetPlayerState());
 			if (UTPS && (UTPS->IntroClass != NULL))
 			{
 				AUTIntro* IntroToPlay = UTPS->IntroClass->GetDefaultObject<AUTIntro>();

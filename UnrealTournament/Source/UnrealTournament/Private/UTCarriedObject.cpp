@@ -1,5 +1,3 @@
-
-
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #include "UnrealTournament.h"
 #include "UTCarriedObject.h"
@@ -14,6 +12,7 @@
 #include "UTRallyPoint.h"
 #include "UTGameMode.h"
 #include "UTFlagRunGameState.h"
+#include "Runtime/Engine/Classes/Engine/EngineTypes.h"
 
 AUTCarriedObject::AUTCarriedObject(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
@@ -22,7 +21,8 @@ AUTCarriedObject::AUTCarriedObject(const FObjectInitializer& ObjectInitializer)
 	Collision->InitCapsuleSize(72.0f, 30.0f);
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &AUTCarriedObject::OnOverlapBegin);
 	Collision->SetCollisionProfileName(FName(TEXT("Pickup")));
-	Collision->bShouldUpdatePhysicsVolume = true;
+    //Collision->bShouldUpdatePhysicsVolume = true;
+    Collision->SetShouldUpdatePhysicsVolume(true);
 	RootComponent = Collision;
 
 	MovementComponent = ObjectInitializer.CreateDefaultSubobject<UUTProjectileMovementComponent>(this, TEXT("MovementComp"));
@@ -159,9 +159,10 @@ void AUTCarriedObject::DetachFrom(USkeletalMeshComponent* AttachToMesh)
 		Collision->SetRelativeLocation(FVector(0,0,0));
 		Collision->SetRelativeRotation(FRotator(0,0,0));
 		Collision->SetRelativeScale3D(FVector(1.0f,1.0f,1.0f));
-		DetachRootComponentFromParent(true);
-		ClientUpdateAttachment(false);
-		Collision->bShouldUpdatePhysicsVolume = true;
+        //DetachRootComponentFromParent(true);
+        DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+        ClientUpdateAttachment(false);
+        Collision->SetShouldUpdatePhysicsVolume(true);
 	}
 }
 
@@ -204,7 +205,7 @@ void AUTCarriedObject::ClientUpdateAttachment(bool bNowAttached)
 	}
 	else
 	{
-		Collision->bShouldUpdatePhysicsVolume = true;
+        Collision->SetShouldUpdatePhysicsVolume(true);
 	}
 }
 
@@ -271,7 +272,7 @@ void AUTCarriedObject::OnRep_Moving()
 	{
 		MovementComponent->StopMovementImmediately();
 		MovementComponent->SetUpdatedComponent(NULL);
-		Collision->bShouldUpdatePhysicsVolume = true;
+        Collision->SetShouldUpdatePhysicsVolume(true);
 	}
 }
 
@@ -280,7 +281,7 @@ void AUTCarriedObject::OnHolderChanged()
 	if (Holder != NULL)
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		Collision->bShouldUpdatePhysicsVolume = false;
+        Collision->SetShouldUpdatePhysicsVolume(false);
 		UParticleSystem* FirstPersonEffect = (GetTeamNum() == 1) ? FirstPersonBlueFlagEffect : FirstPersonRedFlagEffect;
 		if (FirstPersonEffect && Holder->GetUTCharacter() && Holder->GetUTCharacter()->IsLocallyViewed())
 		{
@@ -290,7 +291,7 @@ void AUTCarriedObject::OnHolderChanged()
 	else
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		Collision->bShouldUpdatePhysicsVolume = true;
+        Collision->SetShouldUpdatePhysicsVolume(true);
 	}
 
 	OnCarriedObjectHolderChangedDelegate.Broadcast(this);
@@ -354,8 +355,8 @@ bool AUTCarriedObject::CanBePickedUpBy(AUTCharacter* Character)
 		{
 			if (ObjectState == CarriedObjectState::Dropped)
 			{
-				SendGameMessage(0, Character->PlayerState, NULL);
-				Score(FName("SentHome"), Character, Cast<AUTPlayerState>(Character->PlayerState));
+                SendGameMessage(0, Character->GetPlayerState(), NULL);
+                Score(FName("SentHome"), Character, Cast<AUTPlayerState>(Character->GetPlayerState()));
 			}
 			return false;
 		}
@@ -378,8 +379,8 @@ bool AUTCarriedObject::CanBePickedUpBy(AUTCharacter* Character)
 		{
 			if (ObjectState == CarriedObjectState::Dropped)
 			{
-				SendGameMessage(0, Character->PlayerState, NULL);
-				Score(FName("SentHome"), Character, Cast<AUTPlayerState>(Character->PlayerState));
+                SendGameMessage(0, Character->GetPlayerState(), NULL);
+                Score(FName("SentHome"), Character, Cast<AUTPlayerState>(Character->GetPlayerState()));
 			}
 			return false;
 		}
@@ -417,7 +418,7 @@ void AUTCarriedObject::SendGameMessage(uint32 Switch, APlayerState* PS1, APlayer
 void AUTCarriedObject::SetHolder(AUTCharacter* NewHolder)
 {
 	// Sanity Checks
-	if (NewHolder == NULL || NewHolder->IsPendingKillPending() || Cast<AUTPlayerState>(NewHolder->PlayerState) == NULL)
+    if (NewHolder == NULL || NewHolder->IsPendingKillPending() || Cast<AUTPlayerState>(NewHolder->GetPlayerState()) == NULL)
 	{
 		return;
 	}
@@ -436,7 +437,7 @@ void AUTCarriedObject::SetHolder(AUTCharacter* NewHolder)
 	HoldingPawn = NewHolder;
 	HoldingPawn->UTCharacterMovement->bForceTeamCollision = false;
 	AttachTo(HoldingPawn->GetMesh());
-	Holder = Cast<AUTPlayerState>(HoldingPawn->PlayerState);
+    Holder = Cast<AUTPlayerState>(HoldingPawn->GetPlayerState());
 	PickedUpTime = GetWorld()->GetTimeSeconds();
 
 	// If we have authority, immediately notify of the holder change, otherwise replication will handle it
@@ -658,7 +659,7 @@ void AUTCarriedObject::TossObject(AUTCharacter* ObjectHolder)
 			MovementComponent->StopMovementImmediately();
 			MovementComponent->SetUpdatedComponent(NULL);
 		}
-		Collision->bShouldUpdatePhysicsVolume = true;
+        Collision->SetShouldUpdatePhysicsVolume(true);
 	}
 	if (ObjectState == CarriedObjectState::Dropped)
 	{
@@ -708,7 +709,7 @@ bool AUTCarriedObject::TeleportTo(const FVector& DestLocation, const FRotator& D
 	Collision->SetCollisionObjectType(COLLISION_TELEPORTING_OBJECT);
 	bool bResult = Super::TeleportTo(DestLocation, DestRotation, bIsATest, bNoCheck);
 	Collision->SetCollisionObjectType(SavedObjectType);
-	Collision->bShouldUpdatePhysicsVolume = true;
+    Collision->SetShouldUpdatePhysicsVolume(true);
 	Collision->UpdateOverlaps(); // make sure collision object type changes didn't mess with our overlaps
 	return bResult;
 }
@@ -830,7 +831,7 @@ void AUTCarriedObject::SendHome()
 	LastTeleportedTime = GetWorld()->GetTimeSeconds();
 	LastTeleportedLoc = GetActorLocation();
 
-	DetachRootComponentFromParent(true);
+    DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);//DetachRootComponentFromParent(true);
 	if (ObjectState == CarriedObjectState::Home) return;	// Don't both if we are already home
 
 	NoLongerHeld();
@@ -845,7 +846,7 @@ void AUTCarriedObject::SendHome()
 		if (PastPositions.Num() > 0)
 		{
 			bool bWantsGhostFlag = false;
-			DetachRootComponentFromParent(true);
+            DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);//DetachRootComponentFromParent(true);
 			MovementComponent->Velocity = FVector(0.0f, 0.0f, 0.0f);
 			Collision->SetRelativeRotation(FRotator(0, 0, 0));
 			SetActorLocationAndRotation(PastPositions[PastPositions.Num() - 1].Location, GetActorRotation());
@@ -953,7 +954,7 @@ FRotator AUTCarriedObject::GetHomeRotation() const
 
 void AUTCarriedObject::MoveToHome()
 {
-	DetachRootComponentFromParent(true);
+    DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);//DetachRootComponentFromParent(true);
 	AssistTracking.Empty();
 	HolderRescuers.Empty();
 	PastPositions.Empty();
@@ -1047,7 +1048,7 @@ void AUTCarriedObject::OnRep_AttachmentReplication()
 				if (!RootComponent->bAbsoluteScale)
 				{
 					FTransform ParentToWorld = NewParentComponent->GetSocketTransform(AttachSocket);
-					FTransform RelativeTM = RootComponent->ComponentToWorld.GetRelativeTransform(ParentToWorld);
+                    FTransform RelativeTM = RootComponent->GetComponentToWorld().GetRelativeTransform(ParentToWorld);
 					NewRelativeScale3D = RelativeTM.GetScale3D();
 				}
 
@@ -1063,7 +1064,7 @@ void AUTCarriedObject::OnRep_AttachmentReplication()
 	}
 	else
 	{
-		DetachRootComponentFromParent();
+        DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);//DetachRootComponentFromParent();
 		OnRep_ReplicatedMovement(); // make sure this was applied, since it might be ignored if it arrived in a seperate packet to AttachmentReplication
 		ClientUpdateAttachment(false);
 	}

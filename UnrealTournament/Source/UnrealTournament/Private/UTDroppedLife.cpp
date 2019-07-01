@@ -73,7 +73,7 @@ void AUTDroppedLife::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 		AUTCharacter* TouchingChar = Cast<AUTCharacter>(OtherActor);
 		if (TouchingChar && !TouchingChar->IsDead())
 		{
-			AUTPlayerState* TouchingPlayerState = Cast<AUTPlayerState>(TouchingChar->PlayerState);
+            AUTPlayerState* TouchingPlayerState = Cast<AUTPlayerState>(TouchingChar->GetPlayerState());
 			if (TouchingPlayerState)
 			{
 				float MyPoints = float(int(Value * 0.75f));

@@ -43,7 +43,7 @@ AUTProjectile::AUTProjectile(const class FObjectInitializer& ObjectInitializer)
 		PawnOverlapSphere->bTraceComplexOnMove = false; 
 		PawnOverlapSphere->bReceivesDecals = false;
 		PawnOverlapSphere->SetupAttachment(RootComponent);
-		PawnOverlapSphere->bShouldUpdatePhysicsVolume = false;
+        PawnOverlapSphere->SetShouldUpdatePhysicsVolume(false);
 	}
 
 	// Use a ProjectileMovementComponent to govern this projectile's movement
@@ -453,13 +453,13 @@ void AUTProjectile::SendInitialReplication()
 				// Workaround to skip deprecation warning where it calls the PlayerController version of this function
 				if (IsNetRelevantFor(static_cast<AActor*>(NetDriver->ClientConnections[i]->PlayerController), ViewTarget, ViewLocation))
 				{
-					UActorChannel* Ch = NetDriver->ClientConnections[i]->ActorChannels.FindRef(this);
+                    UActorChannel* Ch = NetDriver->ClientConnections[i]->ActorChannelMap().FindRef(this);
 					if (Ch == NULL)
 					{
 						// can't - protected: if (NetDriver->IsLevelInitializedForActor(this, NetDriver->ClientConnections[i]))
-						if (NetDriver->ClientConnections[i]->ClientWorldPackageName == GetWorld()->GetOutermost()->GetFName() && NetDriver->ClientConnections[i]->ClientHasInitializedLevelFor(this))
+                        if (NetDriver->ClientConnections[i]->GetClientWorldPackageName() == GetWorld()->GetOutermost()->GetFName() && NetDriver->ClientConnections[i]->ClientHasInitializedLevelFor(this))
 						{
-							Ch = (UActorChannel *)NetDriver->ClientConnections[i]->CreateChannel(CHTYPE_Actor, 1);
+                            Ch = (UActorChannel *)NetDriver->ClientConnections[i]->CreateChannelByName(NAME_Actor, EChannelCreateFlags::OpenedLocally);//CreateChannel(CHTYPE_Actor, 1);
 							if (Ch != NULL)
 							{
 								Ch->SetChannelActor(this);
@@ -521,12 +521,12 @@ void AUTProjectile::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& 
 		BPClass->GetLifetimeBlueprintReplicationList(OutLifetimeProps);
 	}
 
-	DOREPLIFETIME(AActor, bHidden);
-	DOREPLIFETIME(AActor, bTearOff);
+    DOREPLIFETIME(AActor, bHidden);
 	DOREPLIFETIME(AActor, bCanBeDamaged);
 
 	// POLGE TODO: Fix the issues with this being private
 	//DOREPLIFETIME(AActor, AttachmentReplication);
+    //DOREPLIFETIME(AActor, pubTearOff);
 
 	DOREPLIFETIME(AActor, Instigator);
 	DOREPLIFETIME_CONDITION(AUTProjectile, UTProjReplicatedMovement, COND_SimulatedOrPhysics);
@@ -624,7 +624,7 @@ void AUTProjectile::PostNetReceiveLocationAndRotation()
 	else if (Role != ROLE_Authority)
 	{
 		// tick particle systems for e.g. SpawnPerUnit trails
-		if (!bTearOff && !bExploded) // if torn off ShutDown() will do this
+        if (!GetTearOff() && !bExploded) // if torn off ShutDown() will do this
 		{
 			TArray<USceneComponent*> Components;
 			GetComponents<USceneComponent>(Components);
@@ -796,7 +796,7 @@ bool AUTProjectile::ShouldIgnoreHit_Implementation(AActor* OtherActor, UPrimitiv
 		|| (Cast<AUTProjectile>(OtherActor) != NULL && !InteractsWithProj(Cast<AUTProjectile>(OtherActor)))
 		|| Cast<AUTProj_WeaponScreen>(OtherActor) != NULL
 		|| Cast<AUTGib>(OtherActor) != NULL
-		|| ((Role != ROLE_Authority) && OtherActor && OtherActor->bTearOff));
+        || ((Role != ROLE_Authority) && OtherActor && OtherActor->GetTearOff()));
 }
 
 void AUTProjectile::ProcessHit_Implementation(AActor* OtherActor, UPrimitiveComponent* OtherComp, const FVector& HitLocation, const FVector& HitNormal)
@@ -808,7 +808,7 @@ void AUTProjectile::ProcessHit_Implementation(AActor* OtherActor, UPrimitiveComp
 	{
 		if (ShouldIgnoreHit(OtherActor, OtherComp))
 		{
-			if ((Role != ROLE_Authority) && OtherActor && OtherActor->bTearOff)
+            if ((Role != ROLE_Authority) && OtherActor && OtherActor->GetTearOff())
 			{ 
 				DamageImpactedActor(OtherActor, OtherComp, HitLocation, HitNormal);
 			}
@@ -974,7 +974,7 @@ void AUTProjectile::Explode_Implementation(const FVector& HitLocation, const FVe
 			}
 			if (Role == ROLE_Authority)
 			{
-				bTearOff = true;
+                TearOff();//bTearOff = true;
 				bReplicateUTMovement = true; // so position of explosion is accurate even if flight path was a little off
 			}
 		}

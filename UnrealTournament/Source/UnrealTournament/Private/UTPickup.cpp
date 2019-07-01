@@ -29,7 +29,7 @@ AUTPickup::AUTPickup(const FObjectInitializer& ObjectInitializer)
 	Collision = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("Capsule"));
 	Collision->SetCollisionProfileName(FName(TEXT("Pickup")));
 	Collision->InitCapsuleSize(64.0f, 75.0f);
-	Collision->bShouldUpdatePhysicsVolume = false;
+    Collision->SetShouldUpdatePhysicsVolume(false);// = false;
 	Collision->Mobility = EComponentMobility::Static;
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &AUTPickup::OnOverlapBegin);
 	RootComponent = Collision;
@@ -153,7 +153,7 @@ void AUTPickup::PlayPreSpawnEffect()
 void AUTPickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepHitResult)
 {
 	APawn* P = Cast<APawn>(OtherActor);
-	if (P != NULL && !P->bTearOff && !GetWorld()->LineTraceTestByChannel(P->GetActorLocation(), GetActorLocation(), ECC_Pawn, FCollisionQueryParams(), WorldResponseParams))
+    if (P != NULL && !P->GetTearOff() && !GetWorld()->LineTraceTestByChannel(P->GetActorLocation(), GetActorLocation(), ECC_Pawn, FCollisionQueryParams(), WorldResponseParams))
 	{
 		ProcessTouch(P);
 	}
@@ -185,7 +185,7 @@ void AUTPickup::ProcessTouch_Implementation(APawn* TouchedBy)
 		AUTGameMode* UTGameMode = GetWorld()->GetAuthGameMode<AUTGameMode>();
 		if (UTGameMode != NULL)
 		{
-			AUTPlayerState* PickedUpBy = Cast<AUTPlayerState>(TouchedBy->PlayerState);
+            AUTPlayerState* PickedUpBy = Cast<AUTPlayerState>(TouchedBy->GetPlayerState());
 			UTGameMode->ScorePickup(this, PickedUpBy, LastPickedUpBy);
 			LastPickedUpBy = PickedUpBy;
 
@@ -194,8 +194,8 @@ void AUTPickup::ProcessTouch_Implementation(APawn* TouchedBy)
 				float Radius = 0.0f;
 				if (TakenSound != NULL)
 				{
-					Radius = TakenSound->GetMaxAudibleDistance();
-					const FAttenuationSettings* Settings = TakenSound->GetAttenuationSettingsToApply();
+                    Radius = TakenSound->GetMaxDistance();
+                    const FSoundAttenuationSettings* Settings = TakenSound->GetAttenuationSettingsToApply();
 					if (Settings != NULL)
 					{
 						Radius = FMath::Max<float>(Radius, Settings->GetMaxDimension());

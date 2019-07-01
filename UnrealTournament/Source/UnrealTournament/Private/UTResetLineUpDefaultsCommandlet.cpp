@@ -1,6 +1,8 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 #include "UnrealTournament.h"
+#include "Developer/SourceControl/Public/SourceControlHelpers.h"
+#include "Developer/SourceControl/Public/SourceControlOperations.h"
 
 #include "UTResetLineUpDefaultsCommandlet.h"
 
@@ -56,7 +58,7 @@ int32 UUTResetLineUpDefaultsCommandlet::Main(const FString& Params)
 		}
 	}
 
-	FScopedSourceControl SourceControl;
+    FScopedSourceControl SourceControl;
 
 	for (int32 i = 0; i < Maps.Num(); i++)
 	{
@@ -88,7 +90,7 @@ int32 UUTResetLineUpDefaultsCommandlet::Main(const FString& Params)
 		{
 			// We shouldnt need this - but just in case
 			GWorld = World;
-			// need to have a bool so we dont' save every single map
+            // need to have a bool so we don't save every single map
 			bool bIsDirty = false;
 
 			World->WorldType = EWorldType::Editor;
@@ -97,7 +99,7 @@ int32 UUTResetLineUpDefaultsCommandlet::Main(const FString& Params)
 			World->AddToRoot();
 			// initialize the levels in the world
 			World->InitWorld(UWorld::InitializationValues().AllowAudioPlayback(false));
-			World->GetWorldSettings()->PostEditChange();
+            //World->GetWorldSettings()->PostEditChange();
 			World->UpdateWorldComponents(true, false);
 
 			// iterate through all the post process volumes
@@ -135,7 +137,7 @@ int32 UUTResetLineUpDefaultsCommandlet::Main(const FString& Params)
 			}
 
 			// collect garbage to delete replaced actors and any objects only referenced by them (components, etc)
-			World->PerformGarbageCollectionAndCleanupActors();
+            GEngine->PerformGarbageCollectionAndCleanupActors();//    PerformGarbageCollectionAndCleanupActors();
 
 			// save the world
 			if ((Package->IsDirty() == true) && (bIsDirty == true))

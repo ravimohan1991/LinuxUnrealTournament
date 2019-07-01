@@ -14,11 +14,12 @@
 #include "UTReplicatedGameRuleset.h"
 #include "../Panels/SUTCreateGamePanel.h"
 #include "UTGameEngine.h"
+#include "SUTTextChatPanel.h"
 
 #if !UE_SERVER
 
-class SUTPlayerListPanel;
-class SUTTextChatPanel;
+//class SUTPlayerListPanel;
+//class SUTTextChatPanel;
 
 const int32 MAP_COLUMNS = 3;
 
@@ -109,9 +110,9 @@ protected:
 	void LeaderTextureLoadComplete(const FName& InPackageName, UPackage* LoadedPackage, EAsyncLoadingResult::Type Result);
 	FReply OnLeadingMapClick(int32 ButtonIndex);
 	FReply OnMapClick(TWeakObjectPtr<AUTReplicatedMapInfo> MapInfo);
-	void Tick( const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime );
+    void Tick( const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime ) override;
 
-	virtual TSharedRef<class SWidget> BuildCustomButtonBar();
+    virtual TSharedRef<class SWidget> BuildCustomButtonBar() override;
 	FText GetClockTime() const;
 
 	bool MapVoteSortCompare(AUTReplicatedMapInfo* A, AUTReplicatedMapInfo* B);

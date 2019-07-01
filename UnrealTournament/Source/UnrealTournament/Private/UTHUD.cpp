@@ -275,7 +275,7 @@ void AUTHUD::PostInitializeComponents()
 	for (const FAssetData& Asset : AssetList)
 	{
 		static FName NAME_GeneratedClass(TEXT("GeneratedClass"));
-		const FString* ClassPath = Asset.TagsAndValues.Find(NAME_GeneratedClass);
+        const FString* ClassPath = &Asset.TagsAndValues.FindTag(NAME_GeneratedClass).GetValue();
 		UClass* CrosshairClass = LoadObject<UClass>(NULL, **ClassPath);
 		if (CrosshairClass != nullptr)
 		{
@@ -377,9 +377,9 @@ AUTPlayerState* AUTHUD::GetScorerPlayerState()
 		return PS;
 	}
 	APawn* PawnOwner = (UTPlayerOwner->GetPawn() != NULL) ? UTPlayerOwner->GetPawn() : Cast<APawn>(UTPlayerOwner->GetViewTarget());
-	if (PawnOwner != NULL && Cast<AUTPlayerState>(PawnOwner->PlayerState) != NULL)
+    if (PawnOwner != NULL && Cast<AUTPlayerState>(PawnOwner->GetPlayerState()) != NULL)
 	{
-		PS = (AUTPlayerState*)PawnOwner->PlayerState;
+        PS = (AUTPlayerState*)PawnOwner->GetPlayerState();
 	}
 
 	return UTPlayerOwner->LastSpectatedPlayerState ? UTPlayerOwner->LastSpectatedPlayerState : PS;
@@ -415,7 +415,7 @@ void AUTHUD::BuildHudWidget(FString NewWidgetString)
 {
 	// Look at the string.  If it starts with a "{" then assume it's not a JSON based config and just resolve it's name.
 
-	if ( NewWidgetString.Trim().Left(1) == TEXT("{") )
+    if ( NewWidgetString.TrimStart().Left(1) == TEXT("{") )
 	{
 		// It's a json command so we have to break it apart
 
@@ -818,7 +818,7 @@ void AUTHUD::DrawHUD()
 				}
 			}
 			AUTCharacter* ViewedCharacter = Cast<AUTCharacter>(PlayerOwner->GetViewTarget());
-			if (ViewedCharacter && ViewedCharacter->bTearOff)
+            if (ViewedCharacter && ViewedCharacter->GetTearOff())
 			{
 				Intensity = 1.f;
 			}
@@ -1264,7 +1264,7 @@ FLinearColor AUTHUD::GetWidgetTeamColor()
 	{
 		//return UTPlayerOwner->UTPlayerState->Team->TeamColor;
 		APawn* HUDPawn = Cast<APawn>(UTPlayerOwner->GetViewTarget());
-		AUTPlayerState* PS = HUDPawn ? Cast<AUTPlayerState>(HUDPawn->PlayerState) : NULL;
+        AUTPlayerState* PS = HUDPawn ? Cast<AUTPlayerState>(HUDPawn->GetPlayerState()) : NULL;
 		if (PS != NULL)
 		{
 			return (PS->GetTeamNum() == 0) ? FLinearColor(0.15, 0.0, 0.0, 1.0) : FLinearColor(0.025, 0.025, 0.1, 1.0);
@@ -1493,7 +1493,7 @@ void AUTHUD::CalcMinimapTransform(const FBox& LevelBox, int32 MapWidth, int32 Ma
 
 void AUTHUD::UpdateMinimapTexture(UCanvas* C, int32 Width, int32 Height)
 {
-	FBox LevelBox(0);
+    FBox LevelBox(EForceInit::ForceInitToZero);
 	AUTRecastNavMesh* NavMesh = GetUTNavData(GetWorld());
 	if (NavMesh != NULL)
 	{
@@ -1768,7 +1768,7 @@ void AUTHUD::DrawMinimapSpectatorIcons()
 			if (UTChar)
 			{
 				// draw team colored dot at location
-				AUTPlayerState* PS = Cast<AUTPlayerState>(UTChar->PlayerState);
+                AUTPlayerState* PS = Cast<AUTPlayerState>(UTChar->GetPlayerState());
 				if (!PS || !UTPlayerOwner->UTPlayerState || (bOnlyShowTeammates && !PS->bOnlySpectator && (PS != UTPlayerOwner->UTPlayerState) && (!PS->Team || (PS->Team != UTPlayerOwner->UTPlayerState->Team)) && !PS->bSpecialPlayer))
 				{
 					continue;

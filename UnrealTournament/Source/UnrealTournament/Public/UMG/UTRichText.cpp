@@ -213,7 +213,8 @@ protected:
 		FTextLayout& TargetTextLayout,
 		TArray<TSharedRef<IRun>>& Runs,
 		TArray<FTextLineHighlight>& LineHighlights,
-		TMap<const FTextBlockStyle*, TSharedPtr<FSlateTextUnderlineLineHighlighter>>& CachedUnderlineHighlighters
+        TMap<const FTextBlockStyle*, TSharedPtr<FSlateTextUnderlineLineHighlighter>>& CachedUnderlineHighlighters,
+        TMap<const FTextBlockStyle*, TSharedPtr<FSlateTextStrikeLineHighlighter>>& CachedStrikeLineHighlighters
 		) override
 	{
 		//reset this each time
@@ -319,7 +320,7 @@ protected:
 			}
 
 			// Handle other runs as normal rich text
-			FRichTextLayoutMarshaller::AppendRunsForText(LineIndex, TextRun, ProcessedString, DefaultTextStyle, InOutModelText, TargetTextLayout, Runs, LineHighlights, CachedUnderlineHighlighters);
+            FRichTextLayoutMarshaller::AppendRunsForText(LineIndex, TextRun, ProcessedString, DefaultTextStyle, InOutModelText, TargetTextLayout, Runs, LineHighlights, CachedUnderlineHighlighters, CachedStrikeLineHighlighters);
 		}
 	}
 
@@ -403,7 +404,7 @@ UUTRichText::UUTRichText(const FObjectInitializer& ObjectInitializer)
 	static ConstructorHelpers::FClassFinder<UUTTextStyle> KeywordTextStyleClassFinder(TEXT("/Game/RestrictedAssets/UI/Text/TextStyle-Body"));
 	InlineIconTextStyle = KeywordTextStyleClassFinder.Class;
 
-	Visiblity_DEPRECATED = Visibility = ESlateVisibility::SelfHitTestInvisible;
+    /*Visiblity_DEPRECATED =*/ Visibility = ESlateVisibility::SelfHitTestInvisible;
 }
 
 void UUTRichText::PostLoad()

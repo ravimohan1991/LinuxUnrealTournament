@@ -14,6 +14,7 @@
 #include "IDetailsView.h"
 #include "IPropertyUtilities.h"
 #include "PropertyCustomizationHelpers.h"
+#include "UTDetailsCustomization.h"
 
 struct FMuzzleFlashChoice
 {
@@ -150,7 +151,7 @@ public:
 			MFEntries[ChildIndex] = NewEntry;
 			
 			TSharedRef<IPropertyHandle> ElementHandle = MyArrayProperty->GetElement(ChildIndex);
-			ChildrenBuilder.AddChildContent(FText::FromString(TEXT("MuzzleFlash")))
+            ChildrenBuilder.AddCustomRow(FText::FromString(TEXT("MuzzleFlash")))
 			.NameContent()
 			[
 				ElementHandle->CreatePropertyNameWidget()

@@ -3,9 +3,10 @@
 #pragma once
 
 #include "PartyMemberState.h"
+#include "UTPartyGameState.h"
 #include "UTPartyMemberState.generated.h"
 
-class UUTPartyGameState;
+//class UUTPartyGameState;
 
 UENUM()
 enum class EUTPartyMemberLocation : uint8

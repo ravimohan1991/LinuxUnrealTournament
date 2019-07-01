@@ -41,7 +41,7 @@ struct FDamageHudIndicator
 	}
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FEnemyDamageNumber
 {
 	GENERATED_USTRUCT_BODY()

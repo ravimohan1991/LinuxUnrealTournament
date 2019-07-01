@@ -123,7 +123,7 @@ float GetNumTrianglesInScene()
 #if STATS
 	IPerfCounters* PerfCounters = IPerfCountersModule::Get().GetPerformanceCounters();
 	
-	if (FGameThreadHudData* ViewData = FHUDGroupGameThreadRenderer::Get().Latest)
+    /*if (FGameThreadHudData* ViewData = FHUDGroupGameThreadRenderer::Get().Latest)
 	{
 		for (const FHudGroup& HudGroup : ViewData->HudGroups)
 		{
@@ -137,7 +137,7 @@ float GetNumTrianglesInScene()
 				}
 			}
 		}
-	}
+    }*/
 #endif
 	
 	return 0.f;

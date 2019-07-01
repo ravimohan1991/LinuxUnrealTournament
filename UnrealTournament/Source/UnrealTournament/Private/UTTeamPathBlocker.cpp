@@ -4,7 +4,7 @@
 #include "UTReachSpec_Team.h"
 #include "UObjectToken.h"
 #include "AI/NavigationSystemHelpers.h"
-#include "AI/NavigationOctree.h"
+//#include "AI/NavigationOctree.h"
 #include "UTNavArea_Default.h"
 
 void AUTTeamPathBlocker::AddSpecialPaths(class UUTPathNode* MyNode, class AUTRecastNavMesh* NavData)
@@ -43,7 +43,7 @@ void AUTTeamPathBlocker::AddSpecialPaths(class UUTPathNode* MyNode, class AUTRec
 				{
 					UUTReachSpec_Team* NewSpec = NewObject<UUTReachSpec_Team>(MyNode);
 					NewSpec->Arbiter = this;
-					FUTPathLink* NewLink = new(MyNode->Paths) FUTPathLink(MyNode, OtherLink.EndPoly, OtherNode, OtherLink.StartEdgePoly, NewSpec, OtherLink.CollisionRadius, FMath::Min<int32>(OtherLink.CollisionHeight, MaxHeight), OtherLink.ReachFlags);
+                    FUTPathLink* NewLink = new(MyNode->Paths) FUTPathLink(const_cast <UUTPathNode*>(MyNode), OtherLink.EndPoly, const_cast <UUTPathNode*>(OtherNode), OtherLink.StartEdgePoly, NewSpec, OtherLink.CollisionRadius, FMath::Min<int32>(OtherLink.CollisionHeight, MaxHeight), OtherLink.ReachFlags);
 					for (NavNodeRef PolyRef : MyNode->Polys)
 					{
 						NewLink->Distances.Add(NavData->CalcPolyDistance(PolyRef, NewLink->EndPoly));

@@ -3,6 +3,7 @@
 #include "UnrealTournament.h"
 #include "SlateBasics.h"
 #include "Slate/SlateGameResources.h"
+#include "RenderingCommon.h"
 #include "SUTSlider.h"
 
 #if !UE_SERVER
@@ -102,7 +103,7 @@ int32 SUTSlider::OnPaint( const FPaintArgs& Args, const FGeometry& AllottedGeome
 	}
 
 	const bool bEnabled = ShouldBeEnabled(bParentEnabled);
-	const ESlateDrawEffect::Type DrawEffects = bEnabled ? ESlateDrawEffect::None : ESlateDrawEffect::DisabledEffect;
+    const ESlateDrawEffect DrawEffects = bEnabled ? ESlateDrawEffect::None : ESlateDrawEffect::DisabledEffect;
 
 	// draw slider bar
 	auto BarTopLeft = FVector2D(SliderStartPoint.X, SliderStartPoint.Y - Style->BarThickness * 0.5f);
@@ -112,7 +113,7 @@ int32 SUTSlider::OnPaint( const FPaintArgs& Args, const FGeometry& AllottedGeome
 		LayerId,
 		SliderGeometry.ToPaintGeometry(BarTopLeft, BarSize),
 		LockedAttribute.Get() ? &Style->DisabledBarImage : &Style->NormalBarImage,
-		RotatedClippingRect,
+        //RotatedClippingRect,
 		DrawEffects,
 		SliderBarColor.Get().GetColor(InWidgetStyle) * InWidgetStyle.GetColorAndOpacityTint()
 		);
@@ -136,7 +137,7 @@ int32 SUTSlider::OnPaint( const FPaintArgs& Args, const FGeometry& AllottedGeome
 				LayerId,
 				SliderGeometry.ToPaintGeometry(TickTopLeft, TickSize),
 				LockedAttribute.Get() ? &Style->DisabledBarImage : &Style->NormalBarImage,
-				RotatedClippingRect,
+                //RotatedClippingRect,
 				DrawEffects,
 				SliderBarColor.Get().GetColor(InWidgetStyle) * InWidgetStyle.GetColorAndOpacityTint()
 				);
@@ -153,7 +154,7 @@ int32 SUTSlider::OnPaint( const FPaintArgs& Args, const FGeometry& AllottedGeome
 		LayerId,
 		SliderGeometry.ToPaintGeometry(HandleTopLeftPoint, Style->NormalThumbImage.ImageSize),
 		LockedAttribute.Get() ? &Style->DisabledThumbImage : &Style->NormalThumbImage,
-		RotatedClippingRect,
+        //RotatedClippingRect,
 		DrawEffects,
 		SliderHandleColor.Get().GetColor(InWidgetStyle) * InWidgetStyle.GetColorAndOpacityTint()
 	);

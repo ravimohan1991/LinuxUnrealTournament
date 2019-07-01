@@ -17,14 +17,14 @@ class UNREALTOURNAMENT_API IUTObjectListItem : public IUTListItem
 	GENERATED_IINTERFACE_BODY()
 
 public:
-	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = ObjectListItem )
-	UObject* GetData() const;
+    //UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = ObjectListItem )
+    //UObject* GetData() const;
 
-	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = ObjectListItem )
-	void SetData( UObject* InData );
+    //UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = ObjectListItem )
+    //void SetData( UObject* InData );
 
-	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = ObjectListItem )
-	void Reset();
+    //UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = ObjectListItem )
+    //void Reset();
 };
 
 

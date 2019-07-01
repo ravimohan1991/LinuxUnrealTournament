@@ -122,7 +122,7 @@ private:
 	TSharedPtr<class SWidget> GameViewportWidget;
 
 	// HACKS needed to keep window focus
-	virtual bool SupportsKeyboardFocus() const override;
+    virtual bool SupportsKeyboardFocus() const override;
 	virtual FReply OnFocusReceived(const FGeometry& MyGeometry, const FFocusEvent& InKeyboardFocusEvent) override;
 	virtual FReply OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyboardEvent) override;
 	virtual FReply OnKeyUp(const FGeometry& MyGeometry, const FKeyEvent& InKeyboardEvent) override;

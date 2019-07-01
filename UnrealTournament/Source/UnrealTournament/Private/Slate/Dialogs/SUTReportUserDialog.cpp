@@ -38,7 +38,7 @@ void SUTReportUserDialog::Construct(const FArguments& InArgs)
 	{
 
 		FString TrollID = Troll->UniqueId->ToString();
-		FString TrollName = Troll->PlayerName;
+        FString TrollName = Troll->GetPlayerName();
 
 		DialogContent->AddSlot()
 		.HAlign(HAlign_Center)
@@ -153,9 +153,9 @@ FReply SUTReportUserDialog::OnReportClicked(int32 ReportType)
 		if (PlayerState && GameState)
 		{
 			TArray<FAnalyticsEventAttribute> ParamArray;
-			ParamArray.Add(FAnalyticsEventAttribute(TEXT("TrollName"), Troll->PlayerName));
+            ParamArray.Add(FAnalyticsEventAttribute(TEXT("TrollName"), Troll->GetPlayerName()));
 			ParamArray.Add(FAnalyticsEventAttribute(TEXT("TrollID"), Troll->UniqueId.ToString()));
-			ParamArray.Add(FAnalyticsEventAttribute(TEXT("ReportName"), PlayerState->PlayerName));
+            ParamArray.Add(FAnalyticsEventAttribute(TEXT("ReportName"), PlayerState->GetPlayerName()));
 			ParamArray.Add(FAnalyticsEventAttribute(TEXT("ReportID"), PlayerState->UniqueId.ToString()));
 			ParamArray.Add(FAnalyticsEventAttribute(TEXT("DemoIKD"), GameState->ReplayID));
 

@@ -28,9 +28,9 @@
 
 #define USE_SQLITE UE_SERVER
 
-#if USE_SQLITE
-#include "ThirdParty/sqlite/sqlite3.h"
-#endif
+//#if USE_SQLITE
+//#include "ThirdParty/sqlite/sqlite3.h"
+//#endif
 
 /* Delays for various timers during matchmaking */
 #define DELETESESSION_DELAY 1.0f
@@ -160,7 +160,7 @@ void UUTGameInstance::Init()
 #endif
 
 	FCoreUObjectDelegates::PreLoadMap.AddUObject(this, &UUTGameInstance::BeginLevelLoading);
-	FCoreUObjectDelegates::PostLoadMap.AddUObject(this, &UUTGameInstance::EndLevelLoading);
+    FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UUTGameInstance::EndLevelLoading);
 }
 
 bool UUTGameInstance::ExecDatabaseCommand(const FString& DatabaseCommand, TArray<FDatabaseRow>& DatabaseRows)
@@ -510,7 +510,7 @@ void UUTGameInstance::StartRecordingReplay(const FString& Name, const FString& F
 						CurrentWorld->DemoNetDriver->GuidCache->RegisterNetGUID_Internal(Info.NetGUID, CacheItem);
 						Info.PathName = Obj.ActorName.ToString();
 						Info.ObjOuter = Obj.Level.Get();
-						UActorChannel* Channel = (UActorChannel*)CurrentWorld->DemoNetDriver->ClientConnections[0]->CreateChannel(CHTYPE_Actor, 1);
+                        UActorChannel* Channel = (UActorChannel*)CurrentWorld->DemoNetDriver->ClientConnections[0]->CreateChannelByName(NAME_Actor, EChannelCreateFlags::OpenedLocally);//CreateChannel(CHTYPE_Actor, 1);
 						if (Channel != nullptr)
 						{
 							Channel->SetChannelActorForDestroy(&Info);
@@ -522,20 +522,20 @@ void UUTGameInstance::StartRecordingReplay(const FString& Name, const FString& F
 		}
 	}
 }
-void UUTGameInstance::PlayReplay(const FString& Name, UWorld* WorldOverride, const TArray<FString>& AdditionalOptions)
+bool UUTGameInstance::PlayReplay(const FString& Name, UWorld* WorldOverride, const TArray<FString>& AdditionalOptions)
 {
 	UWorld* CurrentWorld = WorldOverride != nullptr ? WorldOverride : GetWorld();
 
 	if (CurrentWorld == nullptr)
 	{
 		UE_LOG(UT, Warning, TEXT("UGameInstance::PlayReplay: GetWorld() is null"));
-		return;
+        return false;
 	}
 
 	if (CurrentWorld->WorldType == EWorldType::PIE)
 	{
 		UE_LOG(UT, Warning, TEXT("UUTGameInstance::PlayReplay: Function called while running a PIE instance, this is disabled."));
-		return;
+        return false;
 	}
 
 	CurrentWorld->DestroyDemoNetDriver();
@@ -556,7 +556,7 @@ void UUTGameInstance::PlayReplay(const FString& Name, UWorld* WorldOverride, con
 	if (!GEngine->CreateNamedNetDriver(CurrentWorld, NAME_DemoNetDriver, NAME_DemoNetDriver))
 	{
 		UE_LOG(UT, Warning, TEXT("PlayReplay: failed to create demo net driver!"));
-		return;
+        return false;
 	}
 
 	CurrentWorld->DemoNetDriver = Cast< UDemoNetDriver >(GEngine->FindNamedNetDriver(CurrentWorld, NAME_DemoNetDriver));
@@ -579,11 +579,15 @@ void UUTGameInstance::PlayReplay(const FString& Name, UWorld* WorldOverride, con
 	{
 		UE_LOG(UT, Warning, TEXT("Demo playback failed: %s"), *Error);
 		CurrentWorld->DestroyDemoNetDriver();
+        return false;
 	}
 	else
 	{
 		FCoreUObjectDelegates::PostDemoPlay.Broadcast();
+        return false;
 	}
+
+    return true;
 }
 
 
@@ -607,7 +611,7 @@ void UUTGameInstance::Shutdown()
 /*static*/ UUTGameInstance* UUTGameInstance::Get(UObject* ContextObject)
 {
 	UUTGameInstance* GameInstance = NULL;
-	UWorld* OwningWorld = GEngine->GetWorldFromContextObject(ContextObject, false);
+    UWorld* OwningWorld = GEngine->GetWorldFromContextObjectChecked(ContextObject);//, false);
 
 	if (OwningWorld)
 	{
@@ -824,7 +828,7 @@ void UUTGameInstance::BeginLevelLoading(const FString& LevelName)
 		{
 			if (Asset.PackageName.ToString() == LevelName)
 			{
-				const FString* Title = Asset.TagsAndValues.Find(NAME_MapInfo_Title);
+                const FString* Title = &Asset.TagsAndValues.FindTag(NAME_MapInfo_Title).GetValue();
 				if (Title != nullptr)
 				{
 					LoadingMapFriendlyName = *Title;
@@ -919,7 +923,7 @@ void UUTGameInstance::BeginLevelLoading(const FString& LevelName)
 		{
 			if (Asset.PackageName.ToString() == LevelName)
 			{
-				const FString* VignetteArrayAsString = Asset.TagsAndValues.Find(NAME_Vignettes);
+                const FString* VignetteArrayAsString = &Asset.TagsAndValues.FindTag(NAME_Vignettes).GetValue();
 				if (VignetteArrayAsString != nullptr)
 				{
 					FindField<UProperty>(UUTLevelSummary::StaticClass(), NAME_Vignettes)->ImportText(**VignetteArrayAsString, &MapVignettes, 0, nullptr);
@@ -978,7 +982,7 @@ void UUTGameInstance::OnMoviePlaybackFinished()
 }
 #endif
 
-void UUTGameInstance::EndLevelLoading()
+void UUTGameInstance::EndLevelLoading(UWorld* sos)
 {
 	bLevelIsLoading	 = false;
 	LevelLoadText = FText::GetEmpty();
@@ -1285,7 +1289,7 @@ void UUTGameInstance::AcquireTitleFilesFromMCP()
 	}
 }
 
-void UUTGameInstance::OnEnumerateTitleFilesComplete(bool bWasSuccessful)
+void UUTGameInstance::OnEnumerateTitleFilesComplete(bool bWasSuccessful, const FString& lol)
 {
 	if (bWasSuccessful && RequestedTitleFiles.Num() > 0)
 	{
@@ -1378,7 +1382,7 @@ void UUTGameInstance::OnReadTitleFileComplete(bool bWasSuccessful, const FString
 
 	if (RequestedTitleFiles.Num() > 0)
 	{
-		OnEnumerateTitleFilesComplete(true);
+        OnEnumerateTitleFilesComplete(true);
 	}
 	else
 	{

@@ -3,6 +3,9 @@
 #include "UnrealTournament.h"
 #include "SlateBasics.h"
 #include "Slate/SlateGameResources.h"
+#include "Geometry.h"
+#include "DrawElements.h"
+#include "Platform.h"
 #include "../SUWindowsStyle.h"
 #include "SUTProgressSlider.h"
 
@@ -86,18 +89,18 @@ int32 SUTProgressSlider::OnPaint(const FPaintArgs& Args, const FGeometry& Allott
 	}
 
 	const bool bEnabled = ShouldBeEnabled(bParentEnabled);
-	const ESlateDrawEffect::Type DrawEffects = bEnabled ? ESlateDrawEffect::None : ESlateDrawEffect::DisabledEffect;
+    const ESlateDrawEffect DrawEffects = bEnabled ? ESlateDrawEffect::None : ESlateDrawEffect::DisabledEffect;
 
 	// draw the Background
 	float BarWidth = SliderEndPoint.X - SliderStartPoint.X;
 	auto BarTopLeft = FVector2D(SliderStartPoint.X, SliderStartPoint.Y);
 	auto BarSize = FVector2D(SliderEndPoint.X - SliderStartPoint.X, SliderEndPoint.Y - SliderStartPoint.Y);
-	FSlateDrawElement::MakeBox(
+    FSlateDrawElement::MakeBox(
 		OutDrawElements,
-		LayerId,
-		SliderGeometry.ToPaintGeometry(BarTopLeft, BarSize),
+        LayerId,
+        SliderGeometry.ToPaintGeometry(BarTopLeft, BarSize),
 		LockedAttribute.Get() ? &Style->DisabledBarImage : &Style->NormalBarImage,
-		RotatedClippingRect,
+        //RotatedClippingRect,
 		DrawEffects,
 		SliderBarBGColor.Get().GetColor(InWidgetStyle) * InWidgetStyle.GetColorAndOpacityTint()
 		);
@@ -112,7 +115,7 @@ int32 SUTProgressSlider::OnPaint(const FPaintArgs& Args, const FGeometry& Allott
 		LayerId,
 		SliderGeometry.ToPaintGeometry(BarTopLeft, BarSize),
 		LockedAttribute.Get() ? &Style->DisabledBarImage : &Style->NormalBarImage,
-		RotatedClippingRect,
+        //RotatedClippingRect,
 		DrawEffects,
 		SliderBarColor.Get().GetColor(InWidgetStyle) * InWidgetStyle.GetColorAndOpacityTint()
 		);
@@ -130,7 +133,7 @@ int32 SUTProgressSlider::OnPaint(const FPaintArgs& Args, const FGeometry& Allott
 			LayerId,
 			SliderGeometry.ToPaintGeometry(MarkerTopLeftPoint, MarkerSize),
 			&Style->NormalThumbImage,
-			RotatedClippingRect,
+            //RotatedClippingRect,
 			DrawEffects,
 			CurrentBookmarks[i].Color * InWidgetStyle.GetColorAndOpacityTint()
 			);
@@ -144,7 +147,7 @@ int32 SUTProgressSlider::OnPaint(const FPaintArgs& Args, const FGeometry& Allott
 		LayerId,
 		SliderGeometry.ToPaintGeometry(HandleTopLeftPoint, Style->NormalThumbImage.ImageSize),
 		LockedAttribute.Get() ? &Style->DisabledThumbImage : &Style->NormalThumbImage,
-		RotatedClippingRect,
+        //RotatedClippingRect,
 		DrawEffects,
 		SliderHandleColor.Get().GetColor(InWidgetStyle) * InWidgetStyle.GetColorAndOpacityTint()
 		);
@@ -163,7 +166,7 @@ int32 SUTProgressSlider::OnPaint(const FPaintArgs& Args, const FGeometry& Allott
 			LayerId,
 			SliderGeometry.ToPaintGeometry(MarkerTopLeftPoint, MarkerSize),
 			SUWindowsStyle::Get().GetBrush("UT.Replay.Button.MarkStart"),
-			RotatedClippingRect,
+            //RotatedClippingRect,
 			DrawEffects,
 			SliderHandleColor.Get().GetColor(InWidgetStyle) * InWidgetStyle.GetColorAndOpacityTint()
 			);
@@ -181,7 +184,7 @@ int32 SUTProgressSlider::OnPaint(const FPaintArgs& Args, const FGeometry& Allott
 			LayerId,
 			SliderGeometry.ToPaintGeometry(MarkerTopLeftPoint, MarkerSize),
 			SUWindowsStyle::Get().GetBrush("UT.Replay.Button.MarkEnd"),
-			RotatedClippingRect,
+            //RotatedClippingRect,
 			DrawEffects,
 			SliderHandleColor.Get().GetColor(InWidgetStyle) * InWidgetStyle.GetColorAndOpacityTint()
 			);

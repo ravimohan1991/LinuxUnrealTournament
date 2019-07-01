@@ -17,7 +17,7 @@ namespace ListViewText
 
 UUTListView::UUTListView()
 	: ItemHeight(128.f)
-	, ListItemClass(nullptr)
+    , ListItemClass(/*nullptr*/)
 	, SelectionMode(ESelectionMode::Single)
 	, ConsumeMouseWheel(EConsumeMouseWheel::WhenScrollingPossible)
 	, bClearSelectionOnClick(false)
@@ -45,12 +45,14 @@ TSharedRef<SWidget> UUTListView::RebuildWidget()
 		ItemWidgets.PreConstruct(NumPreAllocatedEntries);
 	}
 
-	TSharedPtr<SScissorRectBox> ScissorRectBox = SNew(SScissorRectBox)
-		[
-			RebuildListWidget()
-		];
+    TSharedPtr<SScissorRectBox> ScissorRectBox = SNew(SScissorRectBox)[RebuildListWidget()];
 
-	return BuildDesignTimeWidget(ScissorRectBox.ToSharedRef());
+    //return BuildDesignTimeWidget(ScissorRectBox.ToSharedRef());
+#if WITH_EDITOR
+    return CreateDesignerOutline(ScissorRectBox.ToSharedRef());
+#else
+    return ScissorRectBox.ToSharedRef();
+#endif
 }
 
 void UUTListView::ReleaseSlateResources(bool bReleaseChildren)
@@ -200,7 +202,7 @@ bool UUTListView::SetSelectedIndex(int32 Index)
 {
 	return SetSelectedItem( GetItemAt(Index) );
 }
-
+//SScissorRectBox.ToSharedRef()
 void UUTListView::SetItemSelection( UObject* Item, bool bSelected )
 {
 	if ( MyListView.IsValid() && DataProvider->AsArray().Contains( Item ) )
@@ -264,7 +266,8 @@ TSharedRef<ITableRow> UUTListView::HandleGenerateRow(UObject* Item, const TShare
 
 	// Make sure we take the widget first BEFORE setting data on it
 	// This ensures that the widget has had a chance to construct before we set data on it
-	TSharedRef<ITableRow> GeneratedRow = ItemWidgets.TakeAndCacheRow<ObjectRowType>(Widget, OwnerTable);
+    // Hacky way to restore. Will see rest during the gameplay
+    TSharedRef<ITableRow> GeneratedRow = ItemWidgets.TakeAndCacheRow<ObjectRowType, ObjectRowType>(Widget, OwnerTable);
 
 	if (!Widget->Implements<UUTObjectListItem>())
 	{
@@ -273,7 +276,7 @@ TSharedRef<ITableRow> UUTListView::HandleGenerateRow(UObject* Item, const TShare
 	else
 	{
 		Widget->SetPadding(DesiredItemPadding);
-		IUTObjectListItem::Execute_SetData(Widget, Item);
+        //IUTObjectListItem::Execute_SetData(Widget, Item);
 
 		FOnItemClicked OnClicked;
 		OnClicked.BindDynamic(this, &ThisClass::DynamicHandleItemClicked);
@@ -309,7 +312,7 @@ void UUTListView::HandleRowReleased(const TSharedRef<ITableRow>& Row)
 
 	if (ensure(ItemWidget->Implements<UUTObjectListItem>()))
 	{
-		IUTObjectListItem::Execute_Reset(ItemWidget);
+        //IUTObjectListItem::Execute_Reset(ItemWidget);
 	}
 
 	ItemWidgets.Release(ItemWidget);
@@ -324,7 +327,7 @@ void UUTListView::DynamicHandleItemClicked(UUserWidget* Widget)
 {
 	if (Widget && ensure(Widget->Implements<UUTObjectListItem>()))
 	{
-		UObject* Data = IUTObjectListItem::Execute_GetData(Widget);
+        UObject* Data = nullptr;//IUTObjectListItem::Execute_GetData(Widget);
 
 		const bool bIsSelected = MyListView->Private_IsItemSelected(Data);
 		if (SelectionMode == ESelectionMode::Single)

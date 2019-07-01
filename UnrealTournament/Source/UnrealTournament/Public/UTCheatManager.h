@@ -1,6 +1,7 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 #pragma once
+#include "../Runtime/Engine/Classes/GameFramework/PlayerController.h"
 #include "UTCheatManager.generated.h"
 
 #if WITH_PROFILE
@@ -63,8 +64,8 @@ class UNREALTOURNAMENT_API UUTCheatManager : public UCheatManager
 	UFUNCTION(exec)
 		virtual void HL();
 
-	UFUNCTION(exec)
-	virtual void Teleport();
+    //UFUNCTION(exec)
+    virtual void Teleport() override;
 
 	virtual void BugItWorker(FVector TheLocation, FRotator TheRotation) override;
 

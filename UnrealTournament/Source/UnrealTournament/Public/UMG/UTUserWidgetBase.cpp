@@ -23,7 +23,7 @@ UUTUserWidgetBase::UUTUserWidgetBase(const FObjectInitializer& ObjectInitializer
 	bIsFocusable = false;
 
 	Visibility = ESlateVisibility::SelfHitTestInvisible;
-	Visiblity_DEPRECATED = ESlateVisibility::SelfHitTestInvisible;
+    //Visiblity_DEPRECATED = ESlateVisibility::SelfHitTestInvisible;
 }
 
 #if WITH_EDITOR

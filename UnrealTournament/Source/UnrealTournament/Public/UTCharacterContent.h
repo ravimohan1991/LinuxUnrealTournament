@@ -1,9 +1,13 @@
 // user-selectable content for a player character (mesh, etc)
 // this is not done as UTCharacter subclasses for networking reasons (don't want players to be invisible if there is packet loss, loading issues, etc)
 // defined as an Actor for the friendly editor tools but is never spawned directly (similar to UTImpactEffect)
-// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
+// (ɔ) The_Cowboy 1000 BC - 2019 AD. All rights reversed.
 #pragma once
+
 #include "UTCharacterVoice.h"
+#include "GameFramework/Actor.h"
+#include "UTGib.h"
+
 #include "UTCharacterContent.generated.h"
 
 USTRUCT(BlueprintType)
@@ -27,6 +31,8 @@ enum EDMSkinType
 };
 
 UCLASS(BlueprintType, Abstract, NotPlaceable)
+//UCLASS(BlueprintType, Blueprintable, config=Engine, meta=(ShortTooltip="An Actor is an object that can be placed or spawned in the world."))
+//UCLASS()
 class UNREALTOURNAMENT_API AUTCharacterContent : public AActor
 {
 	GENERATED_BODY()
@@ -34,21 +40,23 @@ public:
 	friend class AUTCharacter;
 
 	AUTCharacterContent(const FObjectInitializer& OI)
-		: Super(OI)
+        : Super(OI)
 	{
 		RootComponent = OI.CreateDefaultSubobject<USceneComponent>(this, FName(TEXT("DummyRoot"))); // needed so Mesh has RelativeLocation/RelativeRotation in the editor
 		Mesh = OI.CreateDefaultSubobject<USkeletalMeshComponent>(this, FName(TEXT("Mesh")));
 		Mesh->SetupAttachment(RootComponent);
-		Mesh->AlwaysLoadOnClient = true;
+        Mesh->AlwaysLoadOnClient = true;
 		Mesh->AlwaysLoadOnServer = true;
 		Mesh->bCastDynamicShadow = true;
 		Mesh->bAffectDynamicIndirectLighting = true;
 		Mesh->PrimaryComponentTick.TickGroup = TG_PrePhysics;
 		Mesh->SetCollisionProfileName(FName(TEXT("CharacterMesh")));
-		Mesh->bGenerateOverlapEvents = false;
-		Mesh->SetCanEverAffectNavigation(false);
-		Mesh->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::OnlyTickPoseWhenRendered;
-		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        //Mesh->bGenerateOverlapEvents = false;
+        Mesh->SetGenerateOverlapEvents(false);
+        Mesh->SetCanEverAffectNavigation(false);
+        //Mesh->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::OnlyTickPoseWhenRendered;
+        Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+        Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		Mesh->bEnablePhysicsOnDedicatedServer = true; // needed for feign death; death ragdoll shouldn't be invoked on server
 		Mesh->bReceivesDecals = false;
 		DMSkinType = EDMSkin_Red;

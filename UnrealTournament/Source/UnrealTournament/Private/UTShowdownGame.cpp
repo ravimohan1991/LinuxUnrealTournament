@@ -357,7 +357,7 @@ AInfo* AUTShowdownGame::GetTiebreakWinner(FName* WinReason) const
 		AUTCharacter* UTC = Cast<AUTCharacter>(It->Get());
 		if (UTC != NULL && !UTC->IsDead())
 		{
-			AUTPlayerState* PS = Cast<AUTPlayerState>(UTC->PlayerState);
+            AUTPlayerState* PS = Cast<AUTPlayerState>(UTC->GetPlayerState());
 			if (PS != NULL)
 			{
 				AlivePlayers.Add(PS);
@@ -396,7 +396,7 @@ void AUTShowdownGame::ScoreExpiredRoundTime()
 				AUTCharacter* UTC = Cast<AUTCharacter>(It->Get());
 				if (UTC != NULL && !UTC->IsDead())
 				{
-					AUTPlayerState* PS = Cast<AUTPlayerState>(UTC->PlayerState);
+                    AUTPlayerState* PS = Cast<AUTPlayerState>(UTC->GetPlayerState());
 					if (PS != NULL)
 					{
 						PS->Score += 1.0f;
@@ -625,10 +625,10 @@ void AUTShowdownGame::HandleMatchIntermission()
 			APawn* P = C->GetPawn();
 			if (P != NULL)
 			{
-				APlayerState* SavedPlayerState = P->PlayerState; // keep the PlayerState reference for end of round HUD stuff
+                APlayerState* SavedPlayerState = P->GetPlayerState(); // keep the PlayerState reference for end of round HUD stuff
 				P->TurnOff();
 				C->UnPossess();
-				P->PlayerState = SavedPlayerState;
+                P->SetPlayerState(SavedPlayerState);// = SavedPlayerState;
 				// we want the character around for the HUD displays of status but we don't need to actually see it and this prevents potential camera clipping
 				P->GetRootComponent()->SetHiddenInGame(true, true);
 				AUTCharacter* UTC = Cast<AUTCharacter>(P);
@@ -719,7 +719,7 @@ void AUTShowdownGame::HandleMatchIntermission()
 			// sanity check so we don't infinitely recurse
 			for (TMultiMap<AUTTeamInfo*, AUTPlayerState*>::TIterator It(TeamPlayers); It; ++It)
 			{
-				UE_LOG(UT, Warning, TEXT("Showdown spawn selection sorting error with %s on team %s"), *It.Value()->PlayerName, *It.Value()->Team->TeamName.ToString());
+                UE_LOG(UT, Warning, TEXT("Showdown spawn selection sorting error with %s on team %s"), *It.Value()->GetPlayerName(), *It.Value()->Team->TeamName.ToString());
 				RemainingPicks.Add(It.Value());
 				It.RemoveCurrent();
 				break;

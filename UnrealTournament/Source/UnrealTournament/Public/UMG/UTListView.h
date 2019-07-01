@@ -37,7 +37,9 @@ public:
 	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
 	virtual void BeginDestroy() override;
 
-	/** Adds an the item to the list */
+    //FReferenceCollector::AddReferencedObjects();
+
+    /** Adds an the item to the list */
 	UFUNCTION( BlueprintCallable, Category = ListView )
 	void AddItem( UObject* Item ) const;
 
@@ -156,7 +158,7 @@ protected:
 	/** Creates the SListView - override to create a different type of list */
 	virtual TSharedRef<SListView<UObject*>> RebuildListWidget();
 
-	TSharedRef<ITableRow> HandleGenerateRow(UObject* Item, const TSharedRef<STableViewBase>& OwnerTable);
+    TSharedRef<ITableRow> HandleGenerateRow(UObject* Item, const TSharedRef<STableViewBase>& OwnerTable);
 	void HandleItemClicked(UObject* Item);
 	void HandleSelectionChanged(UObject* Item, ESelectInfo::Type SelectInfo);
 	void HandleRowReleased(const TSharedRef<ITableRow>& Row);
@@ -191,7 +193,7 @@ protected:
 
 	TSharedPtr<SListView<UObject*>> MyListView;
 	TSharedPtr<TDataProvider<UObject*>> DataProvider;
-	TWidgetFactory<UUserWidget> ItemWidgets;
+    TWidgetFactory<UUserWidget, UUserWidget> ItemWidgets;
 
 private:
 	UFUNCTION()

@@ -120,7 +120,7 @@ void SUTReplayBrowserPanel::FriendsListUpdated()
 			AUTPlayerState* PS = Cast<AUTPlayerState>(PlayerState);
 			if (PS && !PS->StatsID.IsEmpty() && !FriendStatIDList.Contains(PS->StatsID))
 			{
-				FriendList.Add(MakeShareable(new FString(PS->PlayerName)));
+                FriendList.Add(MakeShareable(new FString(PS->GetPlayerName())));
 				FriendStatIDList.Add(PS->StatsID);
 			}
 		}
@@ -414,8 +414,9 @@ void SUTReplayBrowserPanel::BuildReplayList(const FString& UserId)
 
 		// Fix up the UI
 		LiveOnlyCheckbox->SetIsChecked(bLiveOnly ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
-
-		ReplayStreamer->EnumerateStreams(Version, UserId, MetaString, FOnEnumerateStreamsComplete::CreateSP(this, &SUTReplayBrowserPanel::OnEnumerateStreamsComplete));
+        const TArray<FString> f;
+        const FEnumerateStreamsCallback g = FEnumerateStreamsCallback::CreateSP(this, &SUTReplayBrowserPanel::OnEnumerateStreamsComplete);
+        ReplayStreamer->EnumerateStreams(Version, UserId, MetaString, f, g);
 	}
 }
 
@@ -470,11 +471,11 @@ FReply SUTReplayBrowserPanel::OnRefreshClick()
 	return FReply::Handled();
 }
 
-void SUTReplayBrowserPanel::OnEnumerateStreamsComplete(const TArray<FNetworkReplayStreamInfo>& Streams)
+void SUTReplayBrowserPanel::OnEnumerateStreamsComplete(const FEnumerateStreamsResult& Streams)
 {
 	ReplayList.Empty();
 
-	for (const auto& StreamInfo : Streams)
+    for (const auto& StreamInfo : Streams.FoundStreams)
 	{
 		if (StreamInfo.bIsLive && StreamInfo.LengthInMS < 15000)
 		{

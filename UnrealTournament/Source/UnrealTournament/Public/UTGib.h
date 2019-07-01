@@ -2,6 +2,7 @@
 #pragma once
 
 #include "UTATypes.h"
+#include "Runtime/Engine/Classes/GameFramework/Actor.h"
 
 #include "UTGib.generated.h"
 

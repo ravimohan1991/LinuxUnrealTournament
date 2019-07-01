@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "UTWeapon.h"
+#include "UTWeaponState.h"
 #include "UTWeaponStateActive.generated.h"
 
 UCLASS(CustomConstructor)

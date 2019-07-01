@@ -81,7 +81,7 @@ void AUTDemoRecSpectator::ViewQueuedGuid()
 		if (PS)
 		{
 			APawn* ViewedPawn = Cast<APawn>(GetViewTarget());
-			if (!ViewedPawn || (ViewedPawn->PlayerState != PS))
+            if (!ViewedPawn || (ViewedPawn->GetPlayerState() != PS))
 			{
 				ViewPlayerState(PS);
 			}
@@ -108,7 +108,7 @@ void AUTDemoRecSpectator::ViewPlayerState(APlayerState* PS)
 	// we have to redirect back to the Pawn because engine hardcoded FTViewTarget code will reject a PlayerState with NULL owner
 	for (FConstPawnIterator It = GetWorld()->GetPawnIterator(); It; ++It)
 	{
-		if (It->IsValid() && It->Get()->PlayerState == PS)
+        if (It->IsValid() && It->Get()->GetPlayerState() == PS)
 		{
 			if (GetViewTarget() != It->Get())
 			{
@@ -124,7 +124,7 @@ void AUTDemoRecSpectator::ViewPlayerState(APlayerState* PS)
 		}
 	}
 
-	UE_CLOG(PS != nullptr, UT, Verbose, TEXT("ViewPlayerState failed to find %s, queuing"), *PS->PlayerName);
+    UE_CLOG(PS != nullptr, UT, Verbose, TEXT("ViewPlayerState failed to find %s, queuing"), *PS->GetPlayerName());
 	QueuedPlayerStateToView = PS;
 }
 
@@ -136,7 +136,7 @@ void AUTDemoRecSpectator::DemoNotifyCausedHit_Implementation(APawn* InstigatorPa
 	}
 	if (GetViewTarget() == HitPawn)
 	{
-		APlayerState* InstigatedByState = (InstigatorPawn != NULL) ? InstigatorPawn->PlayerState : NULL;
+        APlayerState* InstigatedByState = (InstigatorPawn != NULL) ? InstigatorPawn->GetPlayerState() : NULL;
 		FVector RelHitLocation(FVector::ZeroVector);
 		FVector ShotDir(FVector::ZeroVector);
 		if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
@@ -174,7 +174,7 @@ void AUTDemoRecSpectator::ViewPawn(APawn* PawnToView)
 {
 	if (PawnToView)
 	{
-		ViewPlayerState(PawnToView->PlayerState);
+        ViewPlayerState(PawnToView->GetPlayerState());
 	}
 }
 
@@ -195,7 +195,7 @@ APlayerState* AUTDemoRecSpectator::GetNextViewablePlayer(int32 dir)
 	AGameState* GameState = GetWorld()->GetGameState<AGameState>();
 	if (PlayerCameraManager->ViewTarget.GetTargetPawn() != NULL)
 	{
-		APlayerState* TestPS = PlayerCameraManager->ViewTarget.GetTargetPawn()->PlayerState;
+        APlayerState* TestPS = PlayerCameraManager->ViewTarget.GetTargetPawn()->GetPlayerState();
 		// Find index of current viewtarget's PlayerState
 		for (int32 i = 0; i < GameState->PlayerArray.Num(); i++)
 		{
@@ -216,7 +216,7 @@ APlayerState* AUTDemoRecSpectator::GetNextViewablePlayer(int32 dir)
 		{
 			for (FConstPawnIterator It = GetWorld()->GetPawnIterator(); It; ++It)
 			{
-				if (It->IsValid() && It->Get()->PlayerState == PlayerStateIter)
+                if (It->IsValid() && It->Get()->GetPlayerState() == PlayerStateIter)
 				{
 					return PlayerStateIter;
 				}
@@ -233,7 +233,7 @@ APlayerState* AUTDemoRecSpectator::GetNextViewablePlayer(int32 dir)
 		{
 			for (FConstPawnIterator It = GetWorld()->GetPawnIterator(); It; ++It)
 			{
-				if (It->IsValid() && It->Get()->PlayerState == PlayerStateIter)
+                if (It->IsValid() && It->Get()->GetPlayerState() == PlayerStateIter)
 				{
 					return PlayerStateIter;
 				}
@@ -523,7 +523,7 @@ void AUTDemoRecSpectator::DumpSpecInfo()
 	UE_LOG(LogUTDemoRecSpectator, Log, TEXT("bAutoCam: %s"), bAutoCam ? TEXT("Yes") : TEXT("No"));
 	UE_LOG(LogUTDemoRecSpectator, Log, TEXT("Camera Mode: %s"), PlayerCameraManager != nullptr ? *PlayerCameraManager->CameraStyle.ToString() : TEXT("No"));
 
-	UE_LOG(LogUTDemoRecSpectator, Log, TEXT("QueuedPlayerStateToView: %s"), QueuedPlayerStateToView != nullptr ? *QueuedPlayerStateToView->PlayerName : TEXT("No"));
+    UE_LOG(LogUTDemoRecSpectator, Log, TEXT("QueuedPlayerStateToView: %s"), QueuedPlayerStateToView != nullptr ? *QueuedPlayerStateToView->GetPlayerName() : TEXT("No"));
 	UE_LOG(LogUTDemoRecSpectator, Log, TEXT("QueuedViewTargetGuid: %s"), QueuedViewTargetGuid.IsValid() ? *QueuedViewTargetGuid.ToString() : TEXT("No"));
 	UE_LOG(LogUTDemoRecSpectator, Log, TEXT("QueuedViewTargetNetId: %s"), QueuedViewTargetNetId.IsValid() ? *QueuedViewTargetNetId.ToString() : TEXT("No"));
 }

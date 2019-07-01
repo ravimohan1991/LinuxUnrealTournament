@@ -1,27 +1,30 @@
-// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
+﻿// (ɔ) The_Cowboy 1000 BC - 2019 AD. All rights reversed.
 
-namespace UnrealBuildTool.Rules
-{
-	public class UTReplayStreamer : ModuleRules
-    {
-        public UTReplayStreamer(TargetInfo Target)
+namespace UnrealBuildTool.Rules 
+{ 
+    public class UTReplayStreamer : ModuleRules 
+    { 
+        public UTReplayStreamer(ReadOnlyTargetRules Target) : base(Target)
         {
-			PrivateIncludePaths.Add( "UTReplayStreamer/Private" );
+            /// <summary>
+            /// Explicit private PCH for this module. Implies that this module will not use a shared PCH.
+            /// </summary>
+            /// Since UnrealEngine 4.21
+            PrivatePCHHeaderFile = "Private/UTReplayStreamer.h";
 
-			PrivateDependencyModuleNames.AddRange( 
-				new string[] 
-				{ 
-					"Core", 
-					"CoreUObject", 
-					"Engine", 
-					"OnlineSubsystem", 
-					"OnlineSubsystemUtils", 
-					"Json", 
-					"HTTP", 
-					"NetworkReplayStreaming", 
-					"HttpNetworkReplayStreaming",
-                    "NullNetworkReplayStreaming",
-				} );
-		}
+            PrivateIncludePaths.Add("UTReplayStreamer/Private");
+            PrivateDependencyModuleNames.AddRange(new string[] { 
+                "Core",// All Present in UnrealEngine
+                "CoreUObject",
+                "Engine",
+                "OnlineSubsystem",// From Engine/Plugins
+                "OnlineSubsystemUtils",// From Engine/Plugins
+                "Json",
+                "HTTP",
+                "NetworkReplayStreaming",
+                "HttpNetworkReplayStreaming",
+                "NullNetworkReplayStreaming"
+            });
+        }
     }
 }

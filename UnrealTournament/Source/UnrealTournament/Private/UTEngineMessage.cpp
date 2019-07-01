@@ -60,7 +60,7 @@ FString UUTEngineMessage::GetConsoleString(const FClientReceiveData& ClientData,
 	bool bMatchesMessageIndex = (ClientData.MessageIndex == 1) || (ClientData.MessageIndex == 4) || (ClientData.MessageIndex == 16);
 	if (ClientData.RelatedPlayerState_1 != nullptr && bMatchesMessageIndex)
 	{
-		return ClientData.RelatedPlayerState_1->PlayerName + LocalMessageText.ToString();
+        return ClientData.RelatedPlayerState_1->GetPlayerName() + LocalMessageText.ToString();
 	}
 	return LocalMessageText.ToString();
 }

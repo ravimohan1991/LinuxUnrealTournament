@@ -93,7 +93,7 @@ void UUTVictoryMessage::GetEmphasisText(FText& PrefixText, FText& EmphasisText, 
 	}
 	else if ((RelatedPlayerState_1 != RelatedPlayerState_2) && (RelatedPlayerState_1 != nullptr))
 	{
-		EmphasisText = FText::FromString(RelatedPlayerState_1->PlayerName);
+        EmphasisText = FText::FromString(RelatedPlayerState_1->GetPlayerName());
 		EmphasisColor = REDHUDCOLOR;
 		return;
 	}

@@ -39,7 +39,7 @@ void UUTChatMessage::ClientReceiveChat(const FClientReceiveData& ClientData, FNa
 		FString PlayerName(TEXT("Player"));
 		if (ClientData.RelatedPlayerState_1 != nullptr)
 		{
-			PlayerName = ClientData.RelatedPlayerState_1->PlayerName;
+            PlayerName = ClientData.RelatedPlayerState_1->GetPlayerName();
 			if (Cast<AUTPlayerState>(ClientData.RelatedPlayerState_1) != nullptr)
 			{
 				TeamNum = Cast<AUTPlayerState>(ClientData.RelatedPlayerState_1)->GetTeamNum();
@@ -91,7 +91,7 @@ void UUTChatMessage::ClientReceiveChat(const FClientReceiveData& ClientData, FNa
 		else if (Destination == ChatDestinations::Instance)
 		{
 			AUTLobbyMatchInfo* InstanceInfo = Cast<AUTLobbyMatchInfo>(ClientData.OptionalObject);
-			AUTLobbyGameState* LobbyGameState = GetWorld()->GetGameState<AUTLobbyGameState>();
+            AUTLobbyGameState* LobbyGameState = Cast<ULocalPlayer>(ClientData.LocalPC->Player)->GetWorld()->GetGameState<AUTLobbyGameState>();
 			if (InstanceInfo && LobbyGameState)
 			{
 				DestinationTag = TEXT("[Instance]");

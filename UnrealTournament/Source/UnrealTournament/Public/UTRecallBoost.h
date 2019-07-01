@@ -3,6 +3,7 @@
 
 #include "UTArsenalBoost.h"
 #include "UTCTFGameState.h"
+#include "UTCharacter.h"
 
 #include "UTRecallBoost.generated.h"
 
@@ -12,7 +13,7 @@ class UNREALTOURNAMENT_API AUTRecallBoost : public AUTArsenalBoost
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AUTReplicatedEmitter> DestinationEffect;
+    TSubclassOf<class AUTReplicatedEmitter> DestinationEffect;
 
 	virtual bool HandleGivenTo_Implementation(AUTCharacter* NewOwner) override
 	{
@@ -21,7 +22,7 @@ public:
 		AUTCTFGameState* GS = NewOwner->GetWorld()->GetGameState<AUTCTFGameState>();
 		if (GS != nullptr)
 		{
-			AUTCTFFlagBase* Base = GS->GetFlagBase(NewOwner->GetTeamNum());
+            AUTCTFFlagBase* Base = GS->GetFlagBase(NewOwner->GetTeamNum());
 			if (Base != nullptr && NewOwner->TeleportTo(Base->GetActorLocation() + FVector(0.0f, 0.0f, NewOwner->GetSimpleCollisionHalfHeight()), Base->GetActorRotation()))
 			{
 				if (DestinationEffect != NULL)

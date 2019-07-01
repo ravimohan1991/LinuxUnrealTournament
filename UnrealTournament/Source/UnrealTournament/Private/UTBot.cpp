@@ -93,7 +93,7 @@ void FBotEnemyInfo::Update(EAIEnemyUpdateType UpdateType, const FVector& ViewerL
 }
 bool FBotEnemyInfo::StaticIsValidInternal(APawn* InPawn, AUTCharacter* InUTChar, AActor* TeamHolder)
 {
-	if (InPawn == NULL || InPawn->bTearOff || InPawn->IsPendingKillPending() || (InUTChar != NULL && InUTChar->IsDead()))
+    if (InPawn == NULL || InPawn->GetTearOff() || InPawn->IsPendingKillPending() || (InUTChar != NULL && InUTChar->IsDead()))
 	{
 		return false;
 	}
@@ -189,7 +189,7 @@ void AUTBot::InitializeCharacter(UUTBotCharacter* NewCharacterData)
 	}
 }
 
-float FBestInventoryEval::Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, const UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance)
+float FBestInventoryEval::Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance)
 {
 	float BestNodeWeight = 0.0f;
 	for (TWeakObjectPtr<AActor> TestActor : Node->POIs)
@@ -279,7 +279,7 @@ bool FBestInventoryEval::GetRouteGoal(AActor*& OutGoal, FVector& OutGoalLoc) con
 		return false;
 	}
 }
-float FHideLocEval::Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, const UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance)
+float FHideLocEval::Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance)
 {
 	if (Node->bDestinationOnly || RejectNodes.Contains(Node))
 	{
@@ -460,9 +460,9 @@ void AUTBot::SetPawn(APawn* InPawn)
 	ResetPerceptionProperties();
 }
 
-void AUTBot::Possess(APawn* InPawn)
+void AUTBot::OnPossess(APawn* InPawn)
 {
-	Super::Possess(InPawn);
+    Super::OnPossess(InPawn);
 
 	ClearMoveTarget();
 	bPickNewFireMode = true;
@@ -599,7 +599,7 @@ void AUTBot::Tick(float DeltaTime)
 			}
 			if (Squad == NULL)
 			{
-				UE_LOG(UT, Warning, TEXT("Bot %s failed to get Squad from game mode!"), (PlayerState != NULL) ? *PlayerState->PlayerName : *GetName());
+                UE_LOG(UT, Warning, TEXT("Bot %s failed to get Squad from game mode!"), (PlayerState != NULL) ? *PlayerState->GetPlayerName() : *GetName());
 				// force default so we always have one
 				SetSquad(GetWorld()->SpawnActor<AUTSquadAI>());
 			}
@@ -629,8 +629,8 @@ void AUTBot::Tick(float DeltaTime)
 					const FVector MyLoc = MyPawn->GetActorLocation();
 					float DistFromTarget = (MoveTarget.GetLocation(MyPawn) - MyLoc).Size();
 					const FVector Extent = MyPawn->GetSimpleCollisionCylinderExtent();
-					FBox MyBox(0);
-					MyBox += MyLoc + Extent;
+                    FBox MyBox(EForceInit::ForceInit);
+                    MyBox += MyLoc + Extent;
 					MyBox += MyLoc - Extent;
 					if (bAdjusting && MyBox.IsInside(AdjustLoc))
 					{
@@ -799,7 +799,7 @@ void AUTBot::Tick(float DeltaTime)
 			{
 				if (CurrentAction == NULL)
 				{
-					UE_LOG(UT, Warning, TEXT("%s (%s) failed to get an action from ExecuteWhatToDoNext()"), *GetName(), *PlayerState->PlayerName);
+                    UE_LOG(UT, Warning, TEXT("%s (%s) failed to get an action from ExecuteWhatToDoNext()"), *GetName(), *PlayerState->GetPlayerName());
 					GoalString = TEXT("BUG - NO ACTION - Setting CampAction");
 					StartNewAction(CampAction);
 				}
@@ -1269,7 +1269,7 @@ void AUTBot::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay
 	YPos += YL;
 	YPos += YL;
 	Canvas->SetDrawColor(255, 0, 0);
-	Canvas->DrawText(GEngine->GetSmallFont(), FString::Printf(TEXT("ENEMIES (current: %s (visible: %s), last rated %f ago)"), (Enemy != NULL && Enemy->PlayerState != NULL) ? *Enemy->PlayerState->PlayerName : *GetNameSafe(Enemy), (Enemy != NULL && IsEnemyVisible(Enemy)) ? TEXT("True") : TEXT("False"), GetWorld()->TimeSeconds - LastPickEnemyTime), 4.0f, YPos);
+    Canvas->DrawText(GEngine->GetSmallFont(), FString::Printf(TEXT("ENEMIES (current: %s (visible: %s), last rated %f ago)"), (Enemy != NULL && Enemy->GetPlayerState() != NULL) ? *Enemy->GetPlayerState()->GetPlayerName() : *GetNameSafe(Enemy), (Enemy != NULL && IsEnemyVisible(Enemy)) ? TEXT("True") : TEXT("False"), GetWorld()->TimeSeconds - LastPickEnemyTime), 4.0f, YPos);
 	YPos += YL;
 	for (const FBotEnemyRating& RatingInfo : LastPickEnemyRatings)
 	{
@@ -2592,7 +2592,7 @@ const FBotEnemyInfo* AUTBot::GetEnemyInfo(APawn* TestEnemy, bool bCheckTeam)
 	// this triggering probably means a notification bug where the AI hasn't been told about an enemy being killed or destroyed
 	if (TestEnemy == Enemy && bCheckTeam && PS != NULL && PS->Team != NULL)
 	{
-		UE_LOG(UT, Warning, TEXT("Bot %s has enemy %s that is not in team's enemy list! (enemy dead: %s)"), *PlayerState->PlayerName, (TestEnemy->PlayerState != NULL) ? *TestEnemy->PlayerState->PlayerName : *TestEnemy->GetName(), TestEnemy->IsPendingKillPending() ? TEXT("True") : TEXT("False"));
+        UE_LOG(UT, Warning, TEXT("Bot %s has enemy %s that is not in team's enemy list! (enemy dead: %s)"), *PlayerState->GetPlayerName(), (TestEnemy->GetPlayerState() != NULL) ? *TestEnemy->GetPlayerState()->GetPlayerName() : *TestEnemy->GetName(), TestEnemy->IsPendingKillPending() ? TEXT("True") : TEXT("False"));
 		return GetEnemyInfo(TestEnemy, false);
 	}
 	return NULL;
@@ -3331,7 +3331,7 @@ void AUTBot::DoCharge()
 {
 	if (GetTarget() == NULL)
 	{
-		UE_LOG(UT, Warning, TEXT("AI ERROR: %s got into DoCharge() with no target!"), *(PlayerState != NULL ? PlayerState->PlayerName : GetName()));
+        UE_LOG(UT, Warning, TEXT("AI ERROR: %s got into DoCharge() with no target!"), *(PlayerState != NULL ? PlayerState->GetPlayerName() : GetName()));
 		DoTacticalMove();
 	}
 	else
@@ -3399,13 +3399,13 @@ void AUTBot::DoHunt(APawn* NewHuntTarget)
 	if (NewHuntTarget == NULL || !FBotEnemyInfo::StaticIsValid(NewHuntTarget) || GetEnemyInfo(NewHuntTarget, false) == NULL)
 	{
 		AUTCharacter* UTC = Cast<AUTCharacter>(NewHuntTarget);
-		UE_LOG(UT, Warning, TEXT("Bot %s in DoHunt() with no or invalid enemy %s (flag %s)"), *PlayerState->PlayerName, (NewHuntTarget != NULL && NewHuntTarget->PlayerState != NULL) ? *NewHuntTarget->PlayerState->PlayerName : *GetNameSafe(NewHuntTarget), *GetNameSafe((UTC != NULL) ? UTC->GetCarriedObject() : NULL));
+        UE_LOG(UT, Warning, TEXT("Bot %s in DoHunt() with no or invalid enemy %s (flag %s)"), *PlayerState->GetPlayerName(), (NewHuntTarget != NULL && NewHuntTarget->GetPlayerState() != NULL) ? *NewHuntTarget->GetPlayerState()->GetPlayerName() : *GetNameSafe(NewHuntTarget), *GetNameSafe((UTC != NULL) ? UTC->GetCarriedObject() : NULL));
 		GoalString = TEXT("BUG - HUNT WITH BAD TARGET - Force CampAction");
 		StartNewAction(CampAction);
 	}
 	else if (GetPawn() == NULL)
 	{
-		UE_LOG(UT, Warning, TEXT("Bot %s in DoHunt() with no Pawn"), *PlayerState->PlayerName);
+        UE_LOG(UT, Warning, TEXT("Bot %s in DoHunt() with no Pawn"), *PlayerState->GetPlayerName());
 	}
 	else
 	{
@@ -3945,13 +3945,13 @@ protected:
 	TSet<NavNodeRef> TestedPolys;
 
 public:
-	virtual float Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, const UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance) override
+    virtual float Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance) override
 	{
 		// if the early out at Asker's node was requested, end when we reach it
 		return (bStopAtAsker && Node == AskerAnchor) ? 10.0f : 0.0f;
 	}
 
-	virtual uint32 GetTransientCost(const FUTPathLink& Link, APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, NavNodeRef StartPoly, int32 TotalDistance) override
+    virtual uint32 GetTransientCost(FUTPathLink& Link, APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, NavNodeRef StartPoly, int32 TotalDistance) override
 	{
 		if (TotalDistance > DistanceLimit)
 		{
@@ -3961,7 +3961,7 @@ public:
 		{
 			// trace test any previously untested nodes along this path
 			TArray<NavNodeRef> Polys;
-			NavData->FindPolyPath(NavData->GetPolyCenter(StartPoly), AgentProps, FRouteCacheItem(Link.Start.Get(), NavData->GetPolyCenter(Link.StartEdgePoly), Link.StartEdgePoly), Polys, false);
+            NavData->FindPolyPath(NavData->GetPolyCenter(StartPoly), AgentProps, FRouteCacheItem(Link.Start /*.Get()*/, NavData->GetPolyCenter(Link.StartEdgePoly), Link.StartEdgePoly), Polys, false);
 			for (NavNodeRef TestPoly : Polys)
 			{
 				if (!TestedPolys.Contains(TestPoly))
@@ -4106,7 +4106,7 @@ void AUTBot::NotifyTakeHit(AController* InstigatedBy, int32 Damage, FVector Mome
 
 void AUTBot::NotifyCausedHit(APawn* HitPawn, int32 Damage)
 {
-	if (HitPawn != GetPawn() && HitPawn->Controller != NULL && !HitPawn->bTearOff && !IsTeammate(HitPawn))
+    if (HitPawn != GetPawn() && HitPawn->Controller != NULL && !HitPawn->GetTearOff() && !IsTeammate(HitPawn))
 	{
 		UpdateEnemyInfo(HitPawn, EUT_DealtDamage);
 	}
@@ -4148,13 +4148,13 @@ void AUTBot::NotifyPickup(APawn* PickedUpBy, AActor* Pickup, float AudibleRadius
 			}
 			// maybe send team message
 			AUTPickup* Item = Cast<AUTPickup>(Pickup);
-			if (Item != NULL && Item->BaseDesireability >= 1.0f && PickedUpBy->PlayerState != NULL)
+            if (Item != NULL && Item->BaseDesireability >= 1.0f && PickedUpBy->GetPlayerState() != NULL)
 			{
 				static float PickupMessageTime = -1.0f;
 				if (PickupMessageTime != GetWorld()->TimeSeconds)
 				{
 					PickupMessageTime = GetWorld()->TimeSeconds;
-					Say(FText::Format(NSLOCTEXT("UTBot", "EnemyPickup", "Enemy {0} got {1}."), FText::FromString(PickedUpBy->PlayerState->PlayerName), Item->GetDisplayName()).ToString(), true);
+                    Say(FText::Format(NSLOCTEXT("UTBot", "EnemyPickup", "Enemy {0} got {1}."), FText::FromString(PickedUpBy->GetPlayerState()->GetPlayerName()), Item->GetDisplayName()).ToString(), true);
 				}
 			}
 			if (bWillBecomeInactive && MoveTarget.Actor.Get() == Pickup && CurrentAction != nullptr)
@@ -4695,7 +4695,7 @@ bool AUTBot::IsImportantEnemyUpdate(APawn* TestEnemy, EAIEnemyUpdateType UpdateT
 
 void AUTBot::UpdateEnemyInfo(APawn* NewEnemy, EAIEnemyUpdateType UpdateType)
 {
-	if (NewEnemy != NULL && !NewEnemy->bTearOff && !NewEnemy->IsPendingKillPending() && Squad != NULL && !IsTeammate(NewEnemy)) //  && (!AreAIIgnoringPlayers() || Cast<APlayerController>(NewEnemy->Controller) == NULL || Game->bOfflineChallenge)
+    if (NewEnemy != NULL && !NewEnemy->GetTearOff() && !NewEnemy->IsPendingKillPending() && Squad != NULL && !IsTeammate(NewEnemy)) //  && (!AreAIIgnoringPlayers() || Cast<APlayerController>(NewEnemy->Controller) == NULL || Game->bOfflineChallenge)
 	{
 		bool bImportant = IsImportantEnemyUpdate(NewEnemy, UpdateType);
 

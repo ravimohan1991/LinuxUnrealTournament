@@ -33,7 +33,7 @@ AUTProj_BioShot::AUTProj_BioShot(const class FObjectInitializer& ObjectInitializ
 		BioMesh->bReceivesDecals = false;
 		BioMesh->CastShadow = false;
 		BioMesh->SetupAttachment(RootComponent);
-		BioMesh->bGenerateOverlapEvents = false;
+        BioMesh->SetGenerateOverlapEvents(false);
 	}
 
 	CollisionComp->bAbsoluteScale = true;
@@ -526,7 +526,7 @@ void AUTProj_BioShot::DamageImpactedActor_Implementation(AActor* OtherActor, UPr
 			{
 				SnotRanking = (SnotSkill > 6.f) ? 5 : 1;
 			}
-			PC->SendPersonalMessage(AirSnotRewardClass, SnotRanking, PS, HitCharacter->PlayerState);
+            PC->SendPersonalMessage(AirSnotRewardClass, SnotRanking, PS, HitCharacter->GetPlayerState());
 		}
 	}
 }

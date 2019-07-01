@@ -93,7 +93,7 @@ void AUTRallyPoint::BeginPlay()
 	for (auto CompIt = OverlappingComponents.CreateIterator(); CompIt; ++CompIt)
 	{
 		UPrimitiveComponent* OtherComponent = *CompIt;
-		if (OtherComponent && OtherComponent->bGenerateOverlapEvents)
+        if (OtherComponent && OtherComponent->GetGenerateOverlapEvents())
 		{
 			AUTGameVolume* V = Cast<AUTGameVolume>(OtherComponent->GetOwner());
 			if (V && V->Priority > BestPriority)
@@ -184,7 +184,7 @@ void AUTRallyPoint::WarnNoFlag(AUTCharacter* TouchingCharacter)
 {
 	if (TouchingCharacter && !TouchingCharacter->IsPendingKillPending() && Cast<AUTPlayerController>(TouchingCharacter->GetController()))
 	{
-		Cast<AUTPlayerController>(TouchingCharacter->GetController())->ClientReceiveLocalizedMessage(UUTFlagRunGameMessage::StaticClass(), 30, TouchingCharacter->PlayerState);
+        Cast<AUTPlayerController>(TouchingCharacter->GetController())->ClientReceiveLocalizedMessage(UUTFlagRunGameMessage::StaticClass(), 30, TouchingCharacter->GetPlayerState());
 	}
 }
 
@@ -433,7 +433,7 @@ void AUTRallyPoint::OnRallyChargingChanged()
 		AUTCharacter* NearbyFC = FlagRunGame && FlagRunGame->ActiveFlag ? FlagRunGame->ActiveFlag->HoldingPawn : nullptr;
 		if ((Role == ROLE_Authority) && FlagRunGame && NearbyFC && (FUTAnalytics::IsAvailable()))
 		{
-			FUTAnalytics::FireEvent_RallyPointCompleteActivate(FlagRunGame, Cast<AUTPlayerState>(NearbyFC->PlayerState));
+            FUTAnalytics::FireEvent_RallyPointCompleteActivate(FlagRunGame, Cast<AUTPlayerState>(NearbyFC->GetPlayerState()));
 		}
 	}
 	else
@@ -474,7 +474,7 @@ void AUTRallyPoint::OnRallyChargingChanged()
 				//if this is a fresh attempt, send an analytic
 				if (FUTAnalytics::IsAvailable() && NearbyFC && FlagRunGame && (RallyReadyCountdown == RallyReadyDelay))
 				{
-					FUTAnalytics::FireEvent_RallyPointBeginActivate(FlagRunGame, Cast<AUTPlayerState>(NearbyFC->PlayerState));
+                    FUTAnalytics::FireEvent_RallyPointBeginActivate(FlagRunGame, Cast<AUTPlayerState>(NearbyFC->GetPlayerState()));
 				}
 			}
 		}
@@ -606,14 +606,14 @@ void AUTRallyPoint::Tick(float DeltaTime)
 									{
 										if (!UTGS->OnSameTeam(NearbyFC, PC))
 										{
-											PC->ClientReceiveLocalizedMessage(UUTCTFMajorMessage::StaticClass(), 28, NearbyFC->PlayerState);
+                                            PC->ClientReceiveLocalizedMessage(UUTCTFMajorMessage::StaticClass(), 28, NearbyFC->GetPlayerState());
 										}
 										else
 										{
 
 											if (!PC->GetUTCharacter() || PC->GetUTCharacter()->bCanRally || PC->GetUTCharacter()->GetCarriedObject())
 											{
-												PC->ClientReceiveLocalizedMessage(UUTCTFMajorMessage::StaticClass(), PC->UTPlayerState->CarriedObject ? 22 : 30, NearbyFC->PlayerState);
+                                                PC->ClientReceiveLocalizedMessage(UUTCTFMajorMessage::StaticClass(), PC->UTPlayerState->CarriedObject ? 22 : 30, NearbyFC->GetPlayerState());
 											}
 										}
 									}
@@ -631,7 +631,7 @@ void AUTRallyPoint::Tick(float DeltaTime)
 						}
 						UUTGameplayStatics::UTPlaySound(GetWorld(), ReadyToRallySound, this, SRT_All);
 						SetRallyPointState(RallyPointStates::Powered);
-						AUTPlayerState* PS = Cast<AUTPlayerState>(NearbyFC->PlayerState);
+                        AUTPlayerState* PS = Cast<AUTPlayerState>(NearbyFC->GetPlayerState());
 						if (PS)
 						{
 							PS->ModifyStatsValue(NAME_RalliesPowered, 1);

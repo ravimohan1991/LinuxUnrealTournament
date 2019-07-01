@@ -121,7 +121,7 @@ void UUTHUDWidget_CTFFlagStatus::DrawFlagStatus(AUTCTFGameState* GameState, FVec
 			{
 				if (bAlwaysDrawFlagHolderName)
 				{
-					FlagHolderNameTemplate.Text = FText::FromString(FlagHolder->PlayerName);
+                    FlagHolderNameTemplate.Text = FText::FromString(FlagHolder->GetPlayerName());
 					RenderObj_Text(FlagHolderNameTemplate, IndicatorPosition);
 				}
 				else if (FlagHolder == UTHUDOwner->UTPlayerOwner->UTPlayerState)
@@ -317,7 +317,7 @@ void UUTHUDWidget_CTFFlagStatus::DrawFlagBaseWorld(AUTCTFGameState* GameState, F
 	
 		FlagIconTemplate.RenderColor = TeamColor;
 
-		float Dist = (FlagBase->GetActorLocation() - PlayerViewPoint).Size();
+        float Dist = (FlagBase->GetActorLocation() - PlayerViewPoint).Size();
 		float WorldRenderScale = RenderScale * MaxIconScale;
 
 		bool bSpectating = UTPlayerOwner->PlayerState && UTPlayerOwner->PlayerState->bOnlySpectator;
@@ -382,7 +382,7 @@ void UUTHUDWidget_CTFFlagStatus::DrawStatusMessage(float DeltaTime)
 	if (GS->IsMatchInProgress() && UTHUDOwner != NULL && UTHUDOwner->PlayerOwner != NULL)
 	{
 		APawn* ViewedPawn = Cast<APawn>(UTHUDOwner->UTPlayerOwner->GetViewTarget());
-		AUTPlayerState* ViewedPS = ViewedPawn ? Cast<AUTPlayerState>(ViewedPawn->PlayerState) : NULL;
+        AUTPlayerState* ViewedPS = ViewedPawn ? Cast<AUTPlayerState>(ViewedPawn->GetPlayerState()) : NULL;
 		AUTPlayerState* OwnerPS = ViewedPS ? ViewedPS : UTHUDOwner->UTPlayerOwner->UTPlayerState;
 		if (OwnerPS != NULL && OwnerPS->Team != NULL)
 		{

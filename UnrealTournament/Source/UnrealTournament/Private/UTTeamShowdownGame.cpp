@@ -245,7 +245,7 @@ void AUTTeamShowdownGame::ScoreKill_Implementation(AController* Killer, AControl
 				int32 TeamCount = 0;
 				for (AController* C : OtherPS->Team->GetTeamMembers())
 				{
-					if (C != Other && C->GetPawn() != NULL && !C->GetPawn()->bTearOff)
+                    if (C != Other && C->GetPawn() != NULL && !C->GetPawn()->GetTearOff())
 					{
 						LastAlive = C;
 						AliveCount++;
@@ -257,7 +257,7 @@ void AUTTeamShowdownGame::ScoreKill_Implementation(AController* Killer, AControl
 					for (AController* C : OtherPS->Team->GetTeamMembers())
 					{
 						AUTPlayerController* PC = Cast<AUTPlayerController>(C);
-						if (PC && PC->GetPawn() != NULL && !PC->GetPawn()->bTearOff)
+                        if (PC && PC->GetPawn() != NULL && !PC->GetPawn()->GetTearOff())
 						{
 							PC->ClientReceiveLocalizedMessage(UUTShowdownRewardMessage::StaticClass(), 1, PC->PlayerState, NULL, NULL);
 						}
@@ -265,7 +265,7 @@ void AUTTeamShowdownGame::ScoreKill_Implementation(AController* Killer, AControl
 					for (AController* C : KillerTeam->GetTeamMembers())
 					{
 						AUTPlayerController* PC = Cast<AUTPlayerController>(C);
-						if (PC && PC->GetPawn() != NULL && !PC->GetPawn()->bTearOff)
+                        if (PC && PC->GetPawn() != NULL && !PC->GetPawn()->GetTearOff())
 						{
 							PC->ClientReceiveLocalizedMessage(UUTShowdownRewardMessage::StaticClass(), 0, PC->PlayerState, NULL, NULL);
 						}
@@ -322,7 +322,7 @@ AInfo* AUTTeamShowdownGame::GetTiebreakWinner(FName* WinReason) const
 		AUTCharacter* UTC = Cast<AUTCharacter>(It->Get());
 		if (UTC != NULL && !UTC->IsDead())
 		{
-			AUTPlayerState* PS = Cast<AUTPlayerState>(UTC->PlayerState);
+            AUTPlayerState* PS = Cast<AUTPlayerState>(UTC->GetPlayerState());
 			if (PS != NULL && PS->Team != NULL)
 			{
 				LivingPlayersPerTeam.SetNumZeroed(FMath::Max<int32>(LivingPlayersPerTeam.Num(), PS->Team->TeamIndex + 1));

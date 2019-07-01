@@ -33,7 +33,7 @@ void UUTKillerMessage::GetEmphasisText(FText& PrefixText, FText& EmphasisText, F
 	if (Switch == -99)
 	{
 		FFormatNamedArguments Args;
-		Args.Add(TEXT("Player1Name"), RelatedPlayerState_1 ? FText::FromString(RelatedPlayerState_1->PlayerName) : FText::GetEmpty());
+        Args.Add(TEXT("Player1Name"), RelatedPlayerState_1 ? FText::FromString(RelatedPlayerState_1->GetPlayerName()) : FText::GetEmpty());
 		PrefixText = FText::Format(SpecKilledText, Args);
 		PostfixText = FText::GetEmpty();
 	}
@@ -42,7 +42,7 @@ void UUTKillerMessage::GetEmphasisText(FText& PrefixText, FText& EmphasisText, F
 		PrefixText = (Switch == 2) ? KillAssistedPrefixText : YouKilledPrefixText;
 		PostfixText = (Switch == 2) ? KillAssistedPostfixText : YouKilledPostfixText;
 	}
-	EmphasisText = RelatedPlayerState_2 ? FText::FromString(RelatedPlayerState_2->PlayerName) : FText::GetEmpty();
+    EmphasisText = RelatedPlayerState_2 ? FText::FromString(RelatedPlayerState_2->GetPlayerName()) : FText::GetEmpty();
 	AUTPlayerState* VictimPS = Cast<AUTPlayerState>(RelatedPlayerState_2);
 	EmphasisColor = (VictimPS && VictimPS->Team) ? VictimPS->Team->TeamColor : FLinearColor::Red;
 }

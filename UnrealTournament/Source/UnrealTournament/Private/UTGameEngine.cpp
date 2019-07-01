@@ -17,6 +17,8 @@
 #include "UTBotCharacter.h"
 #include "UTEpicDefaultRulesets.h"
 #include "UserActivityTracking.h"
+#include "PlatformApplicationMisc.h"
+#include "Runtime/CoreUObject/Public/UObject/UObjectGlobals.h"
 
 #include "UTPlaylistManager.h"
 #if !UE_SERVER
@@ -110,7 +112,7 @@ void UUTGameEngine::Init(IEngineLoop* InEngineLoop)
 	{
 		for (auto WeaponClassRef : AlwaysLoadedWeaponsStringRefs)
 		{
-			AlwaysLoadedWeapons.Add(Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *WeaponClassRef.ToStringReference().ToString(), NULL, LOAD_NoWarn)));
+            AlwaysLoadedWeapons.Add(Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *WeaponClassRef.ToSoftObjectPath().ToString(), NULL, LOAD_NoWarn)));
 		}
 	}
 
@@ -253,10 +255,10 @@ bool UUTGameEngine::Exec(UWorld* InWorld, const TCHAR* Cmd, FOutputDevice& Out)
 	else if (FParse::Command(&Cmd, TEXT("GAMEVER")) || FParse::Command(&Cmd, TEXT("GAMEVERSION")))
 	{
 		FString VersionString = FString::Printf(TEXT("GameVersion %s Date: %s Time: %s"),
-			BUILD_VERSION, TEXT(__DATE__), TEXT(__TIME__));
+            /*BUILD_VERSION,*/ TEXT(__DATE__), TEXT(__TIME__));
 
-		Out.Logf(*VersionString);
-		FPlatformMisc::ClipboardCopy(*VersionString);
+        //Out.Logf(*VersionString);
+        FPlatformApplicationMisc::ClipboardCopy(*VersionString);
 		return true;
 	}
 	else if (FParse::Command(&Cmd, TEXT("MONITORREFRESH")))
@@ -300,7 +302,7 @@ bool UUTGameEngine::Exec(UWorld* InWorld, const TCHAR* Cmd, FOutputDevice& Out)
 		}
 #else
 		OutputString = TEXT("Could not detect monitor refresh frequency");
-		Out.Logf(*OutputString);
+        //Out.Logf(*OutputString);
 #endif
 
 		return true;
@@ -602,10 +604,10 @@ bool UUTGameEngine::CheckVersionOfPakFile(const FString& PakFilename) const
 
 			FString VersionFilename = DashlessPakFilename + TEXT("-version.txt");
 			FString VersionString;
-			if (FFileHelper::LoadFileToString(VersionString, *(FPaths::GameDir() / VersionFilename)))
+            if (FFileHelper::LoadFileToString(VersionString, *(FPaths::ProjectDir() / VersionFilename)))
 			{
 				VersionString = VersionString.LeftChop(2);
-				FNetworkVersion::bHasCachedNetworkChecksum = false;
+                FNetworkVersion::InvalidateNetworkChecksum();// = false;
 				FString CompiledVersionString = FString::FromInt(FNetworkVersion::GetLocalNetworkVersion());
 
 				if (VersionString == CompiledVersionString)
@@ -642,7 +644,7 @@ void UUTGameEngine::AddAssetRegistry(const FString& PakFilename)
 		FString DashlessPakFilename = PakFilename.Left(DashPosition);
 		FString AssetRegistryName = DashlessPakFilename + TEXT("-AssetRegistry.bin");
 		FArrayReader SerializedAssetData;
-		if (FFileHelper::LoadFileToArray(SerializedAssetData, *(FPaths::GameDir() / AssetRegistryName)))
+        if (FFileHelper::LoadFileToArray(SerializedAssetData, *(FPaths::ProjectDir() / AssetRegistryName)))
 		{
 			// serialize the data with the memory reader (will convert FStrings to FNames, etc)
 			AssetRegistryModule.Get().Serialize(SerializedAssetData);
@@ -693,8 +695,8 @@ void UUTGameEngine::IndexExpansionContent()
 		FoundPaks.Empty();
 
 		FString PakFolder = bAltPaks
-			? FPaths::Combine(FPlatformProcess::UserDir(), FApp::GetGameName(), TEXT("Saved"), TEXT("Paks"), TEXT("DownloadedPaks"))
-			: FPaths::Combine(*FPaths::GameSavedDir(), TEXT("Paks"), TEXT("DownloadedPaks"));
+            ? FPaths::Combine(FPlatformProcess::UserDir(), FApp::GetProjectName(), TEXT("Saved"), TEXT("Paks"), TEXT("DownloadedPaks"))
+            : FPaths::Combine(*FPaths::ProjectSavedDir(), TEXT("Paks"), TEXT("DownloadedPaks"));
 
 		PlatformFile.IterateDirectoryRecursively(*PakFolder, PakVisitor);
 		for (const auto& PakPath : FoundPaks)
@@ -739,8 +741,8 @@ void UUTGameEngine::IndexExpansionContent()
 		// Only add MyContent pak files to LocalContentChecksums
 		FoundPaks.Empty();
 		PakFolder = bAltPaks
-			? FPaths::Combine(FPlatformProcess::UserDir(), FApp::GetGameName(), TEXT("Saved"), TEXT("Paks"), TEXT("MyContent"))
-			: FPaths::Combine(*FPaths::GameSavedDir(), TEXT("Paks"), TEXT("MyContent"));
+            ? FPaths::Combine(FPlatformProcess::UserDir(), FApp::GetProjectName(), TEXT("Saved"), TEXT("Paks"), TEXT("MyContent"))
+            : FPaths::Combine(*FPaths::ProjectSavedDir(), TEXT("Paks"), TEXT("MyContent"));
 		PlatformFile.IterateDirectoryRecursively(*PakFolder, PakVisitor);
 		for (const auto& PakPath : FoundPaks)
 		{
@@ -779,7 +781,7 @@ void UUTGameEngine::IndexExpansionContent()
 
 		// Load asset registries from pak files that aren't the default one
 		FoundPaks.Empty();
-		PlatformFile.IterateDirectoryRecursively(*FPaths::Combine(*FPaths::GameContentDir(), TEXT("Paks")), PakVisitor);
+        PlatformFile.IterateDirectoryRecursively(*FPaths::Combine(*FPaths::ProjectContentDir(), TEXT("Paks")), PakVisitor);
 		for (const auto& PakPath : FoundPaks)
 		{
 			bool bValidPak = false;
@@ -983,8 +985,9 @@ UUTLevelSummary* UUTGameEngine::LoadLevelSummary(const FString& MapName)
 		Summary = FindObject<UUTLevelSummary>(Pkg, *NAME_LevelSummary.ToString());
 		if (Summary == NULL)
 		{
-			// LoadObject() actually forces the whole package to be loaded for some reason so we need to take the long way around
-			BeginLoad();
+            TRefCountPtr<FUObjectSerializeContext> LoadContext(FUObjectThreadContext::Get().GetSerializeContext());
+            // LoadObject() actually forces the whole package to be loaded for some reason so we need to take the long way around
+            BeginLoad(LoadContext);//Modified by The_Cowboy
 			FLinkerLoad* Linker = GetPackageLinker(Pkg, NULL, LOAD_NoWarn | LOAD_Quiet, NULL, NULL);
 			if (Linker != NULL)
 			{
@@ -1009,7 +1012,7 @@ UUTLevelSummary* UUTGameEngine::LoadLevelSummary(const FString& MapName)
 					}
 				}
 			}
-			EndLoad();
+            EndLoad(Linker? Linker->GetSerializeContext() : LoadContext.GetReference());
 		}
 	}
 	return Summary;

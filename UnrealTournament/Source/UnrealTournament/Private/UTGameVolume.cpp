@@ -103,7 +103,7 @@ void AUTGameVolume::ActorEnteredVolume(class AActor* Other)
 	{
 		P->LastGameVolume = this;
 		AUTFlagRunGameState* GS = GetWorld()->GetGameState<AUTFlagRunGameState>();
-		if (GS != nullptr && P->PlayerState != nullptr && !GS->IsMatchIntermission() && (GS->IsMatchInProgress() || (Cast<AUTPlayerState>(P->PlayerState) && ((AUTPlayerState*)(P->PlayerState))->bIsWarmingUp)))
+        if (GS != nullptr && P->GetPlayerState() != nullptr && !GS->IsMatchIntermission() && (GS->IsMatchInProgress() || (Cast<AUTPlayerState>(P->GetPlayerState()) && ((AUTPlayerState*)(P->GetPlayerState()))->bIsWarmingUp)))
 		{
 			if (bIsTeamSafeVolume)
 			{
@@ -115,10 +115,10 @@ void AUTGameVolume::ActorEnteredVolume(class AActor* Other)
 				else
 				{
 					P->EnteredSafeVolumeTime = GetWorld()->GetTimeSeconds();
-					if ((P->Health < 80) && Cast<AUTPlayerState>(P->PlayerState) && (GetWorld()->GetTimeSeconds() - ((AUTPlayerState*)(P->PlayerState))->LastNeedHealthTime > 20.f))
+                    if ((P->Health < 80) && Cast<AUTPlayerState>(P->GetPlayerState()) && (GetWorld()->GetTimeSeconds() - ((AUTPlayerState*)(P->GetPlayerState()))->LastNeedHealthTime > 20.f))
 					{
-						((AUTPlayerState*)(P->PlayerState))->LastNeedHealthTime = GetWorld()->GetTimeSeconds();
-						((AUTPlayerState*)(P->PlayerState))->AnnounceStatus(StatusMessage::NeedHealth, 0, true);
+                        ((AUTPlayerState*)(P->GetPlayerState()))->LastNeedHealthTime = GetWorld()->GetTimeSeconds();
+                        ((AUTPlayerState*)(P->GetPlayerState()))->AnnounceStatus(StatusMessage::NeedHealth, 0, true);
 					}
 				}
 			}
@@ -171,12 +171,12 @@ void AUTGameVolume::ActorEnteredVolume(class AActor* Other)
 				// possibly announce flag carrier changed zones
 				if (bIsDefenderBase && !P->GetCarriedObject()->bWasInEnemyBase && (GetWorld()->GetTimeSeconds() - FMath::Min(GS->LastEnemyFCEnteringBaseTime, GS->LastEnteringEnemyBaseTime) > 2.f))
 				{
-					if ((GetWorld()->GetTimeSeconds() - GS->LastEnteringEnemyBaseTime > 2.f) && Cast<AUTPlayerState>(P->PlayerState))
+                    if ((GetWorld()->GetTimeSeconds() - GS->LastEnteringEnemyBaseTime > 2.f) && Cast<AUTPlayerState>(P->GetPlayerState()))
 					{
-						((AUTPlayerState *)(P->PlayerState))->AnnounceStatus(StatusMessage::ImGoingIn);
+                        ((AUTPlayerState *)(P->GetPlayerState()))->AnnounceStatus(StatusMessage::ImGoingIn);
 						if (VoiceLinesSet != NAME_None)
 						{
-							GS->UpdateFCFriendlyLocation(((AUTPlayerState *)(P->PlayerState)), this);
+                            GS->UpdateFCFriendlyLocation(((AUTPlayerState *)(P->GetPlayerState())), this);
 						}
 						GS->LastEnteringEnemyBaseTime = GetWorld()->GetTimeSeconds();
 					}
@@ -195,9 +195,9 @@ void AUTGameVolume::ActorEnteredVolume(class AActor* Other)
 				}
 				else if ((GetWorld()->GetTimeSeconds() - FMath::Min(GS->LastFriendlyLocationReportTime, GS->LastEnemyLocationReportTime) > 1.f) || bIsWarningZone || !bHasFCEntry)
 				{
-					if ((VoiceLinesSet != NAME_None) && ((GetWorld()->GetTimeSeconds() - GS->LastFriendlyLocationReportTime > 1.f) || !bHasFCEntry) && Cast<AUTPlayerState>(P->PlayerState) && (GS->LastFriendlyLocationName != VoiceLinesSet))
+                    if ((VoiceLinesSet != NAME_None) && ((GetWorld()->GetTimeSeconds() - GS->LastFriendlyLocationReportTime > 1.f) || !bHasFCEntry) && Cast<AUTPlayerState>(P->GetPlayerState()) && (GS->LastFriendlyLocationName != VoiceLinesSet))
 					{
-						GS->UpdateFCFriendlyLocation(((AUTPlayerState *)(P->PlayerState)), this);
+                        GS->UpdateFCFriendlyLocation(((AUTPlayerState *)(P->GetPlayerState())), this);
 					}
 					if ((VoiceLinesSet != NAME_None) && P->GetCarriedObject()->bCurrentlyPinged && P->GetCarriedObject()->LastPinger && ((GetWorld()->GetTimeSeconds() - GS->LastEnemyLocationReportTime > 1.f) || !bHasFCEntry) && (GS->LastEnemyLocationName != VoiceLinesSet))
 					{
@@ -222,7 +222,7 @@ void AUTGameVolume::ActorEnteredVolume(class AActor* Other)
 				P->GetCarriedObject()->bWasInEnemyBase = bIsDefenderBase;
 				bHasFCEntry = true;
 			}
-			else if (bIsDefenderBase && Cast<AUTPlayerState>(P->PlayerState) && ((AUTPlayerState*)(P->PlayerState))->Team && (GS->bRedToCap == (((AUTPlayerState*)(P->PlayerState))->Team->TeamIndex == 0)))
+            else if (bIsDefenderBase && Cast<AUTPlayerState>(P->GetPlayerState()) && ((AUTPlayerState*)(P->GetPlayerState()))->Team && (GS->bRedToCap == (((AUTPlayerState*)(P->GetPlayerState()))->Team->TeamIndex == 0)))
 			{
 				// warn base is under attack
 				if (GetWorld()->GetTimeSeconds() - GS->LastEnemyEnteringBaseTime > MinEnemyInBaseInterval)
@@ -237,7 +237,7 @@ void AUTGameVolume::ActorEnteredVolume(class AActor* Other)
 			}
 			else if (!bHasBeenEntered && bReportDefenseStatus && (VoiceLinesSet != NAME_None))
 			{
-				AUTPlayerState* PS = Cast<AUTPlayerState>(P->PlayerState);
+                AUTPlayerState* PS = Cast<AUTPlayerState>(P->GetPlayerState());
 				AUTFlagRunGameState* FRGS = GetWorld()->GetGameState<AUTFlagRunGameState>();
 				if (PS && PS->Team && FRGS && (FRGS->bRedToCap == (PS->Team->TeamIndex == 1)))
 				{
@@ -255,7 +255,7 @@ void AUTGameVolume::ActorEnteredVolume(class AActor* Other)
 	if (!VolumeName.IsEmpty() && P)
 	{
 		//P->LastKnownLocation = this;
-		AUTPlayerState* PS = Cast<AUTPlayerState>(P->PlayerState);
+        AUTPlayerState* PS = Cast<AUTPlayerState>(P->GetPlayerState());
 		if (PS != nullptr)
 		{
 			PS->LastKnownLocation = this;
@@ -269,10 +269,10 @@ void AUTGameVolume::WarnFCIncoming(AUTCharacter* FlagCarrier)
 	if (GS)
 	{
 		GS->LastIncomingWarningTime = GetWorld()->GetTimeSeconds();
-		if (bTestBaseEntry && Cast<AUTPlayerState>(FlagCarrier->PlayerState))
+        if (bTestBaseEntry && Cast<AUTPlayerState>(FlagCarrier->GetPlayerState()))
 		{
 			int32 DirectionSwitch = DetermineEntryDirection(FlagCarrier, GS);
-			((AUTPlayerState *)(FlagCarrier->PlayerState))->AnnounceStatus(StatusMessage::Incoming, DirectionSwitch);
+            ((AUTPlayerState *)(FlagCarrier->GetPlayerState()))->AnnounceStatus(StatusMessage::Incoming, DirectionSwitch);
 		}
 		else
 		{

@@ -9,7 +9,7 @@
 extern FName NAME_Progress;
 extern FName NAME_RespawnTime;
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FPickupReplicatedState
 {
 	GENERATED_USTRUCT_BODY()

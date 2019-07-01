@@ -17,7 +17,7 @@ AUTGhostFlag::AUTGhostFlag(const FObjectInitializer& ObjectInitializer)
 
 	UCapsuleComponent* Root = ObjectInitializer.CreateDefaultSubobject<UCapsuleComponent>(this, TEXT("Capsule"));
 	Root->SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
-	Root->bShouldUpdatePhysicsVolume = false;
+    Root->SetShouldUpdatePhysicsVolume(false);// = false;
 	Root->Mobility = EComponentMobility::Movable;
 	RootComponent = Root;
 

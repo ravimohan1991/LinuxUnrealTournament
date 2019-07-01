@@ -3,7 +3,7 @@
 #include "UTCTFSquadAI.h"
 #include "UTCTFFlag.h"
 #include "UTDefensePoint.h"
-#include "UTGamestate.h"
+#include "UTGameState.h"
 
 AUTCTFSquadAI::AUTCTFSquadAI(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)

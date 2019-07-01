@@ -81,7 +81,7 @@ void UUTHUDWidget_Paperdoll::Draw_Implementation(float DeltaTime)
 	float FlagOpacity = 1.0f;
 
 	AUTCharacter* UTC = Cast<AUTCharacter>(UTHUDOwner->UTPlayerOwner->GetViewTarget());
-	AUTPlayerState* PS = UTC ? Cast<AUTPlayerState>(UTC->PlayerState) : NULL;
+    AUTPlayerState* PS = UTC ? Cast<AUTPlayerState>(UTC->GetPlayerState()) : NULL;
 	UUTHUDWidget_Paperdoll* DefObj = GetClass()->GetDefaultObject<UUTHUDWidget_Paperdoll>();
 
 	AUTFlagRunGameState* GameState = UTHUDOwner->GetWorld()->GetGameState<AUTFlagRunGameState>();

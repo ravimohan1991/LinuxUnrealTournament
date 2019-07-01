@@ -19,7 +19,7 @@ FLinearColor AUTHUD_CTF::GetBaseHUDColor()
 	APawn* HUDPawn = Cast<APawn>(UTPlayerOwner->GetViewTarget());
 	if (HUDPawn)
 	{
-		AUTPlayerState* PS = Cast<AUTPlayerState>(HUDPawn->PlayerState);
+        AUTPlayerState* PS = Cast<AUTPlayerState>(HUDPawn->GetPlayerState());
 		if (PS != NULL && PS->Team != NULL)
 		{
 			TeamColor = PS->Team->TeamColor;

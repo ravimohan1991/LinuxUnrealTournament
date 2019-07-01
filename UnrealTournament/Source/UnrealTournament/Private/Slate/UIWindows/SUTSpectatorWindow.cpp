@@ -54,7 +54,7 @@ FReply SUTSpectatorWindow::OnMouseButtonUp(const FGeometry& MyGeometry, const FP
 		}
 	}
 
-	FSlateApplication::Get().SetKeyboardFocus(SharedThis(this), EKeyboardFocusCause::Keyboard);
+    FSlateApplication::Get().SetKeyboardFocus(SharedThis(this), EFocusCause::Navigation);
 	return FReply::Handled();
 }
 
@@ -87,7 +87,7 @@ void SUTSpectatorWindow::Tick( const FGeometry& AllottedGeometry, const double I
 		if (PC->bSpectatorMouseChangesView != bLast)
 		{
 			bLast = PC->bSpectatorMouseChangesView;
-			FSlateApplication::Get().SetKeyboardFocus(SharedThis(this), EKeyboardFocusCause::Keyboard);
+            FSlateApplication::Get().SetKeyboardFocus(SharedThis(this), EFocusCause::Navigation);
 		}
 	}
 

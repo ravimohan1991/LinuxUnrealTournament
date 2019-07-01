@@ -113,7 +113,7 @@ void FUTCanvasTextItem::Draw(FCanvas* InCanvas)
 		if (CorrectStereo)
 		{
 			FVector2D StereoOutlineBoxSize(2.0f, 2.0f);
-			TileItem.MaterialRenderProxy = GEngine->RemoveSurfaceMaterial->GetRenderProxy(false);
+            TileItem.MaterialRenderProxy = GEngine->RemoveSurfaceMaterial->GetRenderProxy();
 			TileItem.Position = DrawPos - StereoOutlineBoxSize;
 			FVector2D CorrectionSize = FVector2D(Parameters.DrawXL, Parameters.DrawYL) + StereoOutlineBoxSize + StereoOutlineBoxSize;
 			TileItem.Size = CorrectionSize;
@@ -671,7 +671,7 @@ void UUTHUDWidget::DrawMaterial( UMaterialInterface* Material, float X, float Y,
 		}
 
 		FVector2D RenderPos = FVector2D(RenderPosition.X + X - (Width * RenderOffset.X), RenderPosition.Y + Y - (Height * RenderOffset.Y));
-		FCanvasTileItem MaterialItem( RenderPos, Material->GetRenderProxy(0), FVector2D( Width, Height) , FVector2D( MaterialU, MaterialV ), FVector2D( MaterialU+MaterialUWidth, MaterialV +MaterialVHeight));
+        FCanvasTileItem MaterialItem( RenderPos, Material->GetRenderProxy(), FVector2D( Width, Height) , FVector2D( MaterialU, MaterialV ), FVector2D( MaterialU+MaterialUWidth, MaterialV +MaterialVHeight));
 
 		DrawColor.A = Opacity * DrawOpacity * (bIgnoreHUDOpacity ? 1.0f : UTHUDOwner->WidgetOpacity);
 		MaterialItem.SetColor(DrawColor);
@@ -805,16 +805,16 @@ FString UUTHUDWidget::GetClampedName(AUTPlayerState* PS, UFont* NameFont, float 
 		return PS->ClampedName;
 	}
 
-	PS->ClampedName = PS->PlayerName;
+    PS->ClampedName = PS->GetPlayerName();
 	PS->NameClamper = this;
 	float XL = 0.f;
 	float YL = 0.f;
 	Canvas->TextSize(NameFont, PS->ClampedName, XL, YL, NameScale, NameScale);
-	int32 ClampedLen = PS->PlayerName.Len();
+    int32 ClampedLen = PS->GetPlayerName().Len();
 	while ((XL > MaxWidth) && (ClampedLen > 1))
 	{
 		ClampedLen -= 1;
-		PS->ClampedName = PS->PlayerName.Left(ClampedLen) + "...";
+        PS->ClampedName = PS->GetPlayerName().Left(ClampedLen) + "...";
 		Canvas->TextSize(NameFont, PS->ClampedName, XL, YL, NameScale, NameScale);
 	}
 	PS->bHasValidClampedName = true;

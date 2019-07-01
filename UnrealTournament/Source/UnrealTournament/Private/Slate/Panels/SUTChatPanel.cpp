@@ -264,17 +264,17 @@ void SUTChatPanel::Tick( const FGeometry& AllottedGeometry, const double InCurre
 			{
 				if (PS->bIsSpectator)
 				{
-					UserList.Add( FSimpleListData::Make(PS->PlayerName, FLinearColor::Gray));
+                    UserList.Add( FSimpleListData::Make(PS->GetPlayerName(), FLinearColor::Gray));
 				}
 				else
 				{
 					if (bIsTeamGame)
 					{
-						UserList.Add( FSimpleListData::Make(PS->PlayerName, (PS->GetTeamNum() == 1 ? FLinearColor(0.75f, 0.83f, 1.0f, 1.0f) : FLinearColor(1.0f, 0.83f, 0.75f, 1.0f))));
+                        UserList.Add( FSimpleListData::Make(PS->GetPlayerName(), (PS->GetTeamNum() == 1 ? FLinearColor(0.75f, 0.83f, 1.0f, 1.0f) : FLinearColor(1.0f, 0.83f, 0.75f, 1.0f))));
 					}
 					else
 					{
-						UserList.Add( FSimpleListData::Make(PS->PlayerName, FLinearColor::White));
+                        UserList.Add( FSimpleListData::Make(PS->GetPlayerName(), FLinearColor::White));
 					}
 				}
 			}
@@ -508,7 +508,7 @@ FReply SUTChatPanel::UserListToggle()
 void SUTChatPanel::OnShowPanel(TSharedPtr<SUTMenuBase> inParentWindow)
 {
 	SUTPanelBase::OnShowPanel(inParentWindow);
-	FSlateApplication::Get().SetKeyboardFocus(ChatText, EKeyboardFocusCause::Keyboard);
+    FSlateApplication::Get().SetKeyboardFocus(ChatText, EFocusCause::Navigation);
 }
 
 

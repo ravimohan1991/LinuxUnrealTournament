@@ -2,6 +2,7 @@
 #pragma once
 
 #include "UnrealNetwork.h"
+#include "UTReplicatedEmitter.h"
 
 #include "UTPersistentReplicatedEmitter.generated.h"
 

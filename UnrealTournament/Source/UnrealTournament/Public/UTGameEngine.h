@@ -7,6 +7,8 @@
 #include "Online.h"
 #include "OnlineSubsystemTypes.h"
 #include "OnlineTitleFileInterface.h"
+#include "Runtime/Engine/Classes/Engine/GameEngine.h"
+
 #include "UTGameEngine.generated.h"
 
 

@@ -6,7 +6,7 @@
 #include "UObjectToken.h"
 #include "MapErrors.h"
 #include "AI/NavigationSystemHelpers.h"
-#include "AI/NavigationOctree.h"
+#include "Runtime/NavigationSystem/Public/NavigationOctree.h"
 #include "UTReachSpec_JumpPad.h"
 #include "UTGameEngine.h"
 #include "UTNavArea_Default.h"
@@ -18,7 +18,7 @@ AUTJumpPad::AUTJumpPad(const FObjectInitializer& ObjectInitializer)
 
 	SceneRoot = ObjectInitializer.CreateDefaultSubobject<USceneComponent>(this, TEXT("SceneComponent"));
 	RootComponent = SceneRoot;
-	RootComponent->bShouldUpdatePhysicsVolume = true;
+    RootComponent->SetShouldUpdatePhysicsVolume(true);// = true;
 
 	// Setup the mesh
 	Mesh = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, TEXT("JumpPadMesh"));
@@ -60,7 +60,7 @@ void AUTJumpPad::Tick(float DeltaTime)
 
 bool AUTJumpPad::IsEnabled_Implementation() const
 {
-	return TriggerBox != NULL && TriggerBox->IsCollisionEnabled() && TriggerBox->bGenerateOverlapEvents;
+    return TriggerBox != NULL && TriggerBox->IsCollisionEnabled() && TriggerBox->GetGenerateOverlapEvents();
 }
 
 bool AUTJumpPad::CanLaunch_Implementation(AActor* TestActor)
@@ -156,12 +156,12 @@ void AUTJumpPad::Launch_Implementation(AActor* Actor)
 					UUTPathNode* MyNode = NavData->FindNearestNode(GetActorLocation(), NavData->GetPOIExtent(this));
 					if (MyNode != NULL)
 					{
-						for (const FUTPathLink& Path : MyNode->Paths)
+                        for (FUTPathLink& Path : MyNode->Paths)
 						{
 							UUTReachSpec_JumpPad* JumpPadPath = Cast<UUTReachSpec_JumpPad>(Path.Spec.Get());
 							if (JumpPadPath != NULL && JumpPadPath->JumpPad == this)
 							{
-								B->SetMoveTargetDirect(FRouteCacheItem(Path.End.Get(), NavData->GetPolySurfaceCenter(Path.EndPoly), Path.EndPoly));
+                                B->SetMoveTargetDirect(FRouteCacheItem(Path.End /*.Get()*/, NavData->GetPolySurfaceCenter(Path.EndPoly), Path.EndPoly));
 								break;
 							}
 						}
@@ -343,7 +343,7 @@ void AUTJumpPad::AddSpecialPaths(class UUTPathNode* MyNode, class AUTRecastNavMe
 								{
 									UUTReachSpec_JumpPad* JumpSpec = NewObject<UUTReachSpec_JumpPad>(MyNode);
 									JumpSpec->JumpPad = this;
-									FUTPathLink* NewLink = new(MyNode->Paths) FUTPathLink(MyNode, MyPoly, TargetNode, TargetPoly, JumpSpec, PathSize.Radius, PathSize.Height, ReachFlags);
+                                    FUTPathLink* NewLink = new(MyNode->Paths) FUTPathLink(MyNode, MyPoly, const_cast <UUTPathNode*>(TargetNode), TargetPoly, JumpSpec, PathSize.Radius, PathSize.Height, ReachFlags);
 									for (NavNodeRef SrcPoly : MyNode->Polys)
 									{
 										NewLink->Distances.Add(NavData->CalcPolyDistance(SrcPoly, MyPoly) + FMath::TruncToInt(1000.0f * JumpTime)); // TODO: maybe Z adjust cost if this target is higher/lower and the jump will end slightly faster/slower?
@@ -381,7 +381,7 @@ void AUTJumpPad::CheckForErrors()
 	TSubclassOf<AUTGameMode> UTGameClass = *GameClass;
 	if (UTGameClass)
 	{
-		DefaultChar = Cast<ACharacter>(Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *UTGameClass.GetDefaultObject()->PlayerPawnObject.ToStringReference().ToString(), NULL, LOAD_NoWarn)));
+        DefaultChar = Cast<ACharacter>(Cast<UClass>(StaticLoadObject(UClass::StaticClass(), NULL, *UTGameClass.GetDefaultObject()->PlayerPawnObject.ToSoftObjectPath().ToString(), NULL, LOAD_NoWarn)));
 	}
 	else
 	{

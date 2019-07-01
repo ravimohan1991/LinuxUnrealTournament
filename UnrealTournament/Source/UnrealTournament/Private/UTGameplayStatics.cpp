@@ -58,7 +58,7 @@ void UUTGameplayStatics::UTPlaySound(UWorld* TheWorld, USoundBase* TheSound, AAc
 							bShouldReplicate = PC != TopOwner;
 							break;
 						case SRT_IfSourceNotReplicated:
-							bShouldReplicate = SourceActor == NULL || TheWorld->GetNetDriver()->ClientConnections[i]->ActorChannels.Find(SourceActor) == NULL;
+                            bShouldReplicate = SourceActor == NULL || TheWorld->GetNetDriver()->ClientConnections[i]->FindActorChannel(SourceActor) == NULL;//   ActorChannels.Find(SourceActor) == NULL;
 							break;
 						case SRT_None:
 							bShouldReplicate = false;
@@ -107,8 +107,8 @@ void UUTGameplayStatics::UTPlaySound(UWorld* TheWorld, USoundBase* TheSound, AAc
 				if (Instigator != NULL && Instigator->Controller != NULL)
 				{
 					// note: all sound attenuation treated as a sphere
-					float Radius = TheSound->GetMaxAudibleDistance();
-					const FAttenuationSettings* Settings = TheSound->GetAttenuationSettingsToApply();
+                    float Radius = TheSound->GetMaxDistance();
+                    const FSoundAttenuationSettings* Settings = TheSound->GetAttenuationSettingsToApply();
 					if (Settings != NULL)
 					{
 						if (Radius <= 0.0f || Radius >= WORLD_MAX)
@@ -245,7 +245,7 @@ bool UUTGameplayStatics::UTHurtRadius( UObject* WorldContextObject, float BaseDa
 
 	// query scene to see what we hit
 	TArray<FOverlapResult> Overlaps;
-	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject);
+    UWorld* World = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);
 	AUTGameState* GS = World->GetGameState<AUTGameState>();
 	World->OverlapMultiByChannel(Overlaps, Origin, FQuat::Identity, COLLISION_TRACE_WEAPON, FCollisionShape::MakeSphere(DamageOuterRadius), SphereParams);
 
@@ -505,7 +505,7 @@ bool UUTGameplayStatics::UTSuggestProjectileVelocity(UObject* WorldContextObject
 
 	const float TossSpeedSq = FMath::Square(TossSpeed);
 
-	UWorld* const World = GEngine->GetWorldFromContextObject(WorldContextObject);
+    UWorld* const World = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);
 	const float GravityZ = (OverrideGravityZ != 0.f) ? -OverrideGravityZ : -World->GetGravityZ();
 
 	// v^4 - g*(g*x^2 + 2*y*v^2)
@@ -915,7 +915,7 @@ bool UUTGameplayStatics::LineTraceForObjectsSimple(UObject* WorldContextObject, 
 
 FString UUTGameplayStatics::GetLevelName(UObject* WorldContextObject, bool bShortName)
 {
-	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, false);
+    UWorld* World = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);//, false);
 	if (World == NULL)
 	{
 		return TEXT("None");
@@ -948,7 +948,7 @@ float UUTGameplayStatics::GetFloatOption(const FString& Options, const FString& 
 
 bool UUTGameplayStatics::IsPlayInEditor(UObject* WorldContextObject)
 {
-	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, false);
+    UWorld* World = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);//, false);
 	if (World == NULL)
 	{
 		return TEXT("None");
@@ -977,7 +977,7 @@ void UUTGameplayStatics::RecordEvent_UTTutorialPlayInstruction(AUTPlayerControll
 
 void UUTGameplayStatics::ExecuteDatabaseQuery(UObject* WorldContextObject, const FString& DatabaseQuery, TArray<FDatabaseRow>& OutDatabaseRows)
 {
-	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, false);
+    UWorld* World = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);//, false);
 	if (World)
 	{
 		UUTGameInstance* GI = Cast<UUTGameInstance>(World->GetGameInstance());

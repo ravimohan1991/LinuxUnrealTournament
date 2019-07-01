@@ -64,7 +64,7 @@ public:
 			SetIsLoadingInternal(true);
 
 			TWeakObjectPtr<UUTLoadGuard> WeakThis = this;
-			UUTGlobals::Get().StreamableManager.RequestAsyncLoad(InLazyAsset.ToStringReference(),
+            UUTGlobals::Get().StreamableManager.RequestAsyncLoad(InLazyAsset.ToSoftObjectPath(),
 				[WeakThis, OnAssetLoaded]()
 				{
 					if (WeakThis.IsValid() && WeakThis->LazyAsset.IsValid() && WeakThis->bIsLoading)

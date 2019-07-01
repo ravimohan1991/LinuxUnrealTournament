@@ -67,7 +67,7 @@ const FVector& NewAccel
 
 	// If not playing root motion, tick animations after physics. We do this here to keep events, notifies, states and transitions in sync with client updates.
 	if ( !CharacterOwner->bClientUpdating && !CharacterOwner->IsPlayingRootMotion() && CharacterOwner->GetMesh() && CharacterOwner->GetMesh()->IsRegistered() &&
-		(CharacterOwner->GetMesh()->MeshComponentUpdateFlag < EMeshComponentUpdateFlag::OnlyTickPoseWhenRendered || CharacterOwner->GetMesh()->bRecentlyRendered) )
+        (CharacterOwner->GetMesh()->VisibilityBasedAnimTickOption < EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered || CharacterOwner->GetMesh()->bRecentlyRendered) )
 	{
 		TickCharacterPose(DeltaTime);
 		// TODO: SaveBaseLocation() in case tick moves us?
@@ -661,7 +661,7 @@ bool FSavedMove_UTCharacter::IsImportantMove(const FSavedMovePtr& ComparedMove) 
 		return true;
 	}
 
-	if (MovementMode != ComparedMove->MovementMode)
+    if (StartPackedMovementMode != ComparedMove->StartPackedMovementMode || EndPackedMovementMode != ComparedMove->EndPackedMovementMode)
 	{
 //		UE_LOG(UT, Warning, TEXT("%f Is important because mode change"), TimeStamp);
 		return true;
@@ -777,7 +777,7 @@ void UUTCharacterMovement::UTCallServerMove()
 		}
 		//UE_LOG(UTNet, Warning, TEXT("Sending current move %f relative %d flags %d  dodge %d dodgelanding %d shotspawned %d"), NewMove->TimeStamp, bUseRelativeLocation, NewMove->GetCompressedFlags(), (((const FSavedMove_UTCharacter*)NewMove.Get())->bPressedDodgeForward || ((const FSavedMove_UTCharacter*)NewMove.Get())->bPressedDodgeForward || ((const FSavedMove_UTCharacter*)NewMove.Get())->bPressedDodgeForward), ((const FSavedMove_UTCharacter*)NewMove.Get())->bSavedIsDodgeLanding, ((const FSavedMove_UTCharacter*)NewMove.Get())->bShotSpawned);
 		ClientData->ClientUpdateTime = NewMove->TimeStamp;
-		UTCharacterOwner->UTServerMove
+        /*UTCharacterOwner->UTServerMove
 			(
 			NewMove->TimeStamp,
 			NewMove->Acceleration,
@@ -787,14 +787,15 @@ void UUTCharacterMovement::UTCallServerMove()
 			NewMove->SavedControlRotation.Pitch,
 			ClientMovementBase,
 			NewMove->EndBoneName,
-			NewMove->MovementMode
-			);
-	}
+            NewMove->StartPackedMovementMode,
+            NewMove->EndPackedMovementMode
+            );*/
+    }
 
 	APlayerCameraManager* PlayerCameraManager = (PC ? PC->PlayerCameraManager : NULL);
 	if (PlayerCameraManager != NULL && PlayerCameraManager->bUseClientSideCameraUpdates)
 	{
-		UE_LOG(UT, Warning, TEXT("WTF WTF WTF WTF!!!!!!!!!!!!!!!!"));
+        UE_LOG(UT, Warning, TEXT("Something terribly wrong in UTCharMovementReplication function UTCallServerMove!!!"));
 		PlayerCameraManager->bShouldSendClientSideCameraUpdate = true;
 	}
 }
@@ -1103,7 +1104,7 @@ void UUTCharacterMovement::ClientAckGoodMove_Implementation(float TimeStamp)
 	check(ClientData);
 	//UE_LOG(UT, Warning, TEXT("Ack ping is %f vs ExactPing %f"), GetCurrentMovementTime() - TimeStamp, CharacterOwner->PlayerState->ExactPing); 
 
-	AUTPlayerState* UTPS = Cast<AUTPlayerState>(CharacterOwner->PlayerState);
+    AUTPlayerState* UTPS = Cast<AUTPlayerState>(CharacterOwner->GetPlayerState());
 	if (UTPS)
 	{
 		UTPS->CalculatePing(GetCurrentMovementTime() - TimeStamp);
@@ -1406,7 +1407,7 @@ void FSavedMove_UTCharacter::PostUpdate(ACharacter* Character, FSavedMove_Charac
 	// set flag if weapon is shooting on client this frame not from new fire press/release (to keep client and server synchronized)
 	UUTCharacterMovement* UTCharMovement = Character ? Cast<UUTCharacterMovement>(Character->GetCharacterMovement()) : NULL;
 	bShotSpawned = UTCharMovement->bShotSpawned;
-	MovementMode = UTCharMovement->PackNetworkMovementMode(); // @TODO FIXMESTEVE SHOULD BE IN Engine version as well
+    //CustomMovementMode = UTCharMovement->PackNetworkMovementMode(); // @TODO FIXMESTEVE SHOULD BE IN Engine version as well
 	Super::PostUpdate(Character, PostUpdateMode);
 }
 

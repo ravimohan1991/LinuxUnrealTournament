@@ -218,6 +218,7 @@ void AUTPlayerController::GetLifetimeReplicatedProps(TArray<class FLifetimePrope
 	DOREPLIFETIME_CONDITION(AUTPlayerController, VoiceChatChannel, COND_OwnerOnly);
 }
 
+//Ostracons!
 void AUTPlayerController::SendPersonalMessage(TSubclassOf<ULocalMessage> Message, int32 Switch, APlayerState* RelatedPlayerState_1, APlayerState* RelatedPlayerState_2, UObject* OptionalObject)
 {
 	ClientReceiveLocalizedMessage(Message, Switch, RelatedPlayerState_1, RelatedPlayerState_2, OptionalObject);
@@ -238,7 +239,7 @@ void AUTPlayerController::SendPersonalMessage(TSubclassOf<ULocalMessage> Message
 void AUTPlayerController::ClientReceivePersonalMessage_Implementation(TSubclassOf<ULocalMessage> Message, int32 Switch, APlayerState* RelatedPlayerState_1, APlayerState* RelatedPlayerState_2, UObject* OptionalObject)
 {
 	// only pass on if viewing one of the playerstates
-	APlayerState* ViewTargetPS = Cast<APawn>(GetViewTarget()) ? ((APawn *)(GetViewTarget()))->PlayerState : NULL;
+    APlayerState* ViewTargetPS = Cast<APawn>(GetViewTarget()) ? ((APawn *)(GetViewTarget()))->GetPlayerState() : NULL;
 	bool bViewingTarget = (ViewTargetPS == RelatedPlayerState_1) || (ViewTargetPS == RelatedPlayerState_2);
 	if (!bViewingTarget && !Cast<ASpectatorPawn>(GetViewTarget()))
 	{
@@ -566,7 +567,7 @@ void AUTPlayerController::InitPlayerState()
 	Super::InitPlayerState();
 	
 	// need this until Controller::InitPlayerState() is updated
-	if (PlayerState && PlayerState->PlayerName.IsEmpty())
+    if (PlayerState && PlayerState->GetPlayerName().IsEmpty())
 	{
 		UWorld* const World = GetWorld();
 		if (World)
@@ -576,7 +577,7 @@ void AUTPlayerController::InitPlayerState()
 			{
 				// don't call SetPlayerName() as that will broadcast entry messages but the GameMode hasn't had a chance
 				// to potentially apply a player/bot name yet
-				PlayerState->PlayerName = GameMode->DefaultPlayerName.ToString();
+                PlayerState->GetPlayerName() = GameMode->DefaultPlayerName.ToString();
 			}
 		}
 	}
@@ -675,9 +676,9 @@ void AUTPlayerController::ClientRestart_Implementation(APawn* NewPawn)
 	// This function will be called, setting the pawn back to the Character, leaving Characters PlayerState still NULL
 
 	// Probably not the best solution. Make sure the PlayerState is set
-	if (Role < ROLE_Authority && GetPawn() != nullptr && GetPawn()->PlayerState == nullptr)
+    if (Role < ROLE_Authority && GetPawn() != nullptr && GetPawn()->GetPlayerState() == nullptr)
 	{
-		GetPawn()->PlayerState = PlayerState;
+        GetPawn()->SetPlayerState(PlayerState);// = PlayerState;
 	}
 
 	// JackP recommended course of action
@@ -1401,12 +1402,12 @@ void AUTPlayerController::ViewClosestVisiblePlayer()
 	for (FConstPawnIterator It = GetWorld()->GetPawnIterator(); It; ++It)
 	{
 		AUTCharacter *UTChar = Cast<AUTCharacter>(*It);
-		if (UTChar && (UTChar->Health > 0) && Cast<AUTPlayerState>(UTChar->PlayerState) && (GetWorld()->GetTimeSeconds() - UTChar->GetLastRenderTime() < 0.1f))
+        if (UTChar && (UTChar->Health > 0) && Cast<AUTPlayerState>(UTChar->GetPlayerState()) && (GetWorld()->GetTimeSeconds() - UTChar->GetLastRenderTime() < 0.1f))
 		{
 			float NewDist = (UTChar->GetActorLocation() - GetViewTarget()->GetActorLocation()).Size();
 			if (!BestChar || (NewDist < BestDist))
 			{
-				BestChar = Cast<AUTPlayerState>(UTChar->PlayerState);
+                BestChar = Cast<AUTPlayerState>(UTChar->GetPlayerState());
 				BestDist = NewDist;
 			}
 		}
@@ -1497,7 +1498,7 @@ void AUTPlayerController::ViewProjectile()
 				APawn* PawnIter = Iterator->Get();
 				if (PawnIter != nullptr)
 				{
-					AUTPlayerState* PS = Cast<AUTPlayerState>(PawnIter->PlayerState);
+                    AUTPlayerState* PS = Cast<AUTPlayerState>(PawnIter->GetPlayerState());
 					if (PS && PS->SpectatingID == LastSpectatedPlayerId)
 					{
 						bAutoCam = false;
@@ -1521,7 +1522,7 @@ void AUTPlayerController::ViewProjectile()
 				}
 				if (ViewedCharacter)
 				{
-					AUTPlayerState* PS = Cast<AUTPlayerState>(ViewedCharacter->PlayerState);
+                    AUTPlayerState* PS = Cast<AUTPlayerState>(ViewedCharacter->GetPlayerState());
 					if (PS)
 					{
 						LastSpectatedPlayerId = PS->SpectatingID;
@@ -1583,14 +1584,14 @@ void AUTPlayerController::TogglePlayerInfo()
 			APawn* PawnViewTarget = Cast<APawn>(GetViewTarget());
 			if (PawnViewTarget)
 			{
-				PS = Cast<AUTPlayerState>(PawnViewTarget->PlayerState);
+                PS = Cast<AUTPlayerState>(PawnViewTarget->GetPlayerState());
 			}
 		}
 
 		UUTLocalPlayer* LP = Cast<UUTLocalPlayer>(Player);
 		if (PS != nullptr && LP != nullptr && PS != PlayerState)
 		{
-			LP->ShowPlayerInfo(PS->UniqueId.ToString(), PS->PlayerName);
+            LP->ShowPlayerInfo(PS->UniqueId.ToString(), PS->GetPlayerName());
 		}
 	}
 }
@@ -1885,7 +1886,7 @@ void AUTPlayerController::HearSound(USoundBase* InSoundCue, AActor* SoundPlayer,
 	{
 		// we don't want to replicate the location if it's the same as Actor location (so the sound gets played attached to the Actor), but we must if the source Actor isn't relevant
 		UNetConnection* Conn = Cast<UNetConnection>(Player);
-		FVector RepLoc = (SoundPlayer != NULL && SoundPlayer->GetActorLocation() == SoundLocation && (Conn == NULL || Conn->ActorChannels.Contains(SoundPlayer))) ? FVector::ZeroVector : SoundLocation;
+        FVector RepLoc = (SoundPlayer != NULL && SoundPlayer->GetActorLocation() == SoundLocation && (Conn == NULL || Conn->ActorChannelMap().Contains(SoundPlayer))) ? FVector::ZeroVector : SoundLocation;
 		ClientHearSound(InSoundCue, SoundPlayer, RepLoc, bStopWhenOwnerDestroyed, bAmplifyVolume, AmpType);
 	}
 }
@@ -2445,7 +2446,7 @@ void AUTPlayerController::UpdateHiddenComponents(const FVector& ViewLocation, TS
 			AUTCharacter* UTChar = Cast<AUTCharacter>(*It);
 			if (UTChar)
 			{
-				AUTPlayerState* UTPS = Cast<AUTPlayerState>(UTChar->PlayerState);
+                AUTPlayerState* UTPS = Cast<AUTPlayerState>(UTChar->GetPlayerState());
 				if ((UTGS->ActiveLineUpHelper->ActiveType == LineUpTypes::Intro) && (!UTPS || !UTPS->bHasPlayedLineUpIntro))
 				{
 					HideComponentTree(Cast<UPrimitiveComponent>(UTChar->GetRootComponent()), HiddenComponents);
@@ -2735,7 +2736,7 @@ void AUTPlayerController::ResetCameraMode()
 
 void AUTPlayerController::BehindView(bool bWantBehindView)
 {
-	if (GetPawn() != NULL && !GetPawn()->bTearOff && !bAllowPlayingBehindView && GetNetMode() != NM_Standalone && (GetWorld()->WorldType != EWorldType::PIE))
+    if (GetPawn() != NULL && !GetPawn()->GetTearOff() && !bAllowPlayingBehindView && GetNetMode() != NM_Standalone && (GetWorld()->WorldType != EWorldType::PIE))
 	{
 		bWantBehindView = false;
 	}
@@ -2955,7 +2956,7 @@ void AUTPlayerController::SetViewTarget(class AActor* NewViewTarget, FViewTarget
 		if (Char)
 		{
 			ViewProjectileTime = 0.f;
-			LastSpectatedPlayerState = Cast<AUTPlayerState>(Char->PlayerState);
+            LastSpectatedPlayerState = Cast<AUTPlayerState>(Char->GetPlayerState());
 			if (LastSpectatedPlayerState)
 			{
 				LastSpectatedPlayerId = LastSpectatedPlayerState->SpectatingID;
@@ -3199,9 +3200,9 @@ void AUTPlayerController::TestResult(uint16 ButtonID)
 {
 }
 
-void AUTPlayerController::Possess(APawn* PawnToPossess)
+void AUTPlayerController::OnPossess(APawn* PawnToPossess)
 {
-	Super::Possess(PawnToPossess);
+    Super::OnPossess(PawnToPossess);
 
 	AUTCharacter *UTChar = Cast<AUTCharacter>(GetPawn());
 	if (UTChar != nullptr)
@@ -3318,7 +3319,7 @@ void AUTPlayerController::PlayerTick( float DeltaTime )
 				APawn* PawnIter = Iterator->Get();
 				if (PawnIter != nullptr)
 				{
-					AUTPlayerState* PS = Cast<AUTPlayerState>(PawnIter->PlayerState);
+                    AUTPlayerState* PS = Cast<AUTPlayerState>(PawnIter->GetPlayerState());
 					if (PS && PS->SpectatingID == LastSpectatedPlayerId)
 					{
 						AUTCharacter* TargetChar = Cast<AUTCharacter>(PawnIter);
@@ -3474,7 +3475,7 @@ void AUTPlayerController::ChooseBestCamera()
 		for (FConstPawnIterator Iterator = GetWorld()->GetPawnIterator(); Iterator; ++Iterator)
 		{
 			AUTCharacter* CamPawn = Cast<AUTCharacter>(*Iterator);
-			AUTPlayerState* NextPlayerState = (CamPawn && (CamPawn->Health > 0)) ? Cast<AUTPlayerState>(CamPawn->PlayerState) : NULL;
+            AUTPlayerState* NextPlayerState = (CamPawn && (CamPawn->Health > 0)) ? Cast<AUTPlayerState>(CamPawn->GetPlayerState()) : NULL;
 			if (NextPlayerState && GS && GS->CanSpectate(this, NextPlayerState))
 			{
 				float NewScore = UTCam->RatePlayerCamera(NextPlayerState, CamPawn, LastSpectatedPlayerState);
@@ -3846,7 +3847,7 @@ void AUTPlayerController::ServerViewPawn_Implementation(APawn* PawnToView)
 
 	if (PawnToView)
 	{
-		SetViewTarget(PawnToView->PlayerState);
+        SetViewTarget(PawnToView->GetPlayerState());
 	}
 }
 
@@ -4124,7 +4125,7 @@ void AUTPlayerController::UTLogOutBugItGoToLogFile(const FString& InScreenShotDe
 	// Create archive for log data.
 	// we have to +1 on the GScreenshotBitmapIndex as it will be incremented by the bugitscreenshot which is processed next tick
 
-	const FString DescPlusExtension = FString::Printf(TEXT("%s%i.txt"), *InScreenShotDesc, GScreenshotBitmapIndex);
+    const FString DescPlusExtension = FString::Printf(TEXT("%s%i.txt"), *InScreenShotDesc/*, GScreenshotBitmapIndex*/);
 	const FString TxtFileName = CreateProfileFilename(DescPlusExtension, false);
 
 	//FString::Printf( TEXT("BugIt%s-%s%05i"), *GEngineVersion.ToString(), *InScreenShotDesc, GScreenshotBitmapIndex+1 ) + TEXT( ".txt" );
@@ -4180,7 +4181,7 @@ void AUTPlayerController::OnRep_CastingGuide()
 				{
 					FURL URL;
 					URL.LoadURLConfig(TEXT("DefaultPlayer"), GGameIni);
-					URL.AddOption(*FString::Printf(TEXT("Name=%s"), *FString::Printf(TEXT("%s_Spec%i"), *UTPlayerState->PlayerName, InsertIndex)));
+                    URL.AddOption(*FString::Printf(TEXT("Name=%s"), *FString::Printf(TEXT("%s_Spec%i"), *UTPlayerState->GetPlayerName(), InsertIndex)));
 					URL.AddOption(TEXT("CastingView=1"));
 					URL.AddOption(TEXT("SpectatorOnly=1"));
 					FString URLString = URL.ToString();
@@ -4419,9 +4420,9 @@ void AUTPlayerController::ServerRegisterBanVote_Implementation(AUTPlayerState* B
 			if (FUTAnalytics::IsAvailable())
 			{
 				TArray<FAnalyticsEventAttribute> ParamArray;
-				ParamArray.Add(FAnalyticsEventAttribute(TEXT("TrollName"), BadGuy->PlayerName));
+                ParamArray.Add(FAnalyticsEventAttribute(TEXT("TrollName"), BadGuy->GetPlayerName()));
 				ParamArray.Add(FAnalyticsEventAttribute(TEXT("TrollID"), BadGuy->UniqueId.ToString()));
-				ParamArray.Add(FAnalyticsEventAttribute(TEXT("ReportName"), UTPlayerState->PlayerName));
+                ParamArray.Add(FAnalyticsEventAttribute(TEXT("ReportName"), UTPlayerState->GetPlayerName()));
 				ParamArray.Add(FAnalyticsEventAttribute(TEXT("ReportID"), UTPlayerState->UniqueId.ToString()));
 				ParamArray.Add(FAnalyticsEventAttribute(TEXT("DemoIKD"), GameState->ReplayID));
 				ParamArray.Add(FAnalyticsEventAttribute(TEXT("Abuse"), TEXT("KickVote")));
@@ -4455,7 +4456,7 @@ void AUTPlayerController::UpdateRotation(float DeltaTime)
 	{
 		if (Input->AccelerationPower > 0)
 		{
-			float BaseSensivity = Input->GetMouseSensitivity();
+            float BaseSensivity = (Input->GetMouseSensitivityX() + Input->GetMouseSensitivityX()) / 2;
 			FRotator UnscaledInput = RotationInput * (1.0f / BaseSensivity);
 			float InputLength = FMath::Sqrt(UnscaledInput.Yaw * UnscaledInput.Yaw + UnscaledInput.Pitch * UnscaledInput.Pitch);
 			float InputSpeed = InputLength / DeltaTime;
@@ -4891,7 +4892,7 @@ void AUTPlayerController::ProcessVoiceDebug(const FString& Command)
 		{
 			if (GameState->PlayerArray[i])
 			{
-				UE_LOG(UT,Log,TEXT("Player %i %s = %s"),i, *GameState->PlayerArray[i]->PlayerName, *GameState->PlayerArray[i]->UniqueId.ToString());
+                UE_LOG(UT,Log,TEXT("Player %i %s = %s"),i, *GameState->PlayerArray[i]->GetPlayerName(), *GameState->PlayerArray[i]->UniqueId.ToString());
 			}
 		}
 

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Object.h"
+#include "UTCharacter.h"
 #include "UTGhostEvent.generated.h"
 
 /**
@@ -38,7 +39,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ghost)
 	uint32 bApplyWallSlide : 1;
 
-	UFUNCTION(BlueprintNativeEvent)
+    //UFUNCTION(BlueprintNativeEvent)
 	void ApplyEvent(class AUTCharacter* UTC);
 };
 
@@ -53,7 +54,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ghost)
 	FMovementEventInfo MovementEvent;
 
-	UFUNCTION(BlueprintNativeEvent)
+    //UFUNCTION(BlueprintNativeEvent)
 	void ApplyEvent(class AUTCharacter* UTC);
 };
 
@@ -69,7 +70,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ghost)
 	uint8 FireFlags;
 
-	UFUNCTION(BlueprintNativeEvent)
+    //UFUNCTION(BlueprintNativeEvent)
 	void ApplyEvent(class AUTCharacter* UTC);
 };
 
@@ -84,7 +85,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ghost)
 	TSubclassOf<AUTWeapon> WeaponClass;
 
-	UFUNCTION(BlueprintNativeEvent)
+    //UFUNCTION(BlueprintNativeEvent)
 	void ApplyEvent(class AUTCharacter* UTC);
 };
 
@@ -101,6 +102,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ghost)
 	USoundBase* SuperJumpSound;
 
-	UFUNCTION(BlueprintNativeEvent)
+    //UFUNCTION(BlueprintNativeEvent)
 	void ApplyEvent(class AUTCharacter* UTC);
 };

@@ -1145,12 +1145,12 @@ bool AUTLobbyGameState::SendSayToInstance(const FString& PlayerName, FString& Me
 
 				if (Message.Left(TestPlayerName.Len()).Equals(TestPlayerName,ESearchCase::IgnoreCase))
 				{
-					Message = Message.Right(Message.Len() - TestPlayerName.Len()).Trim();
+                    Message = Message.Right(Message.Len() - TestPlayerName.Len()).TrimStart();
 					bIsUser = true;
 				}
 				else if (Message.Left(TestPlayerName.Len()).Equals(TestUID,ESearchCase::IgnoreCase)) 
 				{
-					Message = Message.Right(Message.Len() - TestUID.Len()).Trim();
+                    Message = Message.Right(Message.Len() - TestUID.Len()).TrimStart();
 					bIsUser = true;
 				}
 

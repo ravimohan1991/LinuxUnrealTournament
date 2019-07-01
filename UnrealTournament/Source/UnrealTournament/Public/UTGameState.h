@@ -1,8 +1,10 @@
-// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
+// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.#include "UTLineUpZone.h"
 #pragma once
 
+#include "UTPlayerState.h"
+#include "UTCharacter.h"
 #include "ChartCreation.h"
-
+#include "UTLineUpZone.h"
 #include "UTGameState.generated.h"
 
 
@@ -32,7 +34,7 @@ public:
 		}
 		else if (Ar.IsLoading() && PlayerState != NULL)
 		{
-			PlayerName = PlayerState->PlayerName;
+            PlayerName = PlayerState->GetPlayerName();
 		}
 		return true;
 	}
@@ -41,7 +43,7 @@ public:
 		: PlayerState(NULL)
 	{}
 	FSafePlayerName(AUTPlayerState* InPlayerState)
-		: PlayerState(InPlayerState), PlayerName(InPlayerState != NULL ? InPlayerState->PlayerName : TEXT(""))
+        : PlayerState(InPlayerState), PlayerName(InPlayerState != NULL ? InPlayerState->GetPlayerName() : TEXT(""))
 	{}
 
 	inline bool operator==(const FSafePlayerName& Other) const
@@ -58,17 +60,17 @@ public:
 
 	FString GetPlayerName() const
 	{
-		return (PlayerState != NULL) ? PlayerState->PlayerName : PlayerName;
+        return (PlayerState != NULL) ? PlayerState->GetPlayerName() : PlayerName;
 	}
 };
-template<>
-struct TStructOpsTypeTraits<FSafePlayerName> : public TStructOpsTypeTraitsBase
+//template<>
+/*struct TStructOpsTypeTraits<FSafePlayerName> : public TStructOpsTypeTraitsBase
 {
 	enum
 	{
 		WithNetSerializer = true
 	};
-};
+};*/
 inline uint32 GetTypeHash(const FSafePlayerName& N)
 {
 	return GetTypeHash(N.PlayerName) + GetTypeHash(N.PlayerState);
@@ -98,7 +100,7 @@ struct FCTFAssist
 
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FCTFScoringPlay
 {
 	GENERATED_USTRUCT_BODY()
@@ -376,6 +378,9 @@ class UNREALTOURNAMENT_API AUTGameState : public AGameState
 	UPROPERTY(BlueprintReadOnly, Category = GameState)
 	float MatchEndTime;
 
+    /** No clue what for.  Was there in the UT code.*/
+    float NetUpdateTime;
+
 // deprecated, not called
 	UFUNCTION()
 	virtual void OnRep_RemainingTime() {};
@@ -455,7 +460,7 @@ class UNREALTOURNAMENT_API AUTGameState : public AGameState
 	virtual AUTTeamInfo* FindLeadingTeam();
 
 	/** Returns true if the match state is InProgress or later */
-	UFUNCTION(BlueprintCallable, Category = GameState)
+    //UFUNCTION(BlueprintCallable, Category = GameState)
 	virtual bool HasMatchStarted() const;
 
 	UFUNCTION(BlueprintCallable, Category = GameState)
@@ -828,7 +833,7 @@ protected:
 	void StartFPSCharts();
 	void StopFPSCharts();
 
-	void OnHitchDetected(float DurationInSeconds);
+    void OnHitchDetected(EFrameHitchType sos = EFrameHitchType::NoHitch, float DurationInSeconds = 0);
 
 	bool bRunFPSChart;
 
@@ -898,7 +903,7 @@ public:
 	// Returns true if the replication of the MapVote list is completed
 	bool IsMapVoteListReplicationCompleted();
 
-	virtual bool HasMatchEnded() const;
+    virtual bool HasMatchEnded() const override;
 
 	UPROPERTY(Replicated)
 	FString ReplayID;

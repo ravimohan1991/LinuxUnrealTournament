@@ -99,15 +99,15 @@ public:
 	}
 };
 
-namespace LexicalConversion
-{
-	/** Specialized for FString */
-	template<>
-	inline FString ToSanitizedString<FString>(const FString& value)
-	{
-		return FString(value);
-	}
-}
+//namespace LexicalConversion
+//{
+//	/** Specialized for FString */
+//	template<>
+//	inline FString ToSanitizedString<FString>(const FString& value)
+//	{
+//		return FString(value);
+//	}
+//}
 
 // extras for bools to convert to check box type
 struct UNREALTOURNAMENT_API TAttributePropertyBool : public TAttributeProperty<bool>

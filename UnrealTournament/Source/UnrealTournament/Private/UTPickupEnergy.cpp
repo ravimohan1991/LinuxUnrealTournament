@@ -66,7 +66,7 @@ void AUTPickupEnergy::BeginPlay()
 				GhostMesh->SetWorldScale3D(Mesh->GetComponentScale());
 			}
 			GhostMesh->SetVisibility(!State.bActive, true);
-			GhostMesh->bShouldUpdatePhysicsVolume = false;
+            GhostMesh->SetShouldUpdatePhysicsVolume(false);// = false;
 		}
 	}
 }
@@ -74,14 +74,14 @@ void AUTPickupEnergy::BeginPlay()
 bool AUTPickupEnergy::AllowPickupBy_Implementation(APawn* Other, bool bDefaultAllowPickup)
 {
 	AUTCharacter* P = Cast<AUTCharacter>(Other);
-	AUTPlayerState* OtherPS = Cast<AUTPlayerState>(Other->PlayerState);
+    AUTPlayerState* OtherPS = Cast<AUTPlayerState>(Other->GetPlayerState());
 	AUTGameState* GS = GetWorld()->GetGameState<AUTGameState>();
 	return Super::AllowPickupBy_Implementation(Other, bDefaultAllowPickup && P != nullptr && !P->IsRagdoll() && OtherPS != nullptr && GS != nullptr && OtherPS->GetRemainingBoosts() < GS->BoostRechargeMaxCharges);
 }
 
 void AUTPickupEnergy::GiveTo_Implementation(APawn* Target)
 {
-	AUTPlayerState* PS = Cast<AUTPlayerState>(Target->PlayerState);
+    AUTPlayerState* PS = Cast<AUTPlayerState>(Target->GetPlayerState());
 	if (PS != nullptr)
 	{
 		AUTPickup::GiveTo_Implementation(Target);
@@ -107,7 +107,7 @@ void AUTPickupEnergy::GiveTo_Implementation(APawn* Target)
 
 float AUTPickupEnergy::BotDesireability_Implementation(APawn* Asker, AController* RequestOwner, float PathDistance)
 {
-	AUTPlayerState* PS = Cast<AUTPlayerState>(Asker->PlayerState);
+    AUTPlayerState* PS = Cast<AUTPlayerState>(Asker->GetPlayerState());
 	AUTGameState* GS = GetWorld()->GetGameState<AUTGameState>();
 	return (PS != nullptr && GS != nullptr && PS->GetRemainingBoosts() < GS->BoostRechargeMaxCharges) ? Super::BotDesireability_Implementation(Asker, RequestOwner, PathDistance) : 0.0f;
 }
