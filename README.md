@@ -32,7 +32,9 @@ How to get started (Linux)
         cd UnrealEngine
         ./Setup.sh
   
-  
+* Next we generate the projectfiles
+
+        ./GenerateProjectFiles.sh 
   
 
 **To get started using GitHub:**
