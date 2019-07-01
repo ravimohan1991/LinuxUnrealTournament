@@ -25,7 +25,7 @@ How to get started (Linux)
         git submodule init
         git submodule update
 
-* Read [native build](UnrealEngine/Engine/Build/BatchFiles/Linux/README.md) and complete the prerequisites mentioned there.
+* Read [native build](https://github.com/EpicGames/UnrealEngine/blob/release/Engine/Build/BatchFiles/Linux/README.md) and complete the prerequisites mentioned there.
 
 * Next we compile Engine
     
