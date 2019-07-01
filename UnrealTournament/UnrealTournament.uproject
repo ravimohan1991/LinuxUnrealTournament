@@ -1,0 +1,23 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{0004D8C2-08D6-C61E-7FEB-602A5AF7C02F}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "UnrealTournamentFullScreenMovie",
+			"Type": "Runtime",
+			"LoadingPhase": "PreLoadingScreen"
+		},
+		{
+			"Name": "UnrealTournament",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "UnrealTournamentEditor",
+			"Type": "Developer",
+			"LoadingPhase": "Default"
+		}
+	]
+}
