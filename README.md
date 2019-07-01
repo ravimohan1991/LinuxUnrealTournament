@@ -40,6 +40,7 @@ How to get started (Linux)
   * UnrealTournament/Plugins
   * UnrealTournament/Source/UnrealTournamentServer
   * UnrealTournament/Source/UnrealTournament.Server.Target.cs
+  * UnrealTournament/Source/UnrealTournament/ThirdParty
 
 **To get started using GitHub:**
 
