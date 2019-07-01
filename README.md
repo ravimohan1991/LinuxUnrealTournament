@@ -27,11 +27,11 @@ How to get started (Linux)
 
 * Read [native build](https://github.com/EpicGames/UnrealEngine/blob/release/Engine/Build/BatchFiles/Linux/README.md) and complete the prerequisites mentioned there.
 
-* Next we compile Engine
+* Next we download binary content for the Engine.
     
         cd UnrealEngine
         ./Setup.sh
-  This will download binary content for the Engine.
+  
   
   
 
