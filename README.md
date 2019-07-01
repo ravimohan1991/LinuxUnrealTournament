@@ -7,6 +7,12 @@ As described in the [License Agreement](LICENSE.pdf), the code and assets residi
 
 This project is the continuation of [Epic UT](https://github.com/EpicGames/UnrealTournament) with the last commit date stamp: Aug 11, 2017 (more than 555 days).
 
+The aim of the project is threefold:
+*Update the UT code as per latest Engine release in modular fashion
+*Extensive focus on Linux platform
+*Using Engine to push forward the AI realm
+
+
 Check out the [Unreal Tournament wiki](https://wiki.unrealengine.com/Unreal_Tournament_Development) for documentation on the design and development process of the game.
 
 
