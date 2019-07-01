@@ -29,7 +29,9 @@ How to get started (Linux)
     
         cd UnrealEngine
         ./Setup.sh
-This will download binary content for the Engine.    
+  This will download binary content for the Engine.
+  
+* Something  
 
 **To get started using GitHub:**
 
