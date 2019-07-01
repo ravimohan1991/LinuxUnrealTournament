@@ -20,15 +20,15 @@ How to get started (Linux)
 ---------------------------
 * First we download the Engine and Game code from this repository. To do that type the following sequence of commands in the shell
 
-    git clone https://github.com/ravimohan1991/LinuxUnrealTournament.git
-    cd LinuxUnrealTournament/
-    git submodule init
-    git submodule update
+        git clone https://github.com/ravimohan1991/LinuxUnrealTournament.git
+        cd LinuxUnrealTournament/
+        git submodule init
+        git submodule update
 
 * Next we compile Engine
     
-    cd UnrealEngine
-    ./Setup.sh
+        cd UnrealEngine
+        ./Setup.sh
 This will download binary content for the Engine.    
 
 **To get started using GitHub:**
