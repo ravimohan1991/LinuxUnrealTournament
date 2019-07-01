@@ -12,9 +12,12 @@ Check out the [Unreal Tournament wiki](https://wiki.unrealengine.com/Unreal_Tour
 
 How to get started (Linux)
 ---------------------------
-First we download the Engine and Game code from this repository. 
+First we download the Engine and Game code from this repository. To do that type the following sequence of commands in the shell
 
-
+    git clone https://github.com/ravimohan1991/LinuxUnrealTournament.git
+    cd LinuxUnrealTournament/
+    git submodule init
+    git submodule update
 
 
 **To get started using GitHub:**
