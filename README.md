@@ -35,6 +35,11 @@ How to get started (Linux)
 * Next we generate the projectfiles
 
         ./GenerateProjectFiles.sh 
+
+* Delete some directories/file(s) (not functional right now)
+        * UnrealTournament/Plugins
+        * UnrealTournament/Source/UnrealTournamentServer
+        * UnrealTournament/Source/UnrealTournament.Server.Target.cs
   
 
 **To get started using GitHub:**
