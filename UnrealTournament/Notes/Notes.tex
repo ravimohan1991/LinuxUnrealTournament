@@ -1,0 +1,591 @@
+\documentclass{article}
+\usepackage{listings}             % Include the listings-package
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{csquotes}
+\usepackage{forest}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{mysteel}{RGB}{224, 223, 219}
+\definecolor{filecolor}{RGB}{194, 178, 128}
+\definecolor{fblue}{RGB}{92,144,192}
+\definecolor{fgreen}{RGB}{34,162,70}
+\definecolor{privatecol}{RGB}{245, 243, 239}
+\definecolor{publicol}{RGB}{255, 255, 0}
+\definecolor{classcolor}{RGB}{255, 0, 255}
+
+\newcommand\myfolder[2][fblue]{%
+\begin{tikzpicture}[overlay]
+\begin{scope}[xshift=20pt]
+\filldraw[rounded corners=1pt,fill=#1,draw=white,double=black]
+  (-23pt,10pt) -- ++(3pt,5pt) -- ++(18pt,0pt) -- ++(40:3pt) -- ++(9pt,0pt) -- ++(-40:3pt)
+  -- (20pt,15pt) -- (23pt,10pt) -- cycle;
+\filldraw[rounded corners,draw=white,double=black,top color=#1,bottom color=#1!30]
+  (-22pt,-12pt) -- ++(44pt,0pt) -- (25pt,12pt) coordinate (topr) -- ++(-50pt,0pt) coordinate (topl) -- cycle;
+\end{scope}  
+\end{tikzpicture}%
+\makebox[35pt]{\raisebox{-3pt}{{\ttfamily/#2}}}%
+}
+    
+\title{Unreal Engine and UnrealTournament}
+\author{The\_Cowboy}
+\pagestyle{headings}
+\begin{document}
+\maketitle
+\lstset{language=Java}          % Set your language (you can change the language for each code-block optionally)
+\section{Introduction}
+
+\lstset{ %
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or    %\usepackage{xcolor}
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={...},            % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, %does not work with UTF-8
+  frame=single,                    % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code %(possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=Java,                 % the language of the code
+  morekeywords={*,...},            % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, %right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within %not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it %overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be %numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,                       % sets default tabsize to 2 spaces
+  title=\lstname                   % show the filename of files included with \lstinputlisting; also %try caption instead of title
+} %optionally)
+
+These are the notes concerning the Unreal Engine and UnrealTournament that I took while building UnrealTournament 4 on Linux.  I will be documenting the ``unspoken'' code and my modifications to bring 3 giants (the third is of course Linux!) together in harmony and ``Greater Good'' of the community.  I will assume that
+\begin{itemize}
+\item you have a decent knowledge about coding (no PHP, Python and JavaScript don't count) in Java or C++.
+\item you are quite comfortable with Linux terminal and bash scripting.  
+\item anything else I missed.
+\end{itemize}
+
+
+\section{UnrealBuildTool}
+\label{sec:ubt}
+The UnrealBuildTool or UBT is an \href{https://dotnet.microsoft.com/}{{\color{Blue}.NET}} application which has two-fold functionality
+\begin{itemize}
+\item generate the project files for IDEs which include Qt Creator and KDevelop (both are multiplatform supported) and take care of all the relevant dependencies (including the ``circular dependencies'') in the game project.
+\item compile the C++ source files into binary files (as per the platform needs). {\color{Red}Add more information about the platform dependent compilation}
+\end{itemize}
+
+The code for the UBT is present in the {\ttfamily Engine/Source/Programs/UnrealBuildTool } directory.  The cross platform IDE \href{https://www.monodevelop.com/}{\color{Blue}MonoDevelop} can be used to load the UBT project and modify the tool ``as per the need''.  Then you can either build the project from the IDE or go about the Epic's way (I prefer the latter).
+
+In order to do that make sure that xbuild and \href{https://www.mono-project.com/}{{\color{Blue}Mono}} are appropriately setup on the box.  Then the command
+\lstset{language=bash} 
+\begin{lstlisting}[frame=single]
+  xbuild Engine/Source/Programs/UnrealBuildTool/UnrealBuildTool.csproj /property:Configuration="Development" /verbosity:quiet /nologo
+\end{lstlisting}
+will yield the executale file (.exe) in the {\ttfamily Engine/Binaries/DotNET} directory.  There you have your ``manipulated'' UBT!
+
+Don't get upset by the .exe extension (Linux users tend to get agitated by the name), the Mono\footnote{The words ``Cross Platform'' and ``Open Source'' should restore the peace!} framework will generate the appropriate environment for UBT to work.  The real-time building can be performed by the command
+\lstset{language=bash} 
+\begin{lstlisting}[frame=single]
+ mono Engine/Binaries/DotNET/UnrealBuildTool.exe UE4Game Linux Debug
+\end{lstlisting}
+
+\subsection{Generating Project Files}
+I, for one, find it not only helpful but also natural to work with decent IDE for writing the code.  It not only facilitates the ``smart'' autocomplete features, but also provides a scope for ``searching'' and ``documenting'' the beloved code.  Therefore UBT's toolmode {\color{mysteel}GenerateProjectFiles} comes in handy.  The command
+\lstset{language=bash} 
+\begin{lstlisting}[frame=single]
+ mono Engine/Binaries/DotNET/UnrealBuildTool.exe -Project=``PATH_TO_PROJECT_DIRECTORY/PROJECTNAME.uproject'' -makefile
+\end{lstlisting}
+yields the {\color{filecolor}makefile} in the Root directory of Unreal Engine.  The switch -projectfiles generates all sorts of projectfiles that UBT supports.  For Qt Creator the switch is -qmakefile
+
+\subsection{Building with UBT}
+The {\color{filecolor}makefile} generated by UBT doesnot seem to compile the project (find out why?).  For project building the command is
+
+\lstset{language=bash} 
+\begin{lstlisting}[frame=single]
+mono UnrealBuildTool.exe -project="/home/the_cowboy/unrealworks/Unreal Projects/UnrealTournament/UnrealTournament.uproject" Development Linux -TargetType=Editor -Progress -NoHotReloadFromIDE
+\end{lstlisting}
+
+\section{Coding with Qt Creator}
+\label{sec:cwqt}
+\href{https://www.qt.io/}{{\color{Blue}Qt Creator}} is a decent IDE for coding Unreal Engine projects (or any other C++ project) in Linux.  The configuration recommended by Epic is mentioned in their \href{https://docs.unrealengine.com/en-US/Platforms/Linux/BeginnerLinuxDeveloper/SettingUpQtCreator}{{\color{blue}docs}}.
+
+In this document I will assume the Unreal Engine Root directory as the main directory of the project\footnote{One Unreal Engine project at a time!}.  Thus it will facilitate the ``shipping'' and other formal procedures associated with the professional building ``schemes''.  The commands of Section \ref{sec:ubt} are in agreement with this structure.
+
+Also make sure to follow the ``no space'' convention while naming the folders else UBT will tend to mess up the {\color{Pink}INCLUDEPATH} paths in {\color{filecolor}\ldots includes.pri}.
+
+\section{Steps for Porting UT4 to Latest UE}
+In this section I will log the changes introduced in the classes and header files of UnrealTournament 4 to generate the compatibility with the latest Unreal Engine reseases.
+
+\subsection{Party and all that}
+Party is component of the plugin \emph{OnlineFramework} present in {\ttfamily Engine/Plugins} \\ {\ttfamily /Online/OnlineFramework/Source/} directory.  The directory structure as per the old Engine is shown\\
+
+\begin{forest}
+  for tree={
+    font=\sffamily,
+    minimum height=0.75cm,
+    rounded corners=4pt,
+    grow'=0,
+    inner ysep=8pt,
+    child anchor=west,
+    parent anchor=south,
+    anchor=west,
+    calign=first,
+    edge={rounded corners},
+    edge path={
+      \noexpand\path [draw, \forestoption{edge}]
+      (!u.south west) +(7.5pt,0) |- (.child anchor)\forestoption{edge label};
+    },
+    before typesetting nodes={
+      if n=1
+        {insert before={[,phantom,minimum height=18pt]}}
+        {}
+    },
+    fit=band,
+    s sep=12pt,
+    before computing xy={l=25pt},
+  }
+[\myfolder{Source}
+  [{\myfolder[fgreen]{Party}}
+    [{\myfolder[privatecol]{Private}}
+      [{\myfolder[privatecol]{Party.cpp}}]                                  
+      [{\myfolder[privatecol]{\ldots}}]]
+    [{\myfolder[publicol]{Public}}
+      [{\myfolder[publicol]{Party.h}}]
+      [{\myfolder[publicol]{\ldots}}]]
+  ]
+]
+\end{forest}
+
+In Unreal Engine 4.22 (and hopefully above) the structure of {\ttfamily Party} becomes more complex with highly customized ``modularity''.
+
+
+\begin{itemize}
+\item Added the definition for Enum EMemberChangedReason in the file {\color{filecolor}Party.h}
+\lstset{language=c++}
+  \begin{lstlisting}
+enum class EMemberChangedReason
+{
+    Disconnected,
+    Rejoined,
+    Promoted
+};
+  \end{lstlisting}
+\item The compilation error is
+\lstset{language=bash} 
+\begin{lstlisting}[frame=single]
+Error: Couldn't find parent type for 'UTParty' named 'UParty' in current module or any other module parsed so far.
+\end{lstlisting}
+
+In order to fix the compatibility issues, I am performing some tests
+\begin{itemize}
+\item Test1: Copied {\color{filecolor}Party.h(.cpp)} and {\color{filecolor}PartyGameState.h(.cpp)}\footnote{Of course from the old Engine.} to {\ttfamily Public(Private)/Online } directories.  The hope is that the parent class {\color{classcolor}UParty} (of type PARTY\_API) defined in {\color{filecolor}Party.h} might resolve the definition issues.\\
+  {\color{Green} Success} Seems to work.  But not quite.  There is a series of confilicts of type
+  \lstset{language=bash} 
+\begin{lstlisting}[frame=single]
+ /home/the_cowboy/unrealworks/UnrealProjects/UnrealTournament/Source/UnrealTournament/Public/Online/PartyGameState.h(46) : LogEnum: Error: Enum name collision: 'EPartyType::Public' is in both '/Script/UnrealTournament.EPartyType' and '/Script/Party.EPartyType'
+\end{lstlisting}
+\item Test2: Removed the following code snippet from {\color{filecolor}PartyGameState.h}
+  \lstset{language=c++} 
+\begin{lstlisting}[frame=single]
+ UENUM(BlueprintType)
+enum class EPartyType : uint8
+{
+	/** This party is public (not really supported right now) */
+	Public,
+	/** This party is joinable by friends */
+	FriendsOnly,
+	/** This party requires an invite from an existing party member */
+	Private
+      };
+    \end{lstlisting}
+    as already defined in {\color{filecolor}PartyTypes.h} ({\ttfamily Engine/Plugins/Online}).  {\color{green}Success} Seems to work!  Note it is not a BlueprintType any more.  Will see how it affects the online gameplay.\\
+    Consequently, this must be followed by the inclusion of
+   \lstset{language=c++} 
+\begin{lstlisting}[frame=single]
+   #include "PartyTypes.h"
+ \end{lstlisting}
+ in the file {\color{filecolor}PartyGameState.h} and removing the definitions of EApprovalAction and ToString.
+  \end{itemize}
+\item The compilation error is
+\lstset{language=bash} 
+\begin{lstlisting}[frame=single]
+Error: Couldn't find parent type for 'UTPartyMemberState' named 'UPartyMemberState' in current module or any other module parsed so far.
+\end{lstlisting}
+In order to fix the compatibility issues, I am performing some tests
+\begin{itemize}
+\item Test1: Copied {\color{filecolor}PartyMemberState.h(.cpp)} to {\ttfamily Public(Private)/Online } directories.  The hope is that the parent class {\color{classcolor}} (of type UNREALTOURNAMENT\_API) defined in {\color{filecolor}PartyMemberState.h} might resolve the definition issues.\\
+   {\color{Green} Success} Seems to work.
+ \end{itemize}
+\item The compilation error is
+\lstset{language=bash} 
+\begin{lstlisting}[frame=single]
+Error: Couldn't find parent type for 'UTBlurWidget' named 'UBackgroundBlurWidget' in current module or any other module parsed so far.
+\end{lstlisting}
+In order to fix the compatibility issues, I am performing some tests
+\begin{itemize}
+\item Test1: Copied {\color{filecolor}BackgroundBlurWidget.h(.cpp)} to {\ttfamily Public(Private)/UMG} directories.  The hope is that the parent class {\color{classcolor}UBackgroundBlurWidget} defined in {\color{filecolor}BackgroundBlurWidget.h} might resolve the definition issues.\\
+\end{itemize}
+\item The compilation warning is
+  \lstset{language=bash} 
+\begin{lstlisting}[frame=single]
+/home/the_cowboy/unrealworks/UnrealProjects/UnrealTournament/Source/UnrealTournament/Public/UTATypes.h(339) : LogCompile: Error: Cannot expose property to blueprints in a struct that is not a BlueprintType. TextureUVs.U
+\end{lstlisting}
+The fix seems to define the structure FTextureUVs as a BlueprintType with the code
+ \lstset{language=c++} 
+\begin{lstlisting}[frame=single]
+USTRUCT(BlueprintType)
+\end{lstlisting}
+and define FConfigMapInfo, FPackageRedirectReference, FScoreboardContextMenuItem, FUTGameRuleset, FCustomKeyBinding as BlueprintType.  {\color{green}Success} Seems to work.
+\item Compilation warning of type
+  \lstset{language=bash} 
+\begin{lstlisting}[frame=single]
+some error related to IsHovered override in UTBaseButton.h 
+\end{lstlisting}
+Just wrote override keyword in both {\color{filecolor}UTBaseButton.h(.cpp)} files.
+\item More BlueprintType conversion in file {\color{filecolor}McpStubs.h} of the structure FMcpItemIdAndQuantity.
+\item In file {\color{filecolor}UTTeamInfo.h} changed the UPROPERTY of EnemyList from BlueprintType to EditAnywhere.
+\end{itemize}
+There is a dilemma on how to override a UFUNCTION.  The error of type
+\lstset{language=c++} 
+\begin{lstlisting}[frame=single]
+Override of UFUNCTION in parent class (someclass) cannot have a UFUNCTION() declaration above it; it will use the same parameters as the original declaration.
+\end{lstlisting}
+spit by the UHT makes one to consider writing UFUNCTION keyword in the .cpp file (and removing the keyword from .h to rectify the error).  Also Epic's advise in the file {\color{filecolor}HeaderParser.cpp} is
+\lstset{language=c++} 
+\begin{lstlisting}[frame=single]
+Native function overrides should be done in CPP text, not in a UFUNCTION() declaration (you can't change flags, and it'd otherwise be a burden to keep them identical)
+\end{lstlisting}
+but then it no longer remains the UFUNCTION (trust me, I performed the necessary tests by modifying the UHT).
+
+Some un understood concepts
+\begin{itemize}
+\item Consider the example of delegates in {\color{filecolor}Party.cpp}
+\lstset{language=c++}
+  \begin{lstlisting}
+    PartyJoinRequestReceivedDelegateHandle = PartyInt->AddOnPartyJoinRequestReceivedDelegate_Handle(FOnPartyJoinRequestReceivedDelegate::CreateUObject(this, &ThisClass::PartyJoinRequestReceivedInternal));
+  \end{lstlisting}
+  The UBT is not recognizing the CreateUObject() method for the delegate FOnPartyJoinRequestReceivedDelegate inspite of the proper definition in {\color{filecolor}OnlinePartyInterface.h}.  Simillar problems are there for FOnPartyMemberChangedDelegate, PostLoadMapWithWorld
+\end{itemize}
+\subsection{Blueprints for UT}
+\begin{itemize}
+\item In the file {\color{filecolor}BlueprintContextManager.cpp} present in {\ttfamily BlueprintContext/Private}, line 103 seems to have improper function call and it results in the following error
+  \lstset{language=c++} 
+\begin{lstlisting}[frame=single]
+error: no matching member function for call to 'AddReferencedObjects' Collector.AddReferencedObjects<TSubclassOf<UBlueprintContextBase>, UBlueprintContextBase*>( Iter.Value() );
+\end{lstlisting}
+As of now I have no clue on how to make the appropriate call, so I am commenting it out.
+\end{itemize}
+
+\subsection{UTCharacterContent}
+It seems a lot has changed since last UT code upgrade expecially for the class {\color{classcolor}AUTCharacterContent} so much that it renders the definition of base class {\color{classcolor}AActor} incomplete.
+\begin{itemize}
+\item First comes the constructor
+for {\color{classcolor}AUTCHaracterContent} which (for old version was defined by)
+\lstset{language=c++}
+\begin{lstlisting}[frame=single]
+    AUTCharacterContent(const FObjectInitializer& OI)
+		: Super(OI)
+	{
+		RootComponent = OI.CreateDefaultSubobject<USceneComponent>(this, FName(TEXT("DummyRoot"))); // needed so Mesh has RelativeLocation/RelativeRotation in the editor
+		Mesh = OI.CreateDefaultSubobject<USkeletalMeshComponent>(this, FName(TEXT("Mesh")));
+		Mesh->SetupAttachment(RootComponent);
+		Mesh->AlwaysLoadOnClient = true;
+		Mesh->AlwaysLoadOnServer = true;
+		Mesh->bCastDynamicShadow = true;
+		Mesh->bAffectDynamicIndirectLighting = true;
+		Mesh->PrimaryComponentTick.TickGroup = TG_PrePhysics;
+		Mesh->SetCollisionProfileName(FName(TEXT("CharacterMesh")));
+		Mesh->bGenerateOverlapEvents = false;
+		Mesh->SetCanEverAffectNavigation(false);
+		Mesh->MeshComponentUpdateFlag = EMeshComponentUpdateFlag::OnlyTickPoseWhenRendered;
+		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		Mesh->bEnablePhysicsOnDedicatedServer = true; // needed for feign death; death ragdoll shouldn't be invoked on server
+		Mesh->bReceivesDecals = false;
+		DMSkinType = EDMSkin_Red;
+
+		RelativeScale1p = FVector(1.0f, 1.0f, 1.0f);
+		RelativeRotation1p = FRotator(0.0f, -90.0f, 0.0f);
+
+		DisplayName = NSLOCTEXT("UT", "UntitledCharacter", "Untitled Character");
+
+		static ConstructorHelpers::FObjectFinder<UClass> GibRef[] = { TEXT("/Game/RestrictedAssets/Blueprints/GibHumanHead.GibHumanHead_C"), 
+			TEXT("/Game/RestrictedAssets/Blueprints/GibHumanLegL.GibHumanLegL_C"), TEXT("/Game/RestrictedAssets/Blueprints/GibHumanLegR.GibHumanLegR_C"),
+			TEXT("/Game/RestrictedAssets/Blueprints/GibHumanRibs.GibHumanRibs_C"), TEXT("/Game/RestrictedAssets/Blueprints/GibHumanTorso.GibHumanTorso_C"),
+			TEXT("/Game/RestrictedAssets/Blueprints/GibHumanArmL.GibHumanArmL_C"), TEXT("/Game/RestrictedAssets/Blueprints/GibHumanArmR.GibHumanArmR_C") };
+
+		new(Gibs) FGibSlotInfo{ FName(TEXT("head")), GibRef[0].Object };
+		new(Gibs) FGibSlotInfo{ FName(TEXT("thigh_l")), GibRef[1].Object };
+		new(Gibs) FGibSlotInfo{ FName(TEXT("thigh_r")), GibRef[2].Object };
+		new(Gibs) FGibSlotInfo{ FName(TEXT("Spine_01")), GibRef[3].Object };
+		new(Gibs) FGibSlotInfo{ FName(TEXT("Spine_02")), GibRef[4].Object };
+		new(Gibs) FGibSlotInfo{ FName(TEXT("lowerarm_l")), GibRef[5].Object };
+		new(Gibs) FGibSlotInfo{ FName(TEXT("lowerarm_r")), GibRef[6].Object };
+	}
+      \end{lstlisting}
+      Added the proper incude line
+\lstset{language=c++}
+      \begin{lstlisting}[frame=single]
+        #include "GameFramework/Actor.h"
+      \end{lstlisting}
+      and the following modifications
+\lstset{language=c++}
+      \begin{lstlisting}
+        Mesh->SetGenerateOverlapEvents(false);
+        Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+      \end{lstlisting}
+      in the constructor.
+    \end{itemize}
+
+    \subsection{UTRecastNavMesh.h}
+
+    \begin{itemize}
+    \item The error
+\lstset{language=c++}
+      \begin{lstlisting}
+         error: no member named 'AddDirtyArea' in 'UNavigationSystemBase'
+                        GetWorld()->GetNavigationSystem()->AddDirtyArea(FBox(FVector(-WORLD_MAX), FVector(WORLD_MAX)), ENavigationDirtyFlag::All);
+                      \end{lstlisting}
+                      is rectified by the following code in
+\lstset{language=c++}
+                      \begin{lstlisting}
+                        if (bFirstTime && bNeedsRebuild)
+		{
+            //GetWorld()->GetNavigationSystem()->AddDirtyArea(FBox(FVector(-WORLD_MAX), FVector(WORLD_MAX)), ENavigationDirtyFlag::All);
+            if((UNavigationSystemV1*) GetWorld()->GetNavigationSystem())
+            {
+                ((UNavigationSystemV1*) GetWorld()->GetNavigationSystem())->AddDirtyArea(FBox(FVector(-WORLD_MAX), FVector(WORLD_MAX)), ENavigationDirtyFlag::All);
+            }
+        }
+      \end{lstlisting}
+    \item Another depricated function
+\lstset{language=c++}
+      \begin{lstlisting}
+        //return Cast<AUTRecastNavMesh>(World->GetNavigationSystem()->GetMainNavData(FNavigationSystem::ECreateIfEmpty::DontCreate));
+    return Cast<AUTRecastNavMesh>(UNavigationSystemV1::GetCurrent(World)->GetDefaultNavDataInstance());
+      \end{lstlisting}
+    \end{itemize}
+    \subsection{UTCharacter.h}
+    \begin{itemize}
+    \item The override of the function ClearJumpInput() seems wrong (probably due to new version of Unreal Engine).  I am declaring the method with DeltaTime and the function call is done \emph{only} in {\color{filecolor}UTCharacter.cpp} with DeltaTime=0.
+    \item The property MovementMode in {\color{filecolor}CharacterMovementComponent.h} is deprecated.  Instead there are now two properties StartPackedMovementMode and EndPackedMovementMode containing the same information at the begining and end of the move.  Thus the redefinition of the function
+      \lstset{language=c++}
+      \begin{lstlisting}
+        virtual void UTServerMove(float TimeStamp, FVector_NetQuantize InAccel, FVector_NetQuantize ClientLoc, uint8 CompressedMoveFlags, float ViewYaw, float ViewPitch, UPrimitiveComponent* ClientMovementBase, FName ClientBaseBoneName, uint8 ClientMovementMode);
+      \end{lstlisting}
+      is in order.  We define the new paramaters
+\lstset{language=c++}
+      \begin{lstlisting}
+        virtual void UTServerMove(float TimeStamp, FVector_NetQuantize InAccel, FVector_NetQuantize ClientLoc, uint8 CompressedMoveFlags, float ViewYaw, float ViewPitch, UPrimitiveComponent* ClientMovementBase, FName ClientBaseBoneName, uint8 StartPackedMovementMode, uint8 EndPackedMovementMode);
+      \end{lstlisting}
+    \item The affected classes are in file {\color{filecolor}UTCharMovementReplication.cpp}
+      \begin{itemize}
+      \item In the function PostUpdate, the deprecated property MovementMode is assigned
+\lstset{language=c++}
+\begin{lstlisting}
+MovementMode = UTCharMovement->PackNetworkMovementMode(); 
+        \end{lstlisting}
+        which needs to be modified as well.  TODO for later!!!
+      \end{itemize}
+    \end{itemize}
+    \subsection{PartyContext.cpp}
+    There is a typecast error in PartyContest.cpp with the error
+    \lstset{language=c++}
+    \begin{lstlisting}
+      /home/the_cowboy/unrealworks/UnrealProjects/UnrealTournament/Source/BlueprintContext/Private/PartyContext.cpp:147:35: error: no viable conversion from 'FUniqueNetIdRepl' to 'TSharedPtr<const FUniqueNetId>'
+    \end{lstlisting}
+    To resolve the error the type of LocalUserID in method HandlePartyMemberJoined is changed as following.
+    \begin{lstlisting}
+      //TSharedPt< const FUniqueNetId> LocalUserId
+       FUniqueNetIdRepl LocalUserId
+     \end{lstlisting}
+     similarly changed the datatype of LocalUserID in several other places in the file.
+     \subsection{UTRecastNavMesh.h}
+     \begin{itemize}
+     \item The error is of type
+       \lstset{language=c++}
+       \begin{lstlisting}
+         /home/the_cowboy/unrealworks/UnrealProjects/UnrealTournament/Source/UnrealTournament/Public/UTRecastNavMesh.h:276:38: note: in instantiation of function template specialization 'TWeakObjectPtr<UUTPathNode, FWeakObjectPtr>::TWeakObjectPtr<const UUTPathNode, void>' requested here
+                if (Goals.Contains(FRouteCacheItem(Node, EntryLoc, INVALID_NAVNODEREF)))
+              \end{lstlisting}
+              is due to the update in the Engine code
+              \lstset{language=c++}
+              \begin{lstlisting}
+                /home/the_cowboy/unrealworks/UnrealEngine/Engine/Source/Runtime/Core/Public/UObject/WeakObjectPtrTemplates.h:77:3: warning: 'condition' is deprecated: Implicit conversions from const pointers to non-const TWeakObjectPtrs has been deprecated as it is not const-correct. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile. [-Wdeprecated-declarations]
+              \end{lstlisting}
+              The idea to remove the const keyword for UUTPathNode in the function definition of method Eval
+\lstset{language=c++}
+              \begin{lstlisting}
+                virtual float Eval(APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, const UUTPathNode* Node, const FVector& EntryLoc, int32 TotalDistance) = 0;
+              \end{lstlisting}
+            \item The non-const to const typecast error spits the following error
+              \lstset{language=c++}
+              \begin{lstlisting}
+                /home/the_cowboy/unrealworks/UnrealProjects/UnrealTournament/Source/UnrealTournament/Private/UTBot.cpp:3964:89: note: in instantiation of function template specialization 'TWeakObjectPtr<UUTPathNode, FWeakObjectPtr>::TWeakObjectPtr<const UUTPathNode, void>' requested here
+                        NavData->FindPolyPath(NavData->GetPolyCenter(StartPoly), AgentProps, FRouteCacheItem(Link.Start.Get(), NavData->GetPolyCenter(Link.StartEdgePoly), Link.StartEdgePoly), Polys, false);
+                      \end{lstlisting}
+                      I am trying with the definition of the method GetTransientCost by removing const keyword.  So now the method definition is
+\lstset{language=c++}
+                      \begin{lstlisting}
+                        virtual uint32 GetTransientCost(FUTPathLink& Link, APawn* Asker, const FNavAgentProperties& AgentProps, AController* RequestOwner, NavNodeRef StartPoly, int32 TotalDistance)
+	{
+		return 0;
+	}
+                      \end{lstlisting}
+            \end{itemize}
+            \subsection{UTEditorEngine.cpp}
+            Some DEPRECATED functions here were cleaned
+            \begin{itemize}
+            \item Error of type
+              \lstset{language=c++}
+              \begin{lstlisting}
+               /home/the_cowboy/unrealworks/UnrealProjects/UnrealTournament/Source/UnrealTournamentEditor/Private/UTEditorEngine.cpp:9:29: warning: 'StringAssetReferenceLoaded' is deprecated: StringAssetReferenceLoaded is deprecated, call FSoftObjectPath::PostLoadPath instead Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile. [-Wdeprecated-declarations]
+        if (FCoreUObjectDelegates::StringAssetReferenceLoaded.IsBound())
+              \end{lstlisting}
+            \end{itemize}
+            \subsection{SUTProgressSlider.cpp}
+            \begin{itemize}
+            \item Error of type
+              \lstset{language=c++}
+              \begin{lstlisting}
+                /home/the_cowboy/unrealworks/UnrealProjects/UnrealTournament/Source/UnrealTournament/Private/Slate/Widgets/SUTProgressSlider.cpp:98:5: error: no matching function for call to 'MakeBox'
+    FSlateDrawElement::MakeBox(
+  \end{lstlisting}
+  Commented out RotatedClippingRect as per the depriciation. Might introduce the clipping misfunction in the Editor.  Beware of that!
+  \item Also the function call is found in {\color{filecolor}SUTSlider.cpp}, {\color{filecolor} BackgroundBlurWidget.cpp},
+\end{itemize}
+\subsection{UTEyewear.cpp}
+\begin{itemize}
+\item The method DetachRootComponentFrromParent() is deprecated. So I am using the DetachFromActor() routine with the FDetachmentTransformRules::KeepWorldTransform.  Could be KeepRelativeTransform but I am not sure.  But it certainly should be bMaintainWorldPosition equivalent.
+  \item Also found the call in {\color{filecolor}UTCarriedObject.cpp}, {\color{filecolor}UTCharacter.cpp} (if the function PlayDying())
+  \end{itemize}
+  \subsection{UTNavBlockingVolume.h}
+  \begin{itemize}
+  \item No idea about the role of method GetNavigationData but it surely uses function call presumably present in the old engine code.  So I am commenting them out and will come back to it later.
+    \item simillar obscurity in UTLift.cpp
+  \end{itemize}
+  \subsection{UTCheatManager.cpp}
+  \begin{itemize}
+  \item Commented the entire TestAMDAllocation() method to avoid  ENQUEUE\_UNIQUE\_RENDER\_COMMAND\_THREEPARAMETER depreciation.
+  \end{itemize}
+  \subsection{UTBasePlayerController.cpp}
+  \begin{itemize}
+  \item In the method ServerSay\_Implementation() (and some other calls) the call to Trim() is replaced by TrimStart() probably to trim the whitespaces.
+  \item Another instance in SUTTextChatPanel.h
+    \item Another instance in UTLobbyGameState.cpp
+  \end{itemize}
+  \subsection{UTAnalyticsBlueprintLibrary.cpp}
+  \begin{itemize}
+  \item AttrName and AttrValue are declared const in the AnalyticsEventAttribute.h structure.  Created a pull request on GitHub to rectify the issue.  Right now commenting the lines.
+  \end{itemize}
+  \subsection{BackgroundBlurWidget}
+  \begin{itemize}
+  \item The warning of type
+    \lstset{language=c++}
+    \begin{lstlisting}
+        warning: 'BuildDesignTimeWidget' is deprecated: Don't call this function in RebuildWidget any more.  Override RebuildDesignWidget, and build the wrapper there; widgets that derive from Panel already do this.  If you need to recreate the dashed outline you can use CreateDesignerOutline inside RebuildDesignWidget. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile. [-Wdeprecated-declarations]
+        return BuildDesignTimeWidget(MyGuardOverlay.ToSharedRef());
+      \end{lstlisting}
+      The simple solution is to replace with the code
+\lstset{language=c++}
+      \begin{lstlisting}
+        #if WITH_EDITOR
+        return CreateDesignerOutline(MyWidget.ToSharedRef());
+        #else
+        return MyWidget.ToSharedRef();
+        #endif
+      \end{lstlisting}
+      similar modification in {\color{filecolor}UTLoadGuard.cpp}, {\color{filecolor}UTListView.cpp}
+    \end{itemize}
+    \subsection{SUTPlayerSettingsDialog.cpp}
+    \begin{itemize}
+    \item commented out //ViewFamily.bUseSeparateRenderTarget = true;.  No such memberfunction in the new Engine.  Furthermore //View->ViewRect = View->UnscaledViewRect;
+      \item simillar comment out for SUTWeaponConfigDialog.cpp
+    \end{itemize}
+    \subsection{SUTGameSetupDialog.cpp}
+    \begin{itemize}
+    \item The method RequestMinimize() seems stub for Linux.  Will have to implement from the Engine.  Also present in {\color{filecolor}SUTMenuBase.cpp}
+    \end{itemize}
+    \subsection{UTMapTriangleCountTests.cpp}
+    \begin{itemize}
+    \item Commented out the method GetNumTrianglesInScene() components.  Could be for stats purpose.
+    \end{itemize}
+    \subsection{UTNavBlockingVolume.h}
+    \begin{itemize}
+    \item Commenting out GetNavigationData method.  Don't yet understand NavOctree and relevant concepts.
+    \end{itemize}
+    \subsection{UMG/SObjectTableRow.h}
+    Turns out that new Engine has predefined class SObjectTableRow so it clashes the class defined in the UT code.  Right now I am renaming the UT code class to SObjectTableRowUT.
+    \subsection{Copying FActorComponentTickFunction}
+    \begin{itemize}
+    \item The error of type
+      \lstset{language=c++}
+      \begin{lstlisting}
+         error: object of type 'FActorComponentTickFunction' cannot be assigned because its copy assignment operator is implicitly deleted
+                                CustomDepthMesh->PrimaryComponentTick = CustomDepthMesh->GetClass()->GetDefaultObject<USkeletalMeshComponent>()->PrimaryComponentTick;
+                              \end{lstlisting}
+                              is all over the UT code.  Apparently it worked for old engine, but new Engine code explicitly prohibits such behavior.  Need to find a good solution as per the thread \href{https://forums.unrealengine.com/development-discussion/c-gameplay-programming/1622887-copying-structures-in-the-engine}{copy deilema}.  The code snippet is present in {\color{filecolor}UnrealTournament.cpp}, {\color{filecolor}UTWeaponAttachment.cpp},  as following
+                              \lstset{language=c++}
+                              \begin{lstlisting}
+                                // TODO: scary that these get copied, need an engine solution and/or safe way to duplicate objects during gameplay
+				CustomDepthMesh->PrimaryComponentTick = CustomDepthMesh->GetClass()->GetDefaultObject<USkeletalMeshComponent>()->PrimaryComponentTick;
+				CustomDepthMesh->PostPhysicsComponentTick = CustomDepthMesh->GetClass()->GetDefaultObject<USkeletalMeshComponent>()->PostPhysicsComponentTick;
+                              \end{lstlisting}
+                            \end{itemize}
+                            \subsection{SUTWeaponConfigDialog.cpp}
+                            \begin{itemize}
+                            \item Error of type
+                              \lstset{language=c++}
+                              \begin{lstlisting}
+                                /home/the_cowboy/unrealworks/UnrealProjects/UnrealTournament/Source/UnrealTournament/Private/Slate/Dialogs/SUTWeaponConfigDialog.cpp:684:13: error: no member named 'bUseSeparateRenderTarget' in 'FSceneViewFamilyContext'
+        ViewFamily.bUseSeparateRenderTarget = true;
+                              \end{lstlisting}
+Right now I don't exactly know the role of bUseSeparateRenderTarget so I am commenting it out.
+\end{itemize}
+\subsection{UTPlayerState.cpp}
+\begin{itemize}
+\item Commented out
+  \lstset{language=c++}
+  \begin{lstlisting}
+    //FJsonSerializer::Serialize(Notification.Payload->AsObject().ToSharedRef(), Writer);
+  \end{lstlisting}
+\end{itemize}
+\subsection{UTResetLineUpDefaultsCommandlet.cpp}
+\begin{itemize}
+\item Commented out PostEditChange() method.  Also in UTResetPostProcessVolumes.
+\end{itemize}
+\subsection{UTJumpPad.cpp}
+\begin{itemize}
+\item Again the error of type
+  \lstset{language=c++}
+  \begin{lstlisting}
+     warning: 'condition' is deprecated: Implicit conversions from const pointers to non-const TWeakObjectPtrs has been deprecated as it is not const-correct. Please update your code to the new API before upgrading to the next release, otherwise your project will no longer compile. [-Wdeprecated-declarations]
+   \end{lstlisting}
+   The reason is clear, the error is produced due to
+   \lstset{language=c++}
+   \begin{lstlisting}
+     note: in instantiation of function template specialization 'TWeakObjectPtr<UUTPathNode, FWeakObjectPtr>::TWeakObjectPtr<const UUTPathNode, void>' requested here
+                                                                B->SetMoveTargetDirect(FRouteCacheItem(Path.End.Get(), NavData->GetPolySurfaceCenter(Path.EndPoly), Path.EndPoly));
+                                                              \end{lstlisting}
+                                                            \item The error can be easily rectified by removing the const keyword
+                                                              \lstset{language=c++}
+                                                              \begin{lstlisting}
+                                                                for (FUTPathLink& Path : MyNode->Paths)
+                                                              \end{lstlisting}
+                                                            \end{itemize}
+                                                            \subsection{UTGameMode.cpp}
+                                                            \begin{itemize}
+                                                            \item some dumb error in SetNative method so commenting it out in the function InitGame
+                                                            \end{itemize}
+                                                            \subsection{UTWeaponAttachment.cpp}
+                                                            \begin{itemize}
+                                                            \item Tick error line 138 139 also in UnrealTournament.cpp line 172 and 173
+                                                            \end{itemize}
+\end{document}

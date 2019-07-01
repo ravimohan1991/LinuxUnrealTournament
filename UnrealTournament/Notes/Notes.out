@@ -1,0 +1,33 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{UnrealBuildTool}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Generating Project Files}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Building with UBT}{section.2}% 4
+\BOOKMARK [1][-]{section.3}{Coding with Qt Creator}{}% 5
+\BOOKMARK [1][-]{section.4}{Steps for Porting UT4 to Latest UE}{}% 6
+\BOOKMARK [2][-]{subsection.4.1}{Party and all that}{section.4}% 7
+\BOOKMARK [2][-]{subsection.4.2}{Blueprints for UT}{section.4}% 8
+\BOOKMARK [2][-]{subsection.4.3}{UTCharacterContent}{section.4}% 9
+\BOOKMARK [2][-]{subsection.4.4}{UTRecastNavMesh.h}{section.4}% 10
+\BOOKMARK [2][-]{subsection.4.5}{UTCharacter.h}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.6}{PartyContext.cpp}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.7}{UTRecastNavMesh.h}{section.4}% 13
+\BOOKMARK [2][-]{subsection.4.8}{UTEditorEngine.cpp}{section.4}% 14
+\BOOKMARK [2][-]{subsection.4.9}{SUTProgressSlider.cpp}{section.4}% 15
+\BOOKMARK [2][-]{subsection.4.10}{UTEyewear.cpp}{section.4}% 16
+\BOOKMARK [2][-]{subsection.4.11}{UTNavBlockingVolume.h}{section.4}% 17
+\BOOKMARK [2][-]{subsection.4.12}{UTCheatManager.cpp}{section.4}% 18
+\BOOKMARK [2][-]{subsection.4.13}{UTBasePlayerController.cpp}{section.4}% 19
+\BOOKMARK [2][-]{subsection.4.14}{UTAnalyticsBlueprintLibrary.cpp}{section.4}% 20
+\BOOKMARK [2][-]{subsection.4.15}{BackgroundBlurWidget}{section.4}% 21
+\BOOKMARK [2][-]{subsection.4.16}{SUTPlayerSettingsDialog.cpp}{section.4}% 22
+\BOOKMARK [2][-]{subsection.4.17}{SUTGameSetupDialog.cpp}{section.4}% 23
+\BOOKMARK [2][-]{subsection.4.18}{UTMapTriangleCountTests.cpp}{section.4}% 24
+\BOOKMARK [2][-]{subsection.4.19}{UTNavBlockingVolume.h}{section.4}% 25
+\BOOKMARK [2][-]{subsection.4.20}{UMG/SObjectTableRow.h}{section.4}% 26
+\BOOKMARK [2][-]{subsection.4.21}{Copying FActorComponentTickFunction}{section.4}% 27
+\BOOKMARK [2][-]{subsection.4.22}{SUTWeaponConfigDialog.cpp}{section.4}% 28
+\BOOKMARK [2][-]{subsection.4.23}{UTPlayerState.cpp}{section.4}% 29
+\BOOKMARK [2][-]{subsection.4.24}{UTResetLineUpDefaultsCommandlet.cpp}{section.4}% 30
+\BOOKMARK [2][-]{subsection.4.25}{UTJumpPad.cpp}{section.4}% 31
+\BOOKMARK [2][-]{subsection.4.26}{UTGameMode.cpp}{section.4}% 32
+\BOOKMARK [2][-]{subsection.4.27}{UTWeaponAttachment.cpp}{section.4}% 33
