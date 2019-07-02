@@ -1,6 +1,8 @@
 Welcome to Unreal Tournament for Linux!
 =======================================
 
+Information: This repository is an attempt and not ready right now. Please don't download/clone this with the hope of building running UT. The structure is work in progress!!!
+
 This is the project page for **Unreal Tournament** on GitHub abandoned by Epic (for now).  Unreal Tournament is being created in close collaboration between Epic and the Unreal Engine 4 developer community.  This repository is maintained by The_Cowboy to generate interest in native Linux based gaming and building.  You'll be able to see live commits from "liberal" developers along with integrated code submissions from the community!  You can also use this code as a starting point for experimentation (and we are exactly doing that!).
 
 As described in the [License Agreement](LICENSE.pdf), the code and assets residing in this repository may only be used for Unreal Tournament submissions.
