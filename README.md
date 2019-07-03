@@ -40,12 +40,18 @@ How to get started (Linux)
 * Build the Engine 
         
         make
+  Unreal Editor is now functional. It can be accessed through the binary located in `~/UnrealEngine/Engine/Binaries/Linux`.      
 
 * Now we focus on the UT Game. Delete some directories/file(s) (not functional right now)
   * UnrealTournament/Plugins
   * UnrealTournament/Source/UnrealTournamentServer
   * UnrealTournament/Source/UnrealTournament.Server.Target.cs
   * UnrealTournament/Source/UnrealTournament/ThirdParty
+
+* Finally we are ready to compile the game.
+
+        mono ~/UnrealEngine/Engine/Binaries/DotNET/UnrealBuildTool.exe -Project="~/UnrealTournament/UnrealTournament.uproject" Development Linux −TargetType=Editor −Progress −NoHotReloadFromIDE
+  This will compile UT which can be loaded in the Editor as a project.     
 
 **To get started using GitHub:**
 
