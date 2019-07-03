@@ -40,7 +40,7 @@ How to get started (Linux)
 * Build the Engine 
         
         make
-  Unreal Editor is now functional. It can be accessed through the binary located in `~/UnrealEngine/Engine/Binaries/Linux`.      
+  Unreal Editor is now functional. It can be accessed through the binary `./UE4Editor` located in `~/UnrealEngine/Engine/Binaries/Linux`.      
 
 * Now we focus on the UT Game. Delete some directories/file(s) (not functional right now)
   * UnrealTournament/Plugins
