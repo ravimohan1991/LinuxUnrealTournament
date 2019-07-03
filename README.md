@@ -24,8 +24,7 @@ How to get started (Linux)
 
         git clone https://github.com/ravimohan1991/LinuxUnrealTournament.git
         cd LinuxUnrealTournament/
-        git submodule init
-        git submodule update
+        git clone https://github.com/EpicGames/UnrealEngine -b release
 
 * Read [native build](https://github.com/EpicGames/UnrealEngine/blob/release/Engine/Build/BatchFiles/Linux/README.md) and complete the prerequisites mentioned there.
 
