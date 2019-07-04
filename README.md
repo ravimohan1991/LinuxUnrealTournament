@@ -48,6 +48,10 @@ How to get started (Linux)
   * UnrealTournament/Source/UnrealTournament.Server.Target.cs
   * UnrealTournament/Source/UnrealTournament/ThirdParty
 
+* Almost there! We generate the Game project files.
+          
+          mono ~/UnrealEngine/Engine/Binaries/DotNET/UnrealBuildTool.exe -Project="~/UnrealTournament/UnrealTournament.uproject" -projectfiles
+
 * Finally we are ready to compile the game.
 
         mono ~/UnrealEngine/Engine/Binaries/DotNET/UnrealBuildTool.exe -Project="~/UnrealTournament/UnrealTournament.uproject" Development Linux −TargetType=Editor −Progress −NoHotReloadFromIDE
