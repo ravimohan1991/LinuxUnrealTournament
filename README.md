@@ -47,7 +47,9 @@ How to get started (Linux)
   * UnrealTournament/Source/UnrealTournamentServer
   * UnrealTournament/Source/UnrealTournament.Server.Target.cs
   * UnrealTournament/Source/UnrealTournament/ThirdParty
+* Now run the Editor and hit browse to select the project in directory `UnrealTournament`. The projectfiles will be generated and Editor will compile the project with new name.  NOTE: Due to some bugs in the Engine, the code will not compile without errors. You have to modify the code (I have introduced some pull requests and hopefully, they will be implemented in the new version).
 
+<!--
 * Almost there! We generate the Game project files.
           
           mono ~/UnrealEngine/Engine/Binaries/DotNET/UnrealBuildTool.exe -Project="~/UnrealTournament/UnrealTournament.uproject" -projectfiles
@@ -56,7 +58,7 @@ How to get started (Linux)
 
         mono ~/UnrealEngine/Engine/Binaries/DotNET/UnrealBuildTool.exe -Project="~/UnrealTournament/UnrealTournament.uproject" Development Linux −TargetType=Editor −Progress −NoHotReloadFromIDE
   This will compile UT which can be loaded in the Editor as a project.     
-
+-->
 **To get started using GitHub:**
 
 - You'll want to create your own Unreal Tournament **fork** by clicking the __Fork button__ in the top right of this page.
