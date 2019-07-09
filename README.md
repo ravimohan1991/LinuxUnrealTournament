@@ -47,7 +47,7 @@ How to get started (Linux)
   * UnrealTournament/Source/UnrealTournamentServer
   * UnrealTournament/Source/UnrealTournament.Server.Target.cs
   * UnrealTournament/Source/UnrealTournament/ThirdParty
-* Now run the Editor and hit browse to select the project in directory `UnrealTournament`. The projectfiles will be generated and Editor will compile the project with new name.  NOTE: Due to some bugs in the Engine, the code will not compile without errors. You have to modify the code (I have introduced some pull requests and hopefully, they will be implemented in the new version).
+* Now run the Editor and hit browse to select the project in directory `UnrealTournament`. The projectfiles will be generated and Editor will compile the project with new name.  NOTE: Due to some bugs in the Engine, the code will not compile without errors. You have to modify the code (I have introduced some pull requests and hopefully, they will be implemented in the new version). The request is [here](https://github.com/EpicGames/UnrealEngine/pull/5989). You can modify the Engine code appropriately after downloading form GitHub.
 
 <!--
 * Almost there! We generate the Game project files.
